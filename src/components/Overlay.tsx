@@ -3,10 +3,12 @@ import { GameState } from '../types';
 import { Crown } from 'lucide-react';
 
 interface OverlayProps {
-  gameState: GameState;
+  gameState?: GameState | null;
 }
 
 export const Overlay: React.FC<OverlayProps> = ({ gameState }) => {
+  if (!gameState) return null;
+
   const { homeTeam, awayTeam, time } = gameState;
   
   const formatTime = (minutes: number, seconds: number) => {
