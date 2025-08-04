@@ -21,7 +21,7 @@ function App() {
     <div className="App">
       {viewMode === 'overlay' ? (
         <div className="relative min-h-screen bg-transparent">
-          <Overlay gameState={gameState.gameState} />
+          <Overlay gameState={gameState.gameState} showStats />
           {/* Floating control button */}
           <ControlPanelButton onClick={() => setViewMode('dashboard')} />
         </div>
