@@ -99,23 +99,23 @@ export const Dashboard: React.FC<DashboardProps> = ({
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 text-gray-900">
+    <div className="min-h-screen bg-brand-50 text-brand-900 font-sans p-18">
       {/* Header */}
-      <div className="bg-white shadow-sm border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="bg-white shadow-sm border-b border-brand-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-18">
           <div className="flex justify-between items-center py-4">
-            <h1 className="text-2xl font-bold text-gray-900">Futsal Scoreboard Control</h1>
-            <div className="flex gap-3">
+            <h1 className="text-2xl font-display text-brand-900">Futsal Scoreboard Control</h1>
+            <div className="flex gap-6">
               <button
                 onClick={() => onViewChange('scoreboard')}
-                className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+                className="inline-flex items-center gap-2 px-4 py-2 bg-brand-600 text-white rounded-lg hover:bg-brand-700 transition-colors"
               >
                 <Monitor className="w-4 h-4" />
                 View Scoreboard
               </button>
               <button
                 onClick={() => onViewChange('overlay')}
-                className="inline-flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+                className="inline-flex items-center gap-2 px-4 py-2 bg-accent-600 text-white rounded-lg hover:bg-accent-700 transition-colors"
               >
                 <Monitor className="w-4 h-4" />
                 Streaming Overlay
