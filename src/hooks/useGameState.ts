@@ -49,7 +49,7 @@ const initialState: GameState = {
 
 export const useGameState = () => {
   const [gameState, setGameState] = useState<GameState>(initialState);
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const keyboardListenerRef = useRef<((event: KeyboardEvent) => void) | null>(null);
 
   const updateTeam = useCallback(
