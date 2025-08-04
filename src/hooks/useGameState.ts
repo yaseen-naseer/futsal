@@ -52,15 +52,22 @@ export const useGameState = () => {
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const keyboardListenerRef = useRef<((event: KeyboardEvent) => void) | null>(null);
 
-  const updateTeam = useCallback((team: 'home' | 'away', field: 'name' | 'score' | 'fouls' | 'logo', value: string | number) => {
-    setGameState(prev => ({
-      ...prev,
-      [team === 'home' ? 'homeTeam' : 'awayTeam']: {
-        ...prev[team === 'home' ? 'homeTeam' : 'awayTeam'],
-        [field]: value,
-      },
-    }));
-  }, []);
+  const updateTeam = useCallback(
+    <K extends keyof Pick<Team, 'name' | 'score' | 'fouls' | 'logo'>>(
+      team: 'home' | 'away',
+      field: K,
+      value: Team[K],
+    ) => {
+      setGameState(prev => ({
+        ...prev,
+        [team === 'home' ? 'homeTeam' : 'awayTeam']: {
+          ...prev[team === 'home' ? 'homeTeam' : 'awayTeam'],
+          [field]: value,
+        },
+      }));
+    },
+    [],
+  );
 
   const updateTournamentLogo = useCallback((logo: string) => {
     setGameState(prev => ({
