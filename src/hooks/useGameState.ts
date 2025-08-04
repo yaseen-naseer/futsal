@@ -2,6 +2,24 @@ import { useState, useCallback, useEffect, useRef } from 'react';
 import { GameState, Team } from '../types';
 import { GAME_PRESETS, shouldAutoAdvance } from '../utils/gamePresets';
 
+const adjustTeamStatsForType = (team: Team, type: GameState['gamePreset']['type']): Team => {
+  if (type === 'football') {
+    return {
+      ...team,
+      stats: {
+        ...team.stats,
+        offsides: team.stats.offsides ?? 0,
+      },
+    };
+  }
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { offsides: _unused, ...rest } = team.stats;
+  return {
+    ...team,
+    stats: rest,
+  };
+};
+
 const initialState: GameState = {
   homeTeam: {
     name: 'Home Team',
@@ -11,7 +29,6 @@ const initialState: GameState = {
       shots: 0,
       shotsOnTarget: 0,
       corners: 0,
-      offsides: 0,
       yellowCards: 0,
       redCards: 0,
       possession: 50,
@@ -25,7 +42,6 @@ const initialState: GameState = {
       shots: 0,
       shotsOnTarget: 0,
       corners: 0,
-      offsides: 0,
       yellowCards: 0,
       redCards: 0,
       possession: 50,
@@ -214,15 +230,25 @@ export const useGameState = () => {
       half: 1,
       matchPhase: 'regular',
       isRunning: false,
+      homeTeam: adjustTeamStatsForType(prev.homeTeam, preset.type),
+      awayTeam: adjustTeamStatsForType(prev.awayTeam, preset.type),
     }));
   }, []);
   const resetGame = useCallback(() => {
-    setGameState(prev => ({
-      ...initialState,
-      gamePreset: prev.gamePreset, // Keep current preset
-      time: { minutes: prev.gamePreset.halfDuration, seconds: 0 },
-      possessionStartTime: Date.now(),
-    }));
+    setGameState(prev => {
+      const base = {
+        ...initialState,
+        gamePreset: prev.gamePreset, // Keep current preset
+        time: { minutes: prev.gamePreset.halfDuration, seconds: 0 },
+        possessionStartTime: Date.now(),
+      };
+
+      return {
+        ...base,
+        homeTeam: adjustTeamStatsForType(base.homeTeam, prev.gamePreset.type),
+        awayTeam: adjustTeamStatsForType(base.awayTeam, prev.gamePreset.type),
+      };
+    });
   }, []);
 
   // Keyboard shortcuts for external control
