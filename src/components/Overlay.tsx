@@ -2,22 +2,14 @@ import React from 'react';
 import { GameState } from '../types';
 import { getHalfName } from '../utils/gamePresets';
 import { Crown } from 'lucide-react';
+import { formatTime, isWinning } from '../utils/formatters';
 
 interface OverlayProps {
   gameState: GameState;
 }
 
 export const Overlay: React.FC<OverlayProps> = ({ gameState }) => {
-  const { homeTeam, awayTeam, time, half } = gameState;
-  
-  const formatTime = (minutes: number, seconds: number) => {
-    return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-  };
-
-  const isWinning = (teamScore: number, opponentScore: number) => {
-    return teamScore > opponentScore;
-  };
-
+  const { homeTeam, awayTeam, time } = gameState;
 
   return (
     <div className="fixed inset-0 pointer-events-none">

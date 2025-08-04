@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { GameState, Team } from '../types';
-import { GAME_PRESETS, shouldAutoAdvance, getPresetByType } from '../utils/gamePresets';
+import { GAME_PRESETS, shouldAutoAdvance } from '../utils/gamePresets';
 
 const initialState: GameState = {
   homeTeam: {
@@ -52,7 +52,10 @@ export const useGameState = () => {
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const keyboardListenerRef = useRef<((event: KeyboardEvent) => void) | null>(null);
 
-  const updateTeam = useCallback((team: 'home' | 'away', field: 'name' | 'score' | 'fouls' | 'logo', value: string | number) => {
+  type TeamField = 'name' | 'score' | 'fouls' | 'logo';
+  type TeamFieldValue<T extends TeamField> = T extends 'name' | 'logo' ? string : number;
+
+  const updateTeam = useCallback(<T extends TeamField>(team: 'home' | 'away', field: T, value: TeamFieldValue<T>) => {
     setGameState(prev => ({
       ...prev,
       [team === 'home' ? 'homeTeam' : 'awayTeam']: {
@@ -200,90 +203,12 @@ export const useGameState = () => {
         case 'KeyD':
         case 'Digit1':
           event.preventDefault();
-          // Only allow possession switching when timer is running
-          setGameState(prev => {
-            if (prev.isRunning) {
-              const now = Date.now();
-              const timeDiff = now - prev.possessionStartTime;
-              
-              // Update possession time for previous team
-              const updatedPossessionTime = {
-                ...prev.totalPossessionTime,
-                [prev.ballPossession]: prev.totalPossessionTime[prev.ballPossession] + timeDiff,
-              };
-              
-              // Calculate possession percentages
-              const totalTime = updatedPossessionTime.home + updatedPossessionTime.away;
-              const homePossession = totalTime > 0 ? Math.round((updatedPossessionTime.home / totalTime) * 100) : 50;
-              const awayPossession = 100 - homePossession;
-              
-              return {
-                ...prev,
-                ballPossession: 'home',
-                possessionStartTime: now,
-                totalPossessionTime: updatedPossessionTime,
-                homeTeam: {
-                  ...prev.homeTeam,
-                  stats: {
-                    ...prev.homeTeam.stats,
-                    possession: homePossession,
-                  },
-                },
-                awayTeam: {
-                  ...prev.awayTeam,
-                  stats: {
-                    ...prev.awayTeam.stats,
-                    possession: awayPossession,
-                  },
-                },
-              };
-            }
-            return prev;
-          });
+          switchBallPossession('home');
           break;
         case 'KeyA':
         case 'Digit2':
           event.preventDefault();
-          // Only allow possession switching when timer is running
-          setGameState(prev => {
-            if (prev.isRunning) {
-              const now = Date.now();
-              const timeDiff = now - prev.possessionStartTime;
-              
-              // Update possession time for previous team
-              const updatedPossessionTime = {
-                ...prev.totalPossessionTime,
-                [prev.ballPossession]: prev.totalPossessionTime[prev.ballPossession] + timeDiff,
-              };
-              
-              // Calculate possession percentages
-              const totalTime = updatedPossessionTime.home + updatedPossessionTime.away;
-              const homePossession = totalTime > 0 ? Math.round((updatedPossessionTime.home / totalTime) * 100) : 50;
-              const awayPossession = 100 - homePossession;
-              
-              return {
-                ...prev,
-                ballPossession: 'away',
-                possessionStartTime: now,
-                totalPossessionTime: updatedPossessionTime,
-                homeTeam: {
-                  ...prev.homeTeam,
-                  stats: {
-                    ...prev.homeTeam.stats,
-                    possession: homePossession,
-                  },
-                },
-                awayTeam: {
-                  ...prev.awayTeam,
-                  stats: {
-                    ...prev.awayTeam.stats,
-                    possession: awayPossession,
-                  },
-                },
-              };
-            }
-            return prev;
-          });
+          switchBallPossession('away');
           break;
       }
     };

@@ -29,10 +29,10 @@ export const GamePresetSelector: React.FC<GamePresetSelectorProps> = ({
         {GAME_PRESETS.map((preset, index) => {
           const Icon = getPresetIcon(preset);
           const isSelected = currentPreset.name === preset.name;
-          
+
           return (
             <button
-              key={index}
+              key={preset.name}
               onClick={() => onPresetChange(index)}
               className={`p-4 rounded-lg border-2 text-left transition-all hover:shadow-md ${
                 isSelected

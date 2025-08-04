@@ -1,14 +1,13 @@
 import React from 'react';
 import { GameState, Team } from '../types';
-import { 
-  Plus, 
-  Minus, 
-  Target, 
-  CornerDownLeft, 
-  Flag, 
+import {
+  Plus,
+  Minus,
+  Target,
+  CornerDownLeft,
+  Flag,
   AlertTriangle,
   Square,
-  Users,
   Timer
 } from 'lucide-react';
 

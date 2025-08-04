@@ -2,21 +2,14 @@ import React from 'react';
 import { GameState } from '../types';
 import { getHalfName } from '../utils/gamePresets';
 import { Crown } from 'lucide-react';
+import { formatTime, isWinning } from '../utils/formatters';
 
 interface ScoreboardProps {
   gameState: GameState;
 }
 
 export const Scoreboard: React.FC<ScoreboardProps> = ({ gameState }) => {
-  const { homeTeam, awayTeam, time, half } = gameState;
-  
-  const formatTime = (minutes: number, seconds: number) => {
-    return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-  };
-
-  const isWinning = (score1: number, score2: number) => {
-    return score1 > score2;
-  };
+  const { homeTeam, awayTeam, time } = gameState;
 
   return (
     <div className="w-screen h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white flex items-center justify-center overflow-hidden">
