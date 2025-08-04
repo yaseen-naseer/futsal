@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { GameState } from '../types';
 import { ExternalControlInfo } from './ExternalControlInfo';
 import { GamePresetSelector } from './GamePresetSelector';
+import { getHalfName } from '../utils/gamePresets';
 import {
   Play,
   Pause,
@@ -436,7 +437,9 @@ export const Dashboard: React.FC<DashboardProps> = ({
                     {gameState.isRunning ? 'RUNNING' : 'PAUSED'}
                   </span>
                 </div>
-                <span className="text-sm text-gray-600">Period {gameState.half}</span>
+                <span className="text-sm text-gray-600">
+                  {getHalfName(gameState.half, gameState.gamePreset, gameState.matchPhase)}
+                </span>
               </div>
 
               {/* Timer Controls */}
@@ -509,26 +512,56 @@ export const Dashboard: React.FC<DashboardProps> = ({
               {/* Period Control */}
               <div className="text-center">
                 <label className="block text-sm font-medium text-gray-700 mb-3">Game Period</label>
-                <div className="text-sm text-gray-600 mb-3">
-                  {gameState.half === 1 ? 'First Half' : gameState.half === 2 ? 'Second Half' : `Extra Time ${gameState.half - 2}`}
-                </div>
-                <div className="flex items-center justify-center gap-3">
-                  <button
-                    onClick={() => updatePeriod(Math.max(1, gameState.half - 1))}
-                    className="w-10 h-10 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 flex items-center justify-center transition-colors"
-                  >
-                    <Minus className="w-4 h-4" />
-                  </button>
-                  <span className="text-xl font-bold text-gray-900 min-w-[3rem] text-center">
-                    {gameState.half}
-                  </span>
-                  <button
-                    onClick={() => updatePeriod(gameState.half + 1)}
-                    className="w-10 h-10 bg-green-100 text-green-600 rounded-lg hover:bg-green-200 flex items-center justify-center transition-colors"
-                  >
-                    <Plus className="w-4 h-4" />
-                  </button>
-                </div>
+                {(() => {
+                  const preset = gameState.gamePreset;
+                  const maxHalf = preset.hasExtraTime
+                    ? preset.hasPenalties ? 5 : 4
+                    : preset.hasPenalties ? 5 : preset.totalHalves;
+
+                  const getNextHalf = () => {
+                    if (!preset.hasExtraTime && preset.hasPenalties && gameState.half === 2) {
+                      return 5; // direct to penalties
+                    }
+                    return gameState.half + 1;
+                  };
+
+                  const getPrevHalf = () => {
+                    if (!preset.hasExtraTime && preset.hasPenalties && gameState.half === 5) {
+                      return 2; // back to second half
+                    }
+                    return Math.max(1, gameState.half - 1);
+                  };
+
+                  return (
+                    <>
+                      <div className="text-sm text-gray-600 mb-3">
+                        {getHalfName(gameState.half, preset, gameState.matchPhase)}
+                      </div>
+                      <div className="flex items-center justify-center gap-3">
+                        <button
+                          onClick={() => updatePeriod(getPrevHalf())}
+                          className="w-10 h-10 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 flex items-center justify-center transition-colors"
+                        >
+                          <Minus className="w-4 h-4" />
+                        </button>
+                        <span className="text-xl font-bold text-gray-900 min-w-[3rem] text-center">
+                          {gameState.half}
+                        </span>
+                        <button
+                          onClick={() => updatePeriod(getNextHalf())}
+                          disabled={gameState.half >= maxHalf}
+                          className={`w-10 h-10 rounded-lg flex items-center justify-center transition-colors ${
+                            gameState.half >= maxHalf
+                              ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                              : 'bg-green-100 text-green-600 hover:bg-green-200'
+                          }`}
+                        >
+                          <Plus className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </>
+                  );
+                })()}
                 <div className="mt-3 text-xs text-gray-500">
                   Current Format: {gameState.gamePreset.name}
                 </div>
