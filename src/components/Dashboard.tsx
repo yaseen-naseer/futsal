@@ -24,7 +24,10 @@ interface DashboardProps {
   updatePeriod: (period: number) => void;
   changeGamePreset: (presetIndex: number) => void;
   resetGame: () => void;
-  onViewChange: (view: 'scoreboard' | 'dashboard' | 'overlay' | 'stats' | 'possession') => void;
+  onViewChange: (
+    view: 'scoreboard' | 'dashboard' | 'overlay' | 'stats' | 'possession',
+    showStats?: boolean
+  ) => void;
 }
 
 export const Dashboard: React.FC<DashboardProps> = ({
@@ -113,7 +116,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
                 View Scoreboard
               </button>
               <button
-                onClick={() => onViewChange('overlay')}
+                onClick={() => onViewChange('overlay', true)}
                 className="inline-flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
               >
                 <Monitor className="w-4 h-4" />

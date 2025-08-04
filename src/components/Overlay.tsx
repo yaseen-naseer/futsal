@@ -5,9 +5,10 @@ import { Crown } from 'lucide-react';
 
 interface OverlayProps {
   gameState: GameState;
+  showStats?: boolean;
 }
 
-export const Overlay: React.FC<OverlayProps> = ({ gameState }) => {
+export const Overlay: React.FC<OverlayProps> = ({ gameState, showStats = false }) => {
   const { homeTeam, awayTeam, time } = gameState;
   
   const formatTime = (minutes: number, seconds: number) => {
@@ -97,29 +98,31 @@ export const Overlay: React.FC<OverlayProps> = ({ gameState }) => {
       </div>
 
       {/* Bottom Stats Bar (Optional - can be toggled) */}
-      <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-50">
-        <div className="bg-black/60 backdrop-blur-md rounded-xl border border-white/10 px-6 py-2">
-          <div className="flex items-center gap-8 text-sm">
-            <div className="flex items-center gap-2">
-              <span className="text-blue-400 font-medium">{homeTeam.name}</span>
-              <span className="text-white/60">Fouls:</span>
-              <span className="text-red-400 font-bold">{homeTeam.fouls}</span>
-              <span className="text-white/60">|</span>
-              <span className="text-white/60">Poss:</span>
-              <span className="text-blue-400 font-bold">{homeTeam.stats.possession}%</span>
-            </div>
-            <div className="w-px h-4 bg-white/20"></div>
-            <div className="flex items-center gap-2">
-              <span className="text-red-400 font-medium">{awayTeam.name}</span>
-              <span className="text-white/60">Fouls:</span>
-              <span className="text-red-400 font-bold">{awayTeam.fouls}</span>
-              <span className="text-white/60">|</span>
-              <span className="text-white/60">Poss:</span>
-              <span className="text-red-400 font-bold">{awayTeam.stats.possession}%</span>
+      {showStats && (
+        <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-50">
+          <div className="bg-black/60 backdrop-blur-md rounded-xl border border-white/10 px-6 py-2">
+            <div className="flex items-center gap-8 text-sm">
+              <div className="flex items-center gap-2">
+                <span className="text-blue-400 font-medium">{homeTeam.name}</span>
+                <span className="text-white/60">Fouls:</span>
+                <span className="text-red-400 font-bold">{homeTeam.fouls}</span>
+                <span className="text-white/60">|</span>
+                <span className="text-white/60">Poss:</span>
+                <span className="text-blue-400 font-bold">{homeTeam.stats.possession}%</span>
+              </div>
+              <div className="w-px h-4 bg-white/20"></div>
+              <div className="flex items-center gap-2">
+                <span className="text-red-400 font-medium">{awayTeam.name}</span>
+                <span className="text-white/60">Fouls:</span>
+                <span className="text-red-400 font-bold">{awayTeam.fouls}</span>
+                <span className="text-white/60">|</span>
+                <span className="text-white/60">Poss:</span>
+                <span className="text-red-400 font-bold">{awayTeam.stats.possession}%</span>
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };

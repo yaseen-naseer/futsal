@@ -11,17 +11,19 @@ type ViewMode = 'scoreboard' | 'dashboard' | 'overlay' | 'stats' | 'possession';
 
 function App() {
   const [viewMode, setViewMode] = useState<ViewMode>('dashboard');
+  const [showStats, setShowStats] = useState(false);
   const gameState = useGameState();
 
-  const handleViewChange = (view: ViewMode) => {
+  const handleViewChange = (view: ViewMode, stats: boolean = false) => {
     setViewMode(view);
+    setShowStats(stats);
   };
 
   return (
     <div className="App">
       {viewMode === 'overlay' ? (
         <div className="relative min-h-screen bg-transparent">
-          <Overlay gameState={gameState.gameState} />
+          <Overlay gameState={gameState.gameState} showStats={showStats} />
           {/* Floating control button */}
           <ControlPanelButton onClick={() => setViewMode('dashboard')} />
         </div>
