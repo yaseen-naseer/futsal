@@ -3,6 +3,7 @@ import { GameState } from '../types';
 import { getHalfName } from '../utils/gamePresets';
 import { Crown } from 'lucide-react';
 import { formatTime, isWinning } from '../utils/format';
+import { motion, useReducedMotion } from 'framer-motion';
 
 interface ScoreboardProps {
   gameState: GameState;
@@ -10,9 +11,16 @@ interface ScoreboardProps {
 
 export const Scoreboard: React.FC<ScoreboardProps> = ({ gameState }) => {
   const { homeTeam, awayTeam, time } = gameState;
+  const shouldReduceMotion = useReducedMotion();
 
   return (
-    <div className="w-screen h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white flex items-center justify-center overflow-hidden">
+    <motion.div
+      className="w-screen h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white flex items-center justify-center overflow-hidden"
+      initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: shouldReduceMotion ? 0 : -20 }}
+      transition={{ duration: shouldReduceMotion ? 0 : 0.3 }}
+    >
       <div className="w-full h-full flex items-center justify-center px-8 py-6">
         {/* Main Scoreboard */}
         <div className="bg-black/40 backdrop-blur-lg rounded-3xl border border-gray-700/50 shadow-2xl w-full max-w-7xl h-full max-h-[900px] flex flex-col justify-center p-12">
@@ -120,6 +128,6 @@ export const Scoreboard: React.FC<ScoreboardProps> = ({ gameState }) => {
           </div>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 };
