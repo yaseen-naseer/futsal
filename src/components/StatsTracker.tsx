@@ -4,11 +4,10 @@ import {
   Plus, 
   Minus, 
   Target, 
-  CornerDownLeft, 
-  Flag, 
+  CornerDownLeft,
+  Flag,
   AlertTriangle,
   Square,
-  Users,
   Timer
 } from 'lucide-react';
 
