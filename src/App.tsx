@@ -5,6 +5,7 @@ import { Dashboard } from './components/Dashboard';
 import { Overlay } from './components/Overlay';
 import { StatsTracker } from './components/StatsTracker';
 import { PossessionTracker } from './components/PossessionTracker';
+import { ControlPanelButton } from './components/ControlPanelButton';
 
 type ViewMode = 'scoreboard' | 'dashboard' | 'overlay' | 'stats' | 'possession';
 
@@ -22,52 +23,32 @@ function App() {
         <div className="relative min-h-screen bg-transparent">
           <Overlay gameState={gameState.gameState} />
           {/* Floating control button */}
-          <button
-            onClick={() => setViewMode('dashboard')}
-            className="fixed top-4 right-4 bg-black/50 text-white px-4 py-2 rounded-lg hover:bg-black/70 transition-colors backdrop-blur-sm z-50"
-          >
-            Control Panel
-          </button>
+          <ControlPanelButton onClick={() => setViewMode('dashboard')} />
         </div>
       ) : viewMode === 'stats' ? (
         <div className="relative">
-          <StatsTracker 
+          <StatsTracker
             gameState={gameState.gameState}
             updateTeamStats={gameState.updateTeamStats}
             switchBallPossession={gameState.switchBallPossession}
           />
           {/* Floating control button */}
-          <button
-            onClick={() => setViewMode('dashboard')}
-            className="fixed top-4 right-4 bg-black/50 text-white px-4 py-2 rounded-lg hover:bg-black/70 transition-colors backdrop-blur-sm z-50"
-          >
-            Control Panel
-          </button>
+          <ControlPanelButton onClick={() => setViewMode('dashboard')} />
         </div>
       ) : viewMode === 'scoreboard' ? (
         <div className="relative">
           <Scoreboard gameState={gameState.gameState} />
           {/* Floating control button */}
-          <button
-            onClick={() => setViewMode('dashboard')}
-            className="fixed top-4 right-4 bg-black/50 text-white px-4 py-2 rounded-lg hover:bg-black/70 transition-colors backdrop-blur-sm z-50"
-          >
-            Control Panel
-          </button>
+          <ControlPanelButton onClick={() => setViewMode('dashboard')} />
         </div>
       ) : viewMode === 'possession' ? (
         <div className="relative">
-          <PossessionTracker 
+          <PossessionTracker
             gameState={gameState.gameState}
             switchBallPossession={gameState.switchBallPossession}
           />
           {/* Floating control button */}
-          <button
-            onClick={() => setViewMode('dashboard')}
-            className="fixed top-4 right-4 bg-black/50 text-white px-4 py-2 rounded-lg hover:bg-black/70 transition-colors backdrop-blur-sm z-50"
-          >
-            Control Panel
-          </button>
+          <ControlPanelButton onClick={() => setViewMode('dashboard')} />
         </div>
       ) : (
         <Dashboard
