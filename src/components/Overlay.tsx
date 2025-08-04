@@ -4,11 +4,13 @@ import { Crown } from 'lucide-react';
 import { formatTime, isWinning } from '../utils/format';
 
 interface OverlayProps {
-  gameState: GameState;
+  gameState?: GameState | null;
   showStats?: boolean;
 }
 
 export const Overlay: React.FC<OverlayProps> = ({ gameState, showStats = true }) => {
+  if (!gameState) return null;
+
   const { homeTeam, awayTeam, time } = gameState;
 
   return (
