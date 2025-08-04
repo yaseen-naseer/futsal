@@ -6,12 +6,11 @@ import {
   Play, 
   Pause, 
   RotateCcw, 
-  Plus, 
-  Minus, 
-  Settings, 
+  Plus,
+  Minus,
+  Settings,
   Upload,
   Monitor,
-  Save,
   BarChart3,
   Timer
 } from 'lucide-react';
