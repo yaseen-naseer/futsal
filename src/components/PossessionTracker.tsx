@@ -143,7 +143,7 @@ export const PossessionTracker: React.FC<PossessionTrackerProps> = ({
                   )}
                 </div>
                 <div className="font-bold text-lg mb-2">{awayTeam.name}</div>
-                <div className="text-sm mb-2">Click for Possession</div>
+                <div className="text-sm mb-2">Click for Possession (D or 2)</div>
                 <div className="text-2xl font-bold">{awayTeam.stats.possession}%</div>
                 {ballPossession === 'away' && (
                   <div className="mt-2 text-xs font-semibold text-red-600">
