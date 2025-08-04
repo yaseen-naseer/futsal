@@ -31,11 +31,11 @@ export const ExternalControlInfo: React.FC = () => {
             </div>
             <div className="flex justify-between">
               <span className="text-gray-600">Home Possession:</span>
-              <kbd className="bg-gray-100 px-2 py-1 rounded">D or 1</kbd>
+              <kbd className="bg-gray-100 px-2 py-1 rounded">A or 1</kbd>
             </div>
             <div className="flex justify-between">
               <span className="text-gray-600">Away Possession:</span>
-              <kbd className="bg-gray-100 px-2 py-1 rounded">A or 2</kbd>
+              <kbd className="bg-gray-100 px-2 py-1 rounded">D or 2</kbd>
             </div>
             <div className="text-xs text-gray-500 mt-2">
               * Possession shortcuts only work when timer is running

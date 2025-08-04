@@ -129,7 +129,7 @@ export const StatsTracker: React.FC<StatsTrackerProps> = ({
             >
               <div className="text-center">
                 <div className="font-semibold">{homeTeam.name}</div>
-                <div className="text-sm">Has Possession (D or 1)</div>
+                <div className="text-sm">Has Possession (A or 1)</div>
                 <div className="text-lg font-bold mt-1">{homeTeam.stats.possession}%</div>
               </div>
             </button>
@@ -147,7 +147,7 @@ export const StatsTracker: React.FC<StatsTrackerProps> = ({
                 {ballPossession === 'home' ? homeTeam.name : awayTeam.name}
               </div>
               <div className="mt-2 text-xs text-gray-500">
-                Press D/1 for Home, A/2 for Away (only when timer running)
+                Press A/1 for Home, D/2 for Away (only when timer running)
               </div>
             </div>
 
@@ -161,7 +161,7 @@ export const StatsTracker: React.FC<StatsTrackerProps> = ({
             >
               <div className="text-center">
                 <div className="font-semibold">{awayTeam.name}</div>
-                <div className="text-sm">Has Possession (A or 2)</div>
+                <div className="text-sm">Has Possession (D or 2)</div>
                 <div className="text-lg font-bold mt-1">{awayTeam.stats.possession}%</div>
               </div>
             </button>

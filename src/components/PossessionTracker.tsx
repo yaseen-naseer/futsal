@@ -90,7 +90,7 @@ export const PossessionTracker: React.FC<PossessionTrackerProps> = ({
                   )}
                 </div>
                 <div className="font-bold text-lg mb-2">{homeTeam.name}</div>
-                <div className="text-sm">Click for Possession (D or 1)</div>
+                <div className="text-sm">Click for Possession (A or 1)</div>
                 <div className="text-2xl font-bold">{homeTeam.stats.possession}%</div>
                 {ballPossession === 'home' && (
                   <div className="mt-2 text-xs font-semibold text-blue-600">
@@ -189,7 +189,7 @@ export const PossessionTracker: React.FC<PossessionTrackerProps> = ({
           <h4 className="font-semibold text-green-900 mb-3">Operator Instructions</h4>
           <ul className="space-y-2 text-sm text-green-800">
             <li>• <strong>Click team buttons</strong> to switch ball possession when play changes</li>
-            <li>• <strong>Keyboard shortcuts</strong>: Press <kbd className="bg-green-100 px-2 py-1 rounded text-xs">D</kbd> or <kbd className="bg-green-100 px-2 py-1 rounded text-xs">1</kbd> for Home team, <kbd className="bg-green-100 px-2 py-1 rounded text-xs">A</kbd> or <kbd className="bg-green-100 px-2 py-1 rounded text-xs">2</kbd> for Away team</li>
+            <li>• <strong>Keyboard shortcuts</strong>: Press <kbd className="bg-green-100 px-2 py-1 rounded text-xs">A</kbd> or <kbd className="bg-green-100 px-2 py-1 rounded text-xs">1</kbd> for Home team, <kbd className="bg-green-100 px-2 py-1 rounded text-xs">D</kbd> or <kbd className="bg-green-100 px-2 py-1 rounded text-xs">2</kbd> for Away team</li>
             <li>• <strong>Shortcuts only work when timer is running</strong> - prevents accidental possession changes during breaks</li>
             <li>• <strong>Possession percentages</strong> are calculated automatically based on time</li>
             <li>• <strong>Only track possession changes</strong> - other operators handle different stats</li>
