@@ -204,12 +204,12 @@ export const useGameState = () => {
           event.preventDefault();
           setGameState(prev => ({ ...prev, isRunning: false }));
           break;
-        case 'KeyD':
+        case 'KeyA':
         case 'Digit1':
           event.preventDefault();
           switchBallPossession('home');
           break;
-        case 'KeyA':
+        case 'KeyD':
         case 'Digit2':
           event.preventDefault();
           switchBallPossession('away');
