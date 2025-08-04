@@ -8,7 +8,7 @@ interface OverlayProps {
 }
 
 export const Overlay: React.FC<OverlayProps> = ({ gameState }) => {
-  const { homeTeam, awayTeam, time, half } = gameState;
+  const { homeTeam, awayTeam, time } = gameState;
   
   const formatTime = (minutes: number, seconds: number) => {
     return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
