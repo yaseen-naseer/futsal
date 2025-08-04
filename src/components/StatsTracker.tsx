@@ -199,8 +199,8 @@ export const StatsTracker: React.FC<StatsTrackerProps> = ({
               label="Offsides"
               icon={Flag}
               stat="offsides"
-              homeValue={homeTeam.stats.offsides}
-              awayValue={awayTeam.stats.offsides}
+              homeValue={homeTeam.stats.offsides ?? 0}
+              awayValue={awayTeam.stats.offsides ?? 0}
             />
           )}
 

@@ -7,7 +7,7 @@ export interface Team {
     shots: number;
     shotsOnTarget: number;
     corners: number;
-    offsides: number;
+    offsides?: number;
     yellowCards: number;
     redCards: number;
     possession: number; // percentage
