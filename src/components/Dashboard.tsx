@@ -43,26 +43,46 @@ export const Dashboard: React.FC<DashboardProps> = ({
   const [activeTab, setActiveTab] = useState<'teams' | 'timer' | 'format' | 'settings'>('teams');
   const tabs = ['teams', 'timer', 'format', 'settings'] as const;
 
+  const [homeLogoError, setHomeLogoError] = useState('');
+  const [awayLogoError, setAwayLogoError] = useState('');
+  const [tournamentLogoError, setTournamentLogoError] = useState('');
+
   const handleImageUpload = (team: 'home' | 'away', event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        updateTeam(team, 'logo', e.target?.result as string);
-      };
-      reader.readAsDataURL(file);
+    if (!file) return;
+
+    if (!file.type.startsWith('image/') || file.type === 'image/svg+xml') {
+      const errorMessage = 'Please upload a valid image (SVG not allowed).';
+      if (team === 'home') {
+        setHomeLogoError(errorMessage);
+      } else {
+        setAwayLogoError(errorMessage);
+      }
+      return;
+    }
+
+    const url = URL.createObjectURL(file);
+    updateTeam(team, 'logo', url);
+
+    if (team === 'home') {
+      setHomeLogoError('');
+    } else {
+      setAwayLogoError('');
     }
   };
 
   const handleTournamentLogoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        updateTournamentLogo(e.target?.result as string);
-      };
-      reader.readAsDataURL(file);
+    if (!file) return;
+
+    if (!file.type.startsWith('image/') || file.type === 'image/svg+xml') {
+      setTournamentLogoError('Please upload a valid image (SVG not allowed).');
+      return;
     }
+
+    const url = URL.createObjectURL(file);
+    updateTournamentLogo(url);
+    setTournamentLogoError('');
   };
 
   const adjustScore = (team: 'home' | 'away', delta: number) => {
@@ -200,6 +220,9 @@ export const Dashboard: React.FC<DashboardProps> = ({
                   <p className="text-xs text-gray-500 mt-1">Leave blank to show no header logo.</p>
                 </div>
               </div>
+              {tournamentLogoError && (
+                <p className="text-sm text-red-600 mt-2">{tournamentLogoError}</p>
+              )}
             </div>
 
             {/* Timer Controls - Quick Access */}
@@ -283,6 +306,9 @@ export const Dashboard: React.FC<DashboardProps> = ({
                       />
                     </label>
                   </div>
+                  {homeLogoError && (
+                    <p className="text-sm text-red-600 mt-2">{homeLogoError}</p>
+                  )}
                 </div>
 
                 <div>
@@ -365,6 +391,9 @@ export const Dashboard: React.FC<DashboardProps> = ({
                       />
                     </label>
                   </div>
+                  {awayLogoError && (
+                    <p className="text-sm text-red-600 mt-2">{awayLogoError}</p>
+                  )}
                 </div>
 
                 <div>
