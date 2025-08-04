@@ -3,15 +3,13 @@ import { GameState, Team } from '../types';
 import { ExternalControlInfo } from './ExternalControlInfo';
 import { GamePresetSelector } from './GamePresetSelector';
 import { 
-  Play, 
-  Pause, 
-  RotateCcw, 
-  Plus, 
-  Minus, 
-  Settings, 
+  Play,
+  Pause,
+  RotateCcw,
+  Plus,
+  Minus,
   Upload,
   Monitor,
-  Save,
   BarChart3,
   Timer
 } from 'lucide-react';
@@ -35,8 +33,6 @@ export const Dashboard: React.FC<DashboardProps> = ({
   gameState,
   updateTeam,
   updateTournamentLogo,
-  updateTeamStats,
-  switchBallPossession,
   updateTime,
   toggleTimer,
   resetTimer,
@@ -44,8 +40,14 @@ export const Dashboard: React.FC<DashboardProps> = ({
   changeGamePreset,
   resetGame,
   onViewChange,
-}) => {
+  }) => {
   const [activeTab, setActiveTab] = useState<'teams' | 'timer' | 'format' | 'settings'>('teams');
+  const tabs: Array<'teams' | 'timer' | 'format' | 'settings'> = [
+    'teams',
+    'timer',
+    'format',
+    'settings',
+  ];
 
   const handleImageUpload = (team: 'home' | 'away', event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -148,10 +150,10 @@ export const Dashboard: React.FC<DashboardProps> = ({
         <div className="mb-8">
           <div className="border-b border-gray-200">
             <nav className="-mb-px flex space-x-8">
-              {['teams', 'timer', 'format', 'settings'].map((tab) => (
+              {tabs.map(tab => (
                 <button
                   key={tab}
-                  onClick={() => setActiveTab(tab as any)}
+                  onClick={() => setActiveTab(tab)}
                   className={`py-2 px-1 border-b-2 font-medium text-sm capitalize transition-colors ${
                     activeTab === tab
                       ? 'border-green-500 text-green-600'

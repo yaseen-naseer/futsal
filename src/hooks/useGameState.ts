@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { GameState, Team } from '../types';
-import { GAME_PRESETS, shouldAutoAdvance, getPresetByType } from '../utils/gamePresets';
+import { GAME_PRESETS, shouldAutoAdvance } from '../utils/gamePresets';
 
 const initialState: GameState = {
   homeTeam: {
