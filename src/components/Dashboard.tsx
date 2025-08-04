@@ -1,14 +1,13 @@
 import React, { useState } from 'react';
-import { GameState, Team } from '../types';
+import { GameState } from '../types';
 import { ExternalControlInfo } from './ExternalControlInfo';
 import { GamePresetSelector } from './GamePresetSelector';
-import { 
-  Play, 
-  Pause, 
-  RotateCcw, 
+import {
+  Play,
+  Pause,
+  RotateCcw,
   Plus,
   Minus,
-  Settings,
   Upload,
   Monitor,
   BarChart3,
@@ -19,8 +18,6 @@ interface DashboardProps {
   gameState: GameState;
   updateTeam: (team: 'home' | 'away', field: 'name' | 'score' | 'fouls' | 'logo', value: string | number) => void;
   updateTournamentLogo: (logo: string) => void;
-  updateTeamStats: (team: 'home' | 'away', stat: keyof Team['stats'], value: number) => void;
-  switchBallPossession: (team: 'home' | 'away') => void;
   updateTime: (minutes: number, seconds: number) => void;
   toggleTimer: () => void;
   resetTimer: () => void;
@@ -34,8 +31,6 @@ export const Dashboard: React.FC<DashboardProps> = ({
   gameState,
   updateTeam,
   updateTournamentLogo,
-  updateTeamStats,
-  switchBallPossession,
   updateTime,
   toggleTimer,
   resetTimer,
@@ -45,6 +40,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
   onViewChange,
 }) => {
   const [activeTab, setActiveTab] = useState<'teams' | 'timer' | 'format' | 'settings'>('teams');
+  const tabs = ['teams', 'timer', 'format', 'settings'] as const;
 
   const handleImageUpload = (team: 'home' | 'away', event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -147,10 +143,10 @@ export const Dashboard: React.FC<DashboardProps> = ({
         <div className="mb-8">
           <div className="border-b border-gray-200">
             <nav className="-mb-px flex space-x-8">
-              {['teams', 'timer', 'format', 'settings'].map((tab) => (
+              {tabs.map((tab) => (
                 <button
                   key={tab}
-                  onClick={() => setActiveTab(tab as any)}
+                  onClick={() => setActiveTab(tab)}
                   className={`py-2 px-1 border-b-2 font-medium text-sm capitalize transition-colors ${
                     activeTab === tab
                       ? 'border-green-500 text-green-600'

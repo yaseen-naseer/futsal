@@ -3,12 +3,11 @@ import { GameState, Team } from '../types';
 import { 
   Plus, 
   Minus, 
-  Target, 
-  CornerDownLeft, 
-  Flag, 
+  Target,
+  CornerDownLeft,
+  Flag,
   AlertTriangle,
   Square,
-  Users,
   Timer
 } from 'lucide-react';
 
