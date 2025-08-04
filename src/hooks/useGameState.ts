@@ -156,10 +156,53 @@ export const useGameState = () => {
   }, []);
 
   const toggleTimer = useCallback(() => {
-    setGameState(prev => ({
-      ...prev,
-      isRunning: !prev.isRunning,
-    }));
+    setGameState(prev => {
+      const now = Date.now();
+
+      if (!prev.isRunning) {
+        return {
+          ...prev,
+          isRunning: true,
+          possessionStartTime: now,
+        };
+      }
+
+      const timeDiff = now - prev.possessionStartTime;
+      const updatedPossessionTime = {
+        ...prev.totalPossessionTime,
+        [prev.ballPossession]:
+          prev.totalPossessionTime[prev.ballPossession] + timeDiff,
+      };
+
+      const totalTime =
+        updatedPossessionTime.home + updatedPossessionTime.away;
+      const homePossession =
+        totalTime > 0
+          ? Math.round((updatedPossessionTime.home / totalTime) * 100)
+          : 50;
+      const awayPossession = 100 - homePossession;
+
+      return {
+        ...prev,
+        isRunning: false,
+        possessionStartTime: now,
+        totalPossessionTime: updatedPossessionTime,
+        homeTeam: {
+          ...prev.homeTeam,
+          stats: {
+            ...prev.homeTeam.stats,
+            possession: homePossession,
+          },
+        },
+        awayTeam: {
+          ...prev.awayTeam,
+          stats: {
+            ...prev.awayTeam.stats,
+            possession: awayPossession,
+          },
+        },
+      };
+    });
   }, []);
 
   const resetTimer = useCallback(() => {
@@ -167,6 +210,16 @@ export const useGameState = () => {
       ...prev,
       time: { minutes: prev.gamePreset.halfDuration, seconds: 0 },
       isRunning: false,
+      possessionStartTime: Date.now(),
+      totalPossessionTime: { home: 0, away: 0 },
+      homeTeam: {
+        ...prev.homeTeam,
+        stats: { ...prev.homeTeam.stats, possession: 50 },
+      },
+      awayTeam: {
+        ...prev.awayTeam,
+        stats: { ...prev.awayTeam.stats, possession: 50 },
+      },
     }));
   }, []);
 
@@ -223,16 +276,28 @@ export const useGameState = () => {
 
   const changeGamePreset = useCallback((presetIndex: number) => {
     const preset = GAME_PRESETS[presetIndex];
-    setGameState(prev => ({
-      ...prev,
-      gamePreset: preset,
-      time: { minutes: preset.halfDuration, seconds: 0 },
-      half: 1,
-      matchPhase: 'regular',
-      isRunning: false,
-      homeTeam: adjustTeamStatsForType(prev.homeTeam, preset.type),
-      awayTeam: adjustTeamStatsForType(prev.awayTeam, preset.type),
-    }));
+    setGameState(prev => {
+      const adjustedHome = adjustTeamStatsForType(prev.homeTeam, preset.type);
+      const adjustedAway = adjustTeamStatsForType(prev.awayTeam, preset.type);
+      return {
+        ...prev,
+        gamePreset: preset,
+        time: { minutes: preset.halfDuration, seconds: 0 },
+        half: 1,
+        matchPhase: 'regular',
+        isRunning: false,
+        possessionStartTime: Date.now(),
+        totalPossessionTime: { home: 0, away: 0 },
+        homeTeam: {
+          ...adjustedHome,
+          stats: { ...adjustedHome.stats, possession: 50 },
+        },
+        awayTeam: {
+          ...adjustedAway,
+          stats: { ...adjustedAway.stats, possession: 50 },
+        },
+      };
+    });
   }, []);
   const resetGame = useCallback(() => {
     setGameState(prev => {
