@@ -301,23 +301,37 @@ export const useGameState = () => {
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
       if (event.origin !== window.location.origin) return;
-      
-      const { type, action } = event.data;
-      if (type === 'TIMER_CONTROL') {
-        switch (action) {
-          case 'START':
-            setGameState(prev => ({ ...prev, isRunning: true }));
-            break;
-          case 'STOP':
-            setGameState(prev => ({ ...prev, isRunning: false }));
-            break;
-          case 'TOGGLE':
-            toggleTimer();
-            break;
-          case 'RESET':
-            resetTimer();
-            break;
-        }
+
+      if (typeof event.data !== 'object' || event.data === null) {
+        return;
+      }
+
+      if (!('type' in event.data) || !('action' in event.data)) {
+        return;
+      }
+
+      const { type, action } = event.data as { type: unknown; action: unknown };
+
+      if (type !== 'TIMER_CONTROL' || typeof action !== 'string') {
+        return;
+      }
+
+      switch (action) {
+        case 'START':
+          setGameState(prev => ({ ...prev, isRunning: true }));
+          break;
+        case 'STOP':
+          setGameState(prev => ({ ...prev, isRunning: false }));
+          break;
+        case 'TOGGLE':
+          toggleTimer();
+          break;
+        case 'RESET':
+          resetTimer();
+          break;
+        default:
+          // Ignore unknown actions
+          break;
       }
     };
 
