@@ -155,10 +155,54 @@ export const useGameState = () => {
   }, []);
 
   const updatePeriod = useCallback((period: number) => {
-    setGameState(prev => ({
-      ...prev,
-      half: period,
-    }));
+    setGameState(prev => {
+      const preset = prev.gamePreset;
+      let newHalf = period;
+      let newPhase: GameState['matchPhase'] = prev.matchPhase;
+      let minutes = prev.time.minutes;
+      let seconds = prev.time.seconds;
+
+      if (preset.hasExtraTime) {
+        if (period <= 2) {
+          newPhase = 'regular';
+          minutes = preset.halfDuration;
+          seconds = 0;
+        } else if (period === 3 || period === 4) {
+          newPhase = 'extra-time';
+          minutes = preset.extraTimeDuration;
+          seconds = 0;
+        } else if (preset.hasPenalties) {
+          newHalf = 5;
+          newPhase = 'penalties';
+          minutes = 0;
+          seconds = 0;
+        } else {
+          newHalf = 4;
+        }
+      } else {
+        if (period <= 2) {
+          newPhase = 'regular';
+          minutes = preset.halfDuration;
+          seconds = 0;
+          newHalf = period;
+        } else if (preset.hasPenalties) {
+          newHalf = 5;
+          newPhase = 'penalties';
+          minutes = 0;
+          seconds = 0;
+        } else {
+          newHalf = 2;
+        }
+      }
+
+      return {
+        ...prev,
+        half: newHalf,
+        matchPhase: newPhase,
+        time: { minutes, seconds },
+        isRunning: false,
+      };
+    });
   }, []);
 
   const changeGamePreset = useCallback((presetIndex: number) => {
