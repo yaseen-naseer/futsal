@@ -1,15 +1,18 @@
 import React from 'react';
+import { Settings } from 'lucide-react';
 
 interface ControlPanelButtonProps {
   onClick: () => void;
 }
 
+// Floating action button with an icon for a more modern feel
 export const ControlPanelButton: React.FC<ControlPanelButtonProps> = ({ onClick }) => (
   <button
     onClick={onClick}
-    className="fixed top-4 right-4 bg-black/50 text-white px-4 py-2 rounded-lg hover:bg-black/70 transition-colors backdrop-blur-sm z-50"
+    aria-label="Open control panel"
+    className="fixed top-5 right-5 w-12 h-12 rounded-full bg-indigo-600/80 text-white flex items-center justify-center shadow-lg hover:bg-indigo-600 backdrop-blur-md transition-colors z-50"
   >
-    Control Panel
+    <Settings className="w-5 h-5" />
   </button>
 );
 
