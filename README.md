@@ -48,6 +48,6 @@ Navigate between the dashboard, scoreboard, stats tracker, and overlay views usi
 ### Animations
 Key interface elements such as the live indicator and score updates use smooth animations to improve readability. These animations are powered by Tailwind CSS utility classes.
 
-### Progressive Web App
+## Progressive Web App
 On supported browsers, use the "Install" or "Add to Home Screen" option to install the app. Once installed, it can run offline and launch in a standalone window.
 
