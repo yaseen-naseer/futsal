@@ -4,6 +4,7 @@ import { ExternalControlInfo } from './ExternalControlInfo';
 import { GamePresetSelector } from './GamePresetSelector';
 import { getHalfName } from '../utils/gamePresets';
 import { ConfirmModal } from './ConfirmModal';
+import { MatchSummary } from './MatchSummary';
 import {
   Play,
   Pause,
@@ -257,6 +258,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <MatchSummary gameState={gameState} />
         {/* Navigation Tabs */}
         <div className="mb-8">
           <div className="border-b border-gray-200">
