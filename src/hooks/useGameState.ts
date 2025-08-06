@@ -2,6 +2,19 @@ import { useState, useCallback, useEffect, useRef } from 'react';
 import { GameState, Team } from '../types';
 import { GAME_PRESETS, shouldAutoAdvance } from '../utils/gamePresets';
 
+const calculatePossession = (prev: GameState, now: number) => {
+  const timeDiff = now - prev.possessionStartTime;
+  const updatedPossessionTime = {
+    ...prev.totalPossessionTime,
+    [prev.ballPossession]: prev.totalPossessionTime[prev.ballPossession] + timeDiff,
+  } as const;
+  const totalTime = updatedPossessionTime.home + updatedPossessionTime.away;
+  const homePossession =
+    totalTime > 0 ? Math.round((updatedPossessionTime.home / totalTime) * 100) : 50;
+  const awayPossession = 100 - homePossession;
+  return { updatedPossessionTime, homePossession, awayPossession };
+};
+
 const adjustTeamStatsForType = (team: Team, type: GameState['gamePreset']['type']): Team => {
   if (type === 'football') {
     return {
@@ -111,21 +124,11 @@ export const useGameState = () => {
       if (!prev.isRunning) {
         return prev;
       }
-      
+
       const now = Date.now();
-      const timeDiff = now - prev.possessionStartTime;
-      
-      // Update possession time for previous team
-      const updatedPossessionTime = {
-        ...prev.totalPossessionTime,
-        [prev.ballPossession]: prev.totalPossessionTime[prev.ballPossession] + timeDiff,
-      };
-      
-      // Calculate possession percentages
-      const totalTime = updatedPossessionTime.home + updatedPossessionTime.away;
-      const homePossession = totalTime > 0 ? Math.round((updatedPossessionTime.home / totalTime) * 100) : 50;
-      const awayPossession = 100 - homePossession;
-      
+      const { updatedPossessionTime, homePossession, awayPossession } =
+        calculatePossession(prev, now);
+
       return {
         ...prev,
         ballPossession: newTeam,
@@ -156,22 +159,71 @@ export const useGameState = () => {
   }, []);
 
   const toggleTimer = useCallback(() => {
-    setGameState(prev => ({
-      ...prev,
-      isRunning: !prev.isRunning,
-    }));
+    setGameState(prev => {
+      const now = Date.now();
+      if (prev.isRunning) {
+        const { updatedPossessionTime, homePossession, awayPossession } =
+          calculatePossession(prev, now);
+        return {
+          ...prev,
+          isRunning: false,
+          possessionStartTime: now,
+          totalPossessionTime: updatedPossessionTime,
+          homeTeam: {
+            ...prev.homeTeam,
+            stats: { ...prev.homeTeam.stats, possession: homePossession },
+          },
+          awayTeam: {
+            ...prev.awayTeam,
+            stats: { ...prev.awayTeam.stats, possession: awayPossession },
+          },
+        };
+      }
+      return { ...prev, isRunning: true, possessionStartTime: now };
+    });
   }, []);
 
   const resetTimer = useCallback(() => {
-    setGameState(prev => ({
-      ...prev,
-      time: { minutes: prev.gamePreset.halfDuration, seconds: 0 },
-      isRunning: false,
-    }));
+    setGameState(prev => {
+      const now = Date.now();
+      const { updatedPossessionTime, homePossession, awayPossession } =
+        prev.isRunning
+          ? calculatePossession(prev, now)
+          : {
+              updatedPossessionTime: prev.totalPossessionTime,
+              homePossession: prev.homeTeam.stats.possession,
+              awayPossession: prev.awayTeam.stats.possession,
+            };
+      return {
+        ...prev,
+        time: { minutes: prev.gamePreset.halfDuration, seconds: 0 },
+        isRunning: false,
+        possessionStartTime: now,
+        totalPossessionTime: updatedPossessionTime,
+        homeTeam: {
+          ...prev.homeTeam,
+          stats: { ...prev.homeTeam.stats, possession: homePossession },
+        },
+        awayTeam: {
+          ...prev.awayTeam,
+          stats: { ...prev.awayTeam.stats, possession: awayPossession },
+        },
+      };
+    });
   }, []);
 
   const updatePeriod = useCallback((period: number) => {
     setGameState(prev => {
+      const now = Date.now();
+      const { updatedPossessionTime, homePossession, awayPossession } =
+        prev.isRunning
+          ? calculatePossession(prev, now)
+          : {
+              updatedPossessionTime: prev.totalPossessionTime,
+              homePossession: prev.homeTeam.stats.possession,
+              awayPossession: prev.awayTeam.stats.possession,
+            };
+
       const preset = prev.gamePreset;
       let newHalf = period;
       let newPhase: GameState['matchPhase'] = prev.matchPhase;
@@ -217,22 +269,51 @@ export const useGameState = () => {
         matchPhase: newPhase,
         time: { minutes, seconds },
         isRunning: false,
+        possessionStartTime: now,
+        totalPossessionTime: updatedPossessionTime,
+        homeTeam: {
+          ...prev.homeTeam,
+          stats: { ...prev.homeTeam.stats, possession: homePossession },
+        },
+        awayTeam: {
+          ...prev.awayTeam,
+          stats: { ...prev.awayTeam.stats, possession: awayPossession },
+        },
       };
     });
   }, []);
 
   const changeGamePreset = useCallback((presetIndex: number) => {
     const preset = GAME_PRESETS[presetIndex];
-    setGameState(prev => ({
-      ...prev,
-      gamePreset: preset,
-      time: { minutes: preset.halfDuration, seconds: 0 },
-      half: 1,
-      matchPhase: 'regular',
-      isRunning: false,
-      homeTeam: adjustTeamStatsForType(prev.homeTeam, preset.type),
-      awayTeam: adjustTeamStatsForType(prev.awayTeam, preset.type),
-    }));
+    setGameState(prev => {
+      const now = Date.now();
+      const { updatedPossessionTime, homePossession, awayPossession } =
+        prev.isRunning
+          ? calculatePossession(prev, now)
+          : {
+              updatedPossessionTime: prev.totalPossessionTime,
+              homePossession: prev.homeTeam.stats.possession,
+              awayPossession: prev.awayTeam.stats.possession,
+            };
+      return {
+        ...prev,
+        gamePreset: preset,
+        time: { minutes: preset.halfDuration, seconds: 0 },
+        half: 1,
+        matchPhase: 'regular',
+        isRunning: false,
+        possessionStartTime: now,
+        totalPossessionTime: updatedPossessionTime,
+        homeTeam: adjustTeamStatsForType(
+          { ...prev.homeTeam, stats: { ...prev.homeTeam.stats, possession: homePossession } },
+          preset.type,
+        ),
+        awayTeam: adjustTeamStatsForType(
+          { ...prev.awayTeam, stats: { ...prev.awayTeam.stats, possession: awayPossession } },
+          preset.type,
+        ),
+      };
+    });
   }, []);
   const resetGame = useCallback(() => {
     setGameState(prev => {
@@ -344,50 +425,93 @@ export const useGameState = () => {
       intervalRef.current = setInterval(() => {
         setGameState(prev => {
           const { minutes, seconds } = prev.time;
-          
+          const now = Date.now();
+          const { updatedPossessionTime, homePossession, awayPossession } =
+            calculatePossession(prev, now);
+
           if (minutes === 0 && seconds === 0) {
             // Timer has reached 00:00 - check if we should auto-advance
             const autoAdvance = shouldAutoAdvance(
-              prev.half, 
-              prev.gamePreset, 
+              prev.half,
+              prev.gamePreset,
               prev.matchPhase,
               prev.homeTeam.score,
               prev.awayTeam.score
             );
-            
+
             if (autoAdvance.advance) {
               // Auto-advance to next phase
-              const newDuration = autoAdvance.newPhase === 'extra-time' 
-                ? prev.gamePreset.extraTimeDuration 
+              const newDuration = autoAdvance.newPhase === 'extra-time'
+                ? prev.gamePreset.extraTimeDuration
                 : autoAdvance.newPhase === 'penalties'
                 ? 0 // Penalties don't have a timer
                 : prev.gamePreset.halfDuration;
-              
+
               return {
                 ...prev,
                 half: autoAdvance.newHalf,
                 matchPhase: autoAdvance.newPhase,
                 time: { minutes: newDuration, seconds: 0 },
                 isRunning: false,
+                possessionStartTime: now,
+                totalPossessionTime: updatedPossessionTime,
+                homeTeam: {
+                  ...prev.homeTeam,
+                  stats: { ...prev.homeTeam.stats, possession: homePossession },
+                },
+                awayTeam: {
+                  ...prev.awayTeam,
+                  stats: { ...prev.awayTeam.stats, possession: awayPossession },
+                },
               };
             } else {
               // End of match or phase, just stop the timer
               return {
                 ...prev,
                 isRunning: false,
+                possessionStartTime: now,
+                totalPossessionTime: updatedPossessionTime,
+                homeTeam: {
+                  ...prev.homeTeam,
+                  stats: { ...prev.homeTeam.stats, possession: homePossession },
+                },
+                awayTeam: {
+                  ...prev.awayTeam,
+                  stats: { ...prev.awayTeam.stats, possession: awayPossession },
+                },
               };
             }
           }
-          
+
           if (seconds > 0) {
             return {
               ...prev,
               time: { minutes, seconds: seconds - 1 },
+              possessionStartTime: now,
+              totalPossessionTime: updatedPossessionTime,
+              homeTeam: {
+                ...prev.homeTeam,
+                stats: { ...prev.homeTeam.stats, possession: homePossession },
+              },
+              awayTeam: {
+                ...prev.awayTeam,
+                stats: { ...prev.awayTeam.stats, possession: awayPossession },
+              },
             };
           } else {
             return {
               ...prev,
               time: { minutes: minutes - 1, seconds: 59 },
+              possessionStartTime: now,
+              totalPossessionTime: updatedPossessionTime,
+              homeTeam: {
+                ...prev.homeTeam,
+                stats: { ...prev.homeTeam.stats, possession: homePossession },
+              },
+              awayTeam: {
+                ...prev.awayTeam,
+                stats: { ...prev.awayTeam.stats, possession: awayPossession },
+              },
             };
           }
         });
