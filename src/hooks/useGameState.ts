@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
-import { GameState, Team } from '../types';
+import { GameState, Team, Player } from '../types';
 import { GAME_PRESETS, shouldAutoAdvance } from '../utils/gamePresets';
 
 const calculatePossession = (prev: GameState, now: number) => {
@@ -53,6 +53,7 @@ const initialState: GameState = {
       redCards: 0,
       possession: 50,
     },
+    players: [],
   },
   awayTeam: {
     name: 'Away Team',
@@ -66,6 +67,7 @@ const initialState: GameState = {
       redCards: 0,
       possession: 50,
     },
+    players: [],
   },
   time: {
     minutes: 20, // Will be set by preset
@@ -158,6 +160,71 @@ export const useGameState = () => {
       };
     });
   }, [setGameState]);
+
+  const addPlayer = useCallback(
+    (team: 'home' | 'away', name: string, number?: number) => {
+      const newPlayer: Player = {
+        id: Date.now().toString(),
+        name,
+        number,
+        goals: 0,
+        yellowCards: 0,
+        redCards: 0,
+      };
+      setGameState(prev => ({
+        ...prev,
+        [team === 'home' ? 'homeTeam' : 'awayTeam']: {
+          ...prev[team === 'home' ? 'homeTeam' : 'awayTeam'],
+          players: [
+            ...prev[team === 'home' ? 'homeTeam' : 'awayTeam'].players,
+            newPlayer,
+          ],
+        },
+      }));
+    },
+    [setGameState],
+  );
+
+  const removePlayer = useCallback(
+    (team: 'home' | 'away', playerId: string) => {
+      setGameState(prev => ({
+        ...prev,
+        [team === 'home' ? 'homeTeam' : 'awayTeam']: {
+          ...prev[team === 'home' ? 'homeTeam' : 'awayTeam'],
+          players: prev[team === 'home' ? 'homeTeam' : 'awayTeam'].players.filter(
+            p => p.id !== playerId,
+          ),
+        },
+      }));
+    },
+    [setGameState],
+  );
+
+  const updatePlayerStats = useCallback(
+    (
+      team: 'home' | 'away',
+      playerId: string,
+      field: 'goals' | 'yellowCards' | 'redCards',
+      value: number,
+    ) => {
+      setGameState(prev => {
+        const teamKey = team === 'home' ? 'homeTeam' : 'awayTeam';
+        const players = prev[teamKey].players.map(p =>
+          p.id === playerId ? { ...p, [field]: Math.max(0, value) } : p,
+        );
+        let newTeam = { ...prev[teamKey], players };
+        if (field === 'goals') {
+          const teamScore = players.reduce((sum, p) => sum + p.goals, 0);
+          newTeam = { ...newTeam, score: teamScore };
+        }
+        return {
+          ...prev,
+          [teamKey]: newTeam,
+        };
+      });
+    },
+    [setGameState],
+  );
 
   const switchBallPossession = useCallback((newTeam: 'home' | 'away') => {
     setGameState(prev => {
@@ -610,6 +677,9 @@ export const useGameState = () => {
     updateTeam,
     updateTournamentLogo,
     updateTeamStats,
+    addPlayer,
+    removePlayer,
+    updatePlayerStats,
     switchBallPossession,
     updateTime,
     toggleTimer,

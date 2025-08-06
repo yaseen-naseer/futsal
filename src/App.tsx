@@ -40,6 +40,7 @@ function App() {
             gameState={gameState.gameState}
             updateTeamStats={gameState.updateTeamStats}
             updateTeamScore={(team, value) => gameState.updateTeam(team, 'score', value)}
+            updatePlayerStats={gameState.updatePlayerStats}
             switchBallPossession={gameState.switchBallPossession}
             undo={gameState.undo}
             redo={gameState.redo}
@@ -75,6 +76,8 @@ function App() {
           resetGame={gameState.resetGame}
           undo={gameState.undo}
           redo={gameState.redo}
+          addPlayer={gameState.addPlayer}
+          removePlayer={gameState.removePlayer}
           onViewChange={handleViewChange}
         />
       )}
