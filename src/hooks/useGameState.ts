@@ -83,10 +83,25 @@ const initialState: GameState = {
   matchPhase: 'regular',
 };
 
+const STORAGE_KEY = 'gameState';
+
 export const useGameState = () => {
-  const [gameState, setGameState] = useState<GameState>(initialState);
+  const [gameState, setGameState] = useState<GameState>(() => {
+    if (typeof window !== 'undefined') {
+      const stored = window.localStorage.getItem(STORAGE_KEY);
+      if (stored) {
+        try {
+          return JSON.parse(stored) as GameState;
+        } catch {
+          // ignore malformed stored state
+        }
+      }
+    }
+    return initialState;
+  });
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const keyboardListenerRef = useRef<((event: KeyboardEvent) => void) | null>(null);
+  const skipStorageRef = useRef(false);
 
   const updateTeam = useCallback(
     <K extends keyof Pick<Team, 'name' | 'score' | 'fouls' | 'logo'>>(
@@ -326,6 +341,10 @@ export const useGameState = () => {
     });
   }, []);
   const resetGame = useCallback(() => {
+    skipStorageRef.current = true;
+    if (typeof window !== 'undefined') {
+      window.localStorage.removeItem(STORAGE_KEY);
+    }
     setGameState(prev => {
       const base = {
         ...initialState,
@@ -341,6 +360,16 @@ export const useGameState = () => {
       };
     });
   }, []);
+
+  useEffect(() => {
+    if (skipStorageRef.current) {
+      skipStorageRef.current = false;
+      return;
+    }
+    if (typeof window !== 'undefined') {
+      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(gameState));
+    }
+  }, [gameState]);
 
   // Keyboard shortcuts for external control
   useEffect(() => {
