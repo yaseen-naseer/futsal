@@ -93,7 +93,41 @@ export const useGameState = () => {
       const stored = window.localStorage.getItem(STORAGE_KEY);
       if (stored) {
         try {
-          return JSON.parse(stored) as GameState;
+          const parsed = JSON.parse(stored) as Partial<GameState>;
+          return {
+            ...initialState,
+            ...parsed,
+            homeTeam: {
+              ...initialState.homeTeam,
+              ...parsed.homeTeam,
+              stats: {
+                ...initialState.homeTeam.stats,
+                ...parsed.homeTeam?.stats,
+              },
+              players: parsed.homeTeam?.players ?? [],
+            },
+            awayTeam: {
+              ...initialState.awayTeam,
+              ...parsed.awayTeam,
+              stats: {
+                ...initialState.awayTeam.stats,
+                ...parsed.awayTeam?.stats,
+              },
+              players: parsed.awayTeam?.players ?? [],
+            },
+            time: {
+              ...initialState.time,
+              ...parsed.time,
+            },
+            totalPossessionTime: {
+              ...initialState.totalPossessionTime,
+              ...parsed.totalPossessionTime,
+            },
+            gamePreset: {
+              ...initialState.gamePreset,
+              ...parsed.gamePreset,
+            },
+          } as GameState;
         } catch {
           // ignore malformed stored state
         }
