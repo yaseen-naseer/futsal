@@ -39,6 +39,23 @@ describe('useGameState history', () => {
     result.current.redo();
     expect(result.current.gameState.homeTeam.score).toBe(1);
   });
+
+  it('maintains a maximum of 100 history entries', () => {
+    const { result } = renderHook(() => useGameState());
+
+    for (let i = 1; i <= 110; i++) {
+      result.current.updateTeam('home', 'score', i);
+    }
+
+    for (let i = 0; i < 100; i++) {
+      result.current.undo();
+    }
+
+    expect(result.current.gameState.homeTeam.score).toBe(10);
+
+    result.current.undo();
+    expect(result.current.gameState.homeTeam.score).toBe(10);
+  });
 });
 
 describe('useGameState initialization', () => {
