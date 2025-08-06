@@ -16,6 +16,7 @@ import { PossessionTracker } from './components/PossessionTracker';
 import { ControlPanelButton } from './components/ControlPanelButton';
 import { ThemeToggle } from './components/ThemeToggle';
 import { RemoteControl } from './components/RemoteControl';
+import { SettingsPage } from './components/SettingsPage';
 
 type ViewMode = 'scoreboard' | 'dashboard' | 'overlay' | 'stats' | 'possession';
 
@@ -90,7 +91,6 @@ function App() {
                 resetTimer={gameState.resetTimer}
                 updatePeriod={gameState.updatePeriod}
                 changeGamePreset={gameState.changeGamePreset}
-                resetGame={gameState.resetGame}
                 undo={gameState.undo}
                 redo={gameState.redo}
                 addPlayer={gameState.addPlayer}
@@ -103,6 +103,16 @@ function App() {
           <Route path="/overlay" element={<OverlayView />} />
           <Route path="/stats" element={<StatsView />} />
           <Route path="/possession" element={<PossessionView />} />
+          <Route
+            path="/settings"
+            element={
+              <SettingsPage
+                gameState={gameState.gameState}
+                updateTeam={gameState.updateTeam}
+                resetGame={gameState.resetGame}
+              />
+            }
+          />
           <Route path="/" element={<Navigate to="/dashboard" replace />} />
           <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </Routes>
