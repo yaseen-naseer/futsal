@@ -520,6 +520,9 @@ export const useGameState = () => {
       if (future.length === 0) return prev;
       const next = future.pop() as GameState;
       historyRef.current.past.push(prev);
+      if (historyRef.current.past.length > HISTORY_LIMIT) {
+        historyRef.current.past.shift();
+      }
       return next;
     });
   }, []);

@@ -47,6 +47,14 @@ describe('useGameState history', () => {
       result.current.updateTeam('home', 'score', i);
     }
 
+    for (let i = 0; i < 50; i++) {
+      result.current.undo();
+    }
+
+    for (let i = 0; i < 60; i++) {
+      result.current.redo();
+    }
+
     for (let i = 0; i < 100; i++) {
       result.current.undo();
     }
