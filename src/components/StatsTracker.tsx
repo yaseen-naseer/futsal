@@ -42,10 +42,10 @@ export const StatsTracker: React.FC<StatsTrackerProps> = ({
     homeValue: number;
     awayValue: number;
   }) => (
-    <div className="bg-white rounded-lg border border-gray-200 p-4">
+    <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
       <div className="flex items-center gap-2 mb-3">
-        <Icon className="w-5 h-5 text-gray-600" />
-        <h4 className="font-medium text-gray-900">{label}</h4>
+        <Icon className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+        <h4 className="font-medium text-gray-900 dark:text-gray-100">{label}</h4>
       </div>
       
       <div className="grid grid-cols-2 gap-4">
@@ -97,13 +97,13 @@ export const StatsTracker: React.FC<StatsTrackerProps> = ({
   );
 
   return (
-    <div className="min-h-screen bg-gray-50 text-gray-900">
+    <div className="min-h-screen bg-gray-50 text-gray-900 dark:bg-gray-900 dark:text-gray-100">
       {/* Header */}
-      <div className="bg-white shadow-sm border-b border-gray-200">
+      <div className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-4">
-            <h1 className="text-2xl font-bold text-gray-900">Match Statistics Tracker</h1>
-            <div className="text-sm text-gray-600">
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Match Statistics Tracker</h1>
+            <div className="text-sm text-gray-600 dark:text-gray-400">
               {homeTeam.name} vs {awayTeam.name}
             </div>
           </div>
@@ -112,19 +112,19 @@ export const StatsTracker: React.FC<StatsTrackerProps> = ({
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Ball Possession Control */}
-        <div className="bg-gradient-to-r from-green-50 to-blue-50 rounded-xl border border-green-200 p-6 mb-8">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+        <div className="bg-gradient-to-r from-green-50 to-blue-50 dark:from-green-900 dark:to-blue-900 rounded-xl border border-green-200 dark:border-green-700 p-6 mb-8">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
             <Timer className="w-5 h-5" />
             Ball Possession Control
           </h3>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
             <button
               onClick={() => switchBallPossession('home')}
               className={`p-4 rounded-lg border-2 transition-all ${
                 ballPossession === 'home'
                   ? 'border-blue-500 bg-blue-50 text-blue-700'
-                  : 'border-gray-200 bg-white text-gray-600 hover:border-blue-300'
+                  : 'border-gray-200 bg-white text-gray-600 hover:border-blue-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:border-blue-500'
               }`}
             >
               <div className="text-center">
@@ -135,10 +135,10 @@ export const StatsTracker: React.FC<StatsTrackerProps> = ({
             </button>
 
             <div className="text-center">
-              <div className="text-sm text-gray-600 mb-2">Current Possession</div>
+              <div className="text-sm text-gray-600 dark:text-gray-400 mb-2">Current Possession</div>
               <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full font-semibold ${
-                ballPossession === 'home' 
-                  ? 'bg-blue-100 text-blue-700' 
+                ballPossession === 'home'
+                  ? 'bg-blue-100 text-blue-700'
                   : 'bg-red-100 text-red-700'
               }`}>
                 <div className={`w-2 h-2 rounded-full animate-pulse ${
@@ -146,7 +146,7 @@ export const StatsTracker: React.FC<StatsTrackerProps> = ({
                 }`}></div>
                 {ballPossession === 'home' ? homeTeam.name : awayTeam.name}
               </div>
-              <div className="mt-2 text-xs text-gray-500">
+              <div className="mt-2 text-xs text-gray-500 dark:text-gray-400">
                 Press A/1 for Home, D/2 for Away (only when timer running)
               </div>
             </div>
@@ -156,7 +156,7 @@ export const StatsTracker: React.FC<StatsTrackerProps> = ({
               className={`p-4 rounded-lg border-2 transition-all ${
                 ballPossession === 'away'
                   ? 'border-red-500 bg-red-50 text-red-700'
-                  : 'border-gray-200 bg-white text-gray-600 hover:border-red-300'
+                  : 'border-gray-200 bg-white text-gray-600 hover:border-red-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:border-red-500'
               }`}
             >
               <div className="text-center">
@@ -222,32 +222,32 @@ export const StatsTracker: React.FC<StatsTrackerProps> = ({
         </div>
 
         {/* Quick Stats Summary */}
-        <div className="mt-8 bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Match Summary</h3>
+        <div className="mt-8 bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Match Summary</h3>
           
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
             <div>
-              <div className="text-sm text-gray-600">Total Shots</div>
-              <div className="text-2xl font-bold text-gray-900">
+              <div className="text-sm text-gray-600 dark:text-gray-400">Total Shots</div>
+              <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
                 {homeTeam.stats.shots + awayTeam.stats.shots}
               </div>
             </div>
             <div>
-              <div className="text-sm text-gray-600">Total Corners</div>
-              <div className="text-2xl font-bold text-gray-900">
+              <div className="text-sm text-gray-600 dark:text-gray-400">Total Corners</div>
+              <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
                 {homeTeam.stats.corners + awayTeam.stats.corners}
               </div>
             </div>
             <div>
-              <div className="text-sm text-gray-600">Total Cards</div>
-              <div className="text-2xl font-bold text-gray-900">
+              <div className="text-sm text-gray-600 dark:text-gray-400">Total Cards</div>
+              <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
                 {homeTeam.stats.yellowCards + awayTeam.stats.yellowCards + 
                  homeTeam.stats.redCards + awayTeam.stats.redCards}
               </div>
             </div>
             <div>
-              <div className="text-sm text-gray-600">Shot Accuracy</div>
-              <div className="text-2xl font-bold text-gray-900">
+              <div className="text-sm text-gray-600 dark:text-gray-400">Shot Accuracy</div>
+              <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
                 {homeTeam.stats.shots + awayTeam.stats.shots > 0 
                   ? Math.round(((homeTeam.stats.shotsOnTarget + awayTeam.stats.shotsOnTarget) / 
                       (homeTeam.stats.shots + awayTeam.stats.shots)) * 100)

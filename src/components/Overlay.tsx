@@ -25,7 +25,7 @@ export const Overlay: React.FC<OverlayProps> = ({ gameState, showStats = true })
         exit={{ y: shouldReduceMotion ? 0 : -50, opacity: 0 }}
         transition={{ duration: shouldReduceMotion ? 0 : 0.3 }}
       >
-        <div className="flex h-full text-white shadow-2xl">
+        <div className="flex h-full text-gray-900 dark:text-white shadow-2xl">
           {/* Home Team */}
           <div className="flex items-center gap-2 px-4 h-full bg-blue-600/80 backdrop-blur-md">
             <div className="relative">
@@ -90,24 +90,24 @@ export const Overlay: React.FC<OverlayProps> = ({ gameState, showStats = true })
             exit={{ y: shouldReduceMotion ? 0 : 50, opacity: 0 }}
             transition={{ duration: shouldReduceMotion ? 0 : 0.3 }}
           >
-            <div className="bg-black/60 backdrop-blur-md rounded-xl border border-white/10 px-6 py-2">
+            <div className="bg-white/70 dark:bg-black/60 backdrop-blur-md rounded-xl border border-gray-200 dark:border-white/10 px-6 py-2">
               <div className="flex items-center gap-8 text-sm">
                 <div className="flex items-center gap-2">
-                  <span className="text-blue-400 font-medium">{homeTeam.name}</span>
-                  <span className="text-white/60">Fouls:</span>
-                  <span className="text-red-400 font-bold">{homeTeam.fouls}</span>
-                  <span className="text-white/60">|</span>
-                  <span className="text-white/60">Poss:</span>
-                  <span className="text-blue-400 font-bold">{homeTeam.stats.possession}%</span>
+                  <span className="text-blue-600 dark:text-blue-400 font-medium">{homeTeam.name}</span>
+                  <span className="text-gray-600 dark:text-white/60">Fouls:</span>
+                  <span className="text-red-600 dark:text-red-400 font-bold">{homeTeam.fouls}</span>
+                  <span className="text-gray-600 dark:text-white/60">|</span>
+                  <span className="text-gray-600 dark:text-white/60">Poss:</span>
+                  <span className="text-blue-600 dark:text-blue-400 font-bold">{homeTeam.stats.possession}%</span>
                 </div>
-                <div className="w-px h-4 bg-white/20"></div>
+                <div className="w-px h-4 bg-gray-300 dark:bg-white/20"></div>
                 <div className="flex items-center gap-2">
-                  <span className="text-red-400 font-medium">{awayTeam.name}</span>
-                  <span className="text-white/60">Fouls:</span>
-                  <span className="text-red-400 font-bold">{awayTeam.fouls}</span>
-                  <span className="text-white/60">|</span>
-                  <span className="text-white/60">Poss:</span>
-                  <span className="text-red-400 font-bold">{awayTeam.stats.possession}%</span>
+                  <span className="text-red-600 dark:text-red-400 font-medium">{awayTeam.name}</span>
+                  <span className="text-gray-600 dark:text-white/60">Fouls:</span>
+                  <span className="text-red-600 dark:text-red-400 font-bold">{awayTeam.fouls}</span>
+                  <span className="text-gray-600 dark:text-white/60">|</span>
+                  <span className="text-gray-600 dark:text-white/60">Poss:</span>
+                  <span className="text-red-600 dark:text-red-400 font-bold">{awayTeam.stats.possession}%</span>
                 </div>
               </div>
             </div>
