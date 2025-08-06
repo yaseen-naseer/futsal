@@ -114,6 +114,9 @@ export const Dashboard: React.FC<DashboardProps> = ({
 
   const adjustTime = (type: 'minutes' | 'seconds', delta: number) => {
     const { minutes, seconds } = gameState.time;
+    if (minutes === 0 && seconds === 0 && delta < 0) {
+      return;
+    }
     if (type === 'minutes') {
       const newMinutes = Math.max(0, Math.min(60, minutes + delta));
       updateTime(newMinutes, seconds);
