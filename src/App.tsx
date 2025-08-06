@@ -40,6 +40,7 @@ function App() {
             gameState={gameState.gameState}
             updateTeamStats={gameState.updateTeamStats}
             updateTeamScore={(team, value) => gameState.updateTeam(team, 'score', value)}
+            updateTeamFouls={(team, value) => gameState.updateTeam(team, 'fouls', value)}
             updatePlayerStats={gameState.updatePlayerStats}
             switchBallPossession={gameState.switchBallPossession}
             undo={gameState.undo}

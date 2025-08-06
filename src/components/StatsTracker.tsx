@@ -12,6 +12,7 @@ import {
   Goal,
   Undo2,
   Redo2,
+  Hand,
 } from 'lucide-react';
 import { formatTime } from '../utils/format';
 
@@ -19,6 +20,7 @@ interface StatsTrackerProps {
   gameState: GameState;
   updateTeamStats: (team: 'home' | 'away', stat: keyof Team['stats'], value: number) => void;
   updateTeamScore: (team: 'home' | 'away', value: number) => void;
+  updateTeamFouls: (team: 'home' | 'away', value: number) => void;
   updatePlayerStats: (
     team: 'home' | 'away',
     playerId: string,
@@ -34,6 +36,7 @@ export const StatsTracker: React.FC<StatsTrackerProps> = ({
   gameState,
   updateTeamStats,
   updateTeamScore,
+  updateTeamFouls,
   updatePlayerStats,
   switchBallPossession,
   undo,
@@ -100,6 +103,11 @@ export const StatsTracker: React.FC<StatsTrackerProps> = ({
       away: awayTeam.stats.redCards,
     },
     {
+      label: 'Fouls',
+      home: homeTeam.fouls,
+      away: awayTeam.fouls,
+    },
+    {
       label: 'Possession',
       home: `${homeTeam.stats.possession}%`,
       away: `${awayTeam.stats.possession}%`,
@@ -117,6 +125,12 @@ export const StatsTracker: React.FC<StatsTrackerProps> = ({
     if (!gameState.isRunning) return;
     const currentScore = gameState[team === 'home' ? 'homeTeam' : 'awayTeam'].score;
     updateTeamScore(team, Math.max(0, currentScore + delta));
+  };
+
+  const adjustFouls = (team: 'home' | 'away', delta: number) => {
+    if (!gameState.isRunning) return;
+    const currentFouls = gameState[team === 'home' ? 'homeTeam' : 'awayTeam'].fouls;
+    updateTeamFouls(team, Math.max(0, currentFouls + delta));
   };
 
   const adjustPlayerStat = (
@@ -384,6 +398,79 @@ export const StatsTracker: React.FC<StatsTrackerProps> = ({
                   </span>
                   <button
                     onClick={() => adjustScore('away', 1)}
+                    disabled={!gameState.isRunning}
+                    className={`w-8 h-8 bg-green-100 text-green-600 rounded-lg flex items-center justify-center transition-colors dark:bg-green-900 dark:text-green-400 ${
+                      gameState.isRunning
+                        ? 'hover:bg-green-200 dark:hover:bg-green-800'
+                        : 'opacity-50 cursor-not-allowed'
+                    }`}
+                  >
+                    <Plus className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
+            <div className="flex items-center gap-2 mb-3">
+              <Hand className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+              <h4 className="font-medium text-gray-900 dark:text-gray-100">Fouls</h4>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              {/* Home Team */}
+              <div className="text-center">
+                <div className="text-sm text-blue-600 font-medium mb-2 dark:text-blue-400">{homeTeam.name}</div>
+                <div className="flex items-center justify-center gap-2">
+                  <button
+                    onClick={() => adjustFouls('home', -1)}
+                    disabled={!gameState.isRunning}
+                    className={`w-8 h-8 bg-red-100 text-red-600 rounded-lg flex items-center justify-center transition-colors dark:bg-red-900 dark:text-red-400 ${
+                      gameState.isRunning
+                        ? 'hover:bg-red-200 dark:hover:bg-red-800'
+                        : 'opacity-50 cursor-not-allowed'
+                    }`}
+                  >
+                    <Minus className="w-4 h-4" />
+                  </button>
+                  <span className="text-xl font-bold text-blue-600 min-w-[2rem] dark:text-blue-400">
+                    {homeTeam.fouls}
+                  </span>
+                  <button
+                    onClick={() => adjustFouls('home', 1)}
+                    disabled={!gameState.isRunning}
+                    className={`w-8 h-8 bg-green-100 text-green-600 rounded-lg flex items-center justify-center transition-colors dark:bg-green-900 dark:text-green-400 ${
+                      gameState.isRunning
+                        ? 'hover:bg-green-200 dark:hover:bg-green-800'
+                        : 'opacity-50 cursor-not-allowed'
+                    }`}
+                  >
+                    <Plus className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+
+              {/* Away Team */}
+              <div className="text-center">
+                <div className="text-sm text-red-600 font-medium mb-2 dark:text-red-400">{awayTeam.name}</div>
+                <div className="flex items-center justify-center gap-2">
+                  <button
+                    onClick={() => adjustFouls('away', -1)}
+                    disabled={!gameState.isRunning}
+                    className={`w-8 h-8 bg-red-100 text-red-600 rounded-lg flex items-center justify-center transition-colors dark:bg-red-900 dark:text-red-400 ${
+                      gameState.isRunning
+                        ? 'hover:bg-red-200 dark:hover:bg-red-800'
+                        : 'opacity-50 cursor-not-allowed'
+                    }`}
+                  >
+                    <Minus className="w-4 h-4" />
+                  </button>
+                  <span className="text-xl font-bold text-red-600 min-w-[2rem] dark:text-red-400">
+                    {awayTeam.fouls}
+                  </span>
+                  <button
+                    onClick={() => adjustFouls('away', 1)}
                     disabled={!gameState.isRunning}
                     className={`w-8 h-8 bg-green-100 text-green-600 rounded-lg flex items-center justify-center transition-colors dark:bg-green-900 dark:text-green-400 ${
                       gameState.isRunning
