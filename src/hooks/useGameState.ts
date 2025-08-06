@@ -226,15 +226,34 @@ export const useGameState = () => {
 
   const removePlayer = useCallback(
     (team: 'home' | 'away', playerId: string) => {
-      setGameState(prev => ({
-        ...prev,
-        [team === 'home' ? 'homeTeam' : 'awayTeam']: {
-          ...prev[team === 'home' ? 'homeTeam' : 'awayTeam'],
-          players: prev[team === 'home' ? 'homeTeam' : 'awayTeam'].players.filter(
-            p => p.id !== playerId,
-          ),
-        },
-      }));
+      setGameState(prev => {
+        const teamKey = team === 'home' ? 'homeTeam' : 'awayTeam';
+        const teamObj = prev[teamKey];
+        const playerToRemove = teamObj.players.find(p => p.id === playerId);
+        if (!playerToRemove) return prev;
+
+        const updatedTeam: Team = {
+          ...teamObj,
+          score: Math.max(0, teamObj.score - playerToRemove.goals),
+          stats: {
+            ...teamObj.stats,
+            yellowCards: Math.max(
+              0,
+              teamObj.stats.yellowCards - playerToRemove.yellowCards,
+            ),
+            redCards: Math.max(
+              0,
+              teamObj.stats.redCards - playerToRemove.redCards,
+            ),
+          },
+          players: teamObj.players.filter(p => p.id !== playerId),
+        };
+
+        return {
+          ...prev,
+          [teamKey]: updatedTeam,
+        };
+      });
     },
     [setGameState],
   );

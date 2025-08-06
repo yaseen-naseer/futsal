@@ -96,3 +96,28 @@ describe('useGameState initialization', () => {
   });
 });
 
+describe('useGameState player management', () => {
+  it('removes player and adjusts team totals', () => {
+    const { result } = renderHook(() => useGameState());
+
+    result.current.addPlayer('home', 'Test Player');
+    const playerId = result.current.gameState.homeTeam.players[0].id;
+
+    result.current.updatePlayerStats('home', playerId, 'goals', 2);
+    result.current.updatePlayerStats('home', playerId, 'yellowCards', 1);
+    result.current.updatePlayerStats('home', playerId, 'redCards', 1);
+
+    result.current.toggleTimer();
+    result.current.updateTeamStats('home', 'yellowCards', 1);
+    result.current.updateTeamStats('home', 'redCards', 1);
+    result.current.toggleTimer();
+
+    result.current.removePlayer('home', playerId);
+
+    expect(result.current.gameState.homeTeam.score).toBe(0);
+    expect(result.current.gameState.homeTeam.stats.yellowCards).toBe(0);
+    expect(result.current.gameState.homeTeam.stats.redCards).toBe(0);
+    expect(result.current.gameState.homeTeam.players).toHaveLength(0);
+  });
+});
+
