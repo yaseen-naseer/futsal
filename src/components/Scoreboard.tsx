@@ -15,7 +15,7 @@ export const Scoreboard: React.FC<ScoreboardProps> = ({ gameState }) => {
 
   return (
     <motion.div
-      className="w-screen h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white flex items-center justify-center overflow-hidden"
+      className="w-screen h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 text-gray-900 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 dark:text-white flex items-center justify-center overflow-hidden"
       initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: shouldReduceMotion ? 0 : -20 }}
@@ -23,7 +23,7 @@ export const Scoreboard: React.FC<ScoreboardProps> = ({ gameState }) => {
     >
       <div className="w-full h-full flex items-center justify-center px-8 py-6">
         {/* Main Scoreboard */}
-        <div className="bg-black/40 backdrop-blur-lg rounded-3xl border border-gray-700/50 shadow-2xl w-full max-w-7xl h-full max-h-[900px] flex flex-col justify-center p-12">
+        <div className="bg-white/60 dark:bg-black/40 backdrop-blur-lg rounded-3xl border border-gray-200 dark:border-gray-700/50 shadow-2xl w-full max-w-7xl h-full max-h-[900px] flex flex-col justify-center p-12">
           {/* Header */}
           {gameState.tournamentLogo && (
             <div className="text-center mb-12">
@@ -62,7 +62,7 @@ export const Scoreboard: React.FC<ScoreboardProps> = ({ gameState }) => {
                 <div className="text-8xl font-bold text-blue-400">{homeTeam.score}</div>
               </div>
               <div className="flex items-center justify-center gap-3">
-                <span className="text-lg text-gray-400">Fouls:</span>
+                <span className="text-lg text-gray-600 dark:text-gray-400">Fouls:</span>
                 <span className="bg-red-500/20 text-red-400 px-4 py-2 rounded-full text-xl font-semibold">
                   {homeTeam.fouls}
                 </span>
@@ -76,7 +76,7 @@ export const Scoreboard: React.FC<ScoreboardProps> = ({ gameState }) => {
                 <div className="text-7xl font-mono font-bold text-green-400 mb-4">
                   {formatTime(time.minutes, time.seconds)}
                 </div>
-                <div className="text-lg text-gray-400">
+                <div className="text-lg text-gray-600 dark:text-gray-400">
                   {getHalfName(gameState.half, gameState.gamePreset, gameState.matchPhase)}
                 </div>
               </div>
@@ -119,7 +119,7 @@ export const Scoreboard: React.FC<ScoreboardProps> = ({ gameState }) => {
                 <div className="text-8xl font-bold text-red-400">{awayTeam.score}</div>
               </div>
               <div className="flex items-center justify-center gap-3">
-                <span className="text-lg text-gray-400">Fouls:</span>
+                <span className="text-lg text-gray-600 dark:text-gray-400">Fouls:</span>
                 <span className="bg-red-500/20 text-red-400 px-4 py-2 rounded-full text-xl font-semibold">
                   {awayTeam.fouls}
                 </span>

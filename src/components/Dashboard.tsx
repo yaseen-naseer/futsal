@@ -119,12 +119,12 @@ export const Dashboard: React.FC<DashboardProps> = ({
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 text-gray-900">
+    <div className="min-h-screen bg-gray-50 text-gray-900 dark:bg-gray-900 dark:text-gray-100">
       {/* Header */}
-      <div className="bg-white shadow-sm border-b border-gray-200">
+      <div className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-4">
-            <h1 className="text-2xl font-bold text-gray-900">Futsal Scoreboard Control</h1>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Futsal Scoreboard Control</h1>
             <div className="flex gap-3">
               <button
                 onClick={() => onViewChange('scoreboard')}
@@ -271,7 +271,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
             </div>
 
             {/* Home Team */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
               <h3 className="text-lg font-semibold text-blue-600 mb-6">Home Team</h3>
               
               <div className="space-y-6">
@@ -356,7 +356,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
             </div>
 
             {/* Away Team */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
               <h3 className="text-lg font-semibold text-red-600 mb-6">Away Team</h3>
               
               <div className="space-y-6">
@@ -444,8 +444,8 @@ export const Dashboard: React.FC<DashboardProps> = ({
 
         {/* Timer Tab */}
         {activeTab === 'timer' && (
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8 max-w-2xl mx-auto">
-            <h3 className="text-lg font-semibold text-gray-900 mb-8 text-center">Timer Control</h3>
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-8 max-w-2xl mx-auto">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-8 text-center">Timer Control</h3>
             
             <div className="space-y-8">
               {/* Timer Display */}
@@ -504,7 +504,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
                     >
                       <Minus className="w-4 h-4" />
                     </button>
-                    <span className="text-2xl font-bold text-gray-900 min-w-[3rem] text-center">
+                    <span className="text-2xl font-bold text-gray-900 dark:text-gray-100 min-w-[3rem] text-center">
                       {gameState.time.minutes}
                     </span>
                     <button
@@ -525,7 +525,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
                     >
                       <Minus className="w-4 h-4" />
                     </button>
-                    <span className="text-2xl font-bold text-gray-900 min-w-[3rem] text-center">
+                    <span className="text-2xl font-bold text-gray-900 dark:text-gray-100 min-w-[3rem] text-center">
                       {gameState.time.seconds}
                     </span>
                     <button
@@ -573,7 +573,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
                         >
                           <Minus className="w-4 h-4" />
                         </button>
-                        <span className="text-xl font-bold text-gray-900 min-w-[3rem] text-center">
+                        <span className="text-xl font-bold text-gray-900 dark:text-gray-100 min-w-[3rem] text-center">
                           {gameState.half}
                         </span>
                         <button
@@ -609,8 +609,8 @@ export const Dashboard: React.FC<DashboardProps> = ({
 
         {/* Settings Tab */}
         {activeTab === 'settings' && (
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8 max-w-2xl mx-auto">
-            <h3 className="text-lg font-semibold text-gray-900 mb-8 text-center">Game Settings</h3>
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-8 max-w-2xl mx-auto">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-8 text-center">Game Settings</h3>
             
             <div className="space-y-8">
               {/* External Control Info */}
@@ -630,7 +630,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
               </div>
 
               <div className="border-t pt-6">
-                <h4 className="font-semibold text-gray-900 mb-4">Quick Actions</h4>
+                <h4 className="font-semibold text-gray-900 dark:text-gray-100 mb-4">Quick Actions</h4>
                 <div className="grid grid-cols-2 gap-4">
                   <button
                     onClick={() => {

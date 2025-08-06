@@ -1,17 +1,20 @@
 import React, { useState } from 'react';
 import { useGameState } from './hooks/useGameState';
+import { useTheme } from './hooks/useTheme';
 import { Scoreboard } from './components/Scoreboard';
 import { Dashboard } from './components/Dashboard';
 import { Overlay } from './components/Overlay';
 import { StatsTracker } from './components/StatsTracker';
 import { PossessionTracker } from './components/PossessionTracker';
 import { ControlPanelButton } from './components/ControlPanelButton';
+import { ThemeToggle } from './components/ThemeToggle';
 
 type ViewMode = 'scoreboard' | 'dashboard' | 'overlay' | 'stats' | 'possession';
 
 function App() {
   const [viewMode, setViewMode] = useState<ViewMode>('dashboard');
   const gameState = useGameState();
+  const { theme, toggleTheme } = useTheme();
 
   const handleViewChange = (view: ViewMode) => {
     setViewMode(view);
@@ -19,6 +22,7 @@ function App() {
 
   return (
     <div className="App">
+      <ThemeToggle theme={theme} onToggle={toggleTheme} />
       {viewMode === 'overlay' ? (
         <div className="relative min-h-screen bg-transparent">
           <Overlay gameState={gameState.gameState} showStats />
