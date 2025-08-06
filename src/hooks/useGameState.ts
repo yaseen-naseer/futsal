@@ -140,6 +140,7 @@ export const useGameState = () => {
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const keyboardListenerRef = useRef<((event: KeyboardEvent) => void) | null>(null);
   const skipStorageRef = useRef(false);
+  const channelRef = useRef<BroadcastChannel | null>(null);
 
   const setGameState = useCallback(
     (updater: GameState | ((prev: GameState) => GameState)) => {
@@ -558,47 +559,78 @@ export const useGameState = () => {
     };
   }, [toggleTimer, resetTimer, switchBallPossession, setGameState]);
 
+  const handleRemoteMessage = useCallback(
+    (data: unknown) => {
+      if (typeof data !== 'object' || data === null) {
+        return;
+      }
+
+      const { type } = data as { type?: string };
+
+      switch (type) {
+        case 'TIMER_CONTROL': {
+          const { action } = data as { action?: string };
+          switch (action) {
+            case 'START':
+              setGameState(prev => ({ ...prev, isRunning: true }));
+              break;
+            case 'STOP':
+              setGameState(prev => ({ ...prev, isRunning: false }));
+              break;
+            case 'TOGGLE':
+              toggleTimer();
+              break;
+            case 'RESET':
+              resetTimer();
+              break;
+            default:
+              break;
+          }
+          break;
+        }
+        case 'TEAM_UPDATE': {
+          const { team, field, value } = data as {
+            team?: 'home' | 'away';
+            field?: keyof Pick<Team, 'name' | 'score' | 'fouls' | 'logo'>;
+            value?: string | number;
+          };
+          if (team === 'home' || team === 'away') {
+            if (field) {
+              updateTeam(team, field, value as Team[keyof Team]);
+            }
+          }
+          break;
+        }
+        default:
+          break;
+      }
+    },
+    [toggleTimer, resetTimer, setGameState, updateTeam],
+  );
+
   // API endpoint simulation for external control
   useEffect(() => {
-    const handleMessage = (event: MessageEvent) => {
+    const windowHandler = (event: MessageEvent) => {
       if (event.origin !== window.location.origin) return;
-
-      if (typeof event.data !== 'object' || event.data === null) {
-        return;
-      }
-
-      if (!('type' in event.data) || !('action' in event.data)) {
-        return;
-      }
-
-      const { type, action } = event.data as { type: unknown; action: unknown };
-
-      if (type !== 'TIMER_CONTROL' || typeof action !== 'string') {
-        return;
-      }
-
-      switch (action) {
-        case 'START':
-          setGameState(prev => ({ ...prev, isRunning: true }));
-          break;
-        case 'STOP':
-          setGameState(prev => ({ ...prev, isRunning: false }));
-          break;
-        case 'TOGGLE':
-          toggleTimer();
-          break;
-        case 'RESET':
-          resetTimer();
-          break;
-        default:
-          // Ignore unknown actions
-          break;
-      }
+      handleRemoteMessage(event.data);
     };
 
-    window.addEventListener('message', handleMessage);
-    return () => window.removeEventListener('message', handleMessage);
-  }, [toggleTimer, resetTimer, setGameState]);
+    window.addEventListener('message', windowHandler);
+    let channel: BroadcastChannel | null = null;
+    if (typeof BroadcastChannel !== 'undefined') {
+      channel = new BroadcastChannel('game-state');
+      channel.addEventListener('message', e => handleRemoteMessage(e.data));
+      channelRef.current = channel;
+    }
+    return () => {
+      window.removeEventListener('message', windowHandler);
+      channel?.close();
+    };
+  }, [handleRemoteMessage]);
+
+  useEffect(() => {
+    channelRef.current?.postMessage({ type: 'STATE_UPDATE', state: gameState });
+  }, [gameState]);
 
   useEffect(() => {
     if (gameState.isRunning) {
