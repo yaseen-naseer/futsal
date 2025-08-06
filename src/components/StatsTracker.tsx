@@ -15,6 +15,7 @@ import {
   Hand,
 } from 'lucide-react';
 import { formatTime } from '../utils/format';
+import { useSettings } from '../hooks/useSettings';
 
 interface StatsTrackerProps {
   gameState: GameState;
@@ -43,6 +44,7 @@ export const StatsTracker: React.FC<StatsTrackerProps> = ({
   redo,
 }) => {
   const { homeTeam, awayTeam, ballPossession } = gameState;
+  const { settings } = useSettings();
   const homePlayers = homeTeam.players ?? [];
   const awayPlayers = awayTeam.players ?? [];
 
@@ -261,18 +263,22 @@ export const StatsTracker: React.FC<StatsTrackerProps> = ({
                 </div>
               </div>
               <div className="flex gap-2">
-                <button
-                  onClick={undo}
-                  className="inline-flex items-center gap-2 px-3 py-1 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 transition-colors"
-                >
-                  <Undo2 className="w-4 h-4" /> Undo
-                </button>
-                <button
-                  onClick={redo}
-                  className="inline-flex items-center gap-2 px-3 py-1 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 transition-colors"
-                >
-                  <Redo2 className="w-4 h-4" /> Redo
-                </button>
+                {settings.showUndo && (
+                  <button
+                    onClick={undo}
+                    className="inline-flex items-center gap-2 px-3 py-1 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 transition-colors"
+                  >
+                    <Undo2 className="w-4 h-4" /> Undo
+                  </button>
+                )}
+                {settings.showRedo && (
+                  <button
+                    onClick={redo}
+                    className="inline-flex items-center gap-2 px-3 py-1 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 transition-colors"
+                  >
+                    <Redo2 className="w-4 h-4" /> Redo
+                  </button>
+                )}
               </div>
             </div>
           </div>
