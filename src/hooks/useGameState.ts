@@ -318,9 +318,11 @@ export const useGameState = () => {
     });
   }, [setGameState]);
   const updateTime = useCallback((minutes: number, seconds: number) => {
+    const clampedMinutes = Math.max(0, Math.floor(minutes));
+    const clampedSeconds = Math.max(0, Math.min(59, Math.floor(seconds)));
     setGameState(prev => ({
       ...prev,
-      time: { minutes, seconds },
+      time: { minutes: clampedMinutes, seconds: clampedSeconds },
     }));
   }, [setGameState]);
 
