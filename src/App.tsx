@@ -9,6 +9,8 @@ import { PossessionTracker } from './components/PossessionTracker';
 import { ControlPanelButton } from './components/ControlPanelButton';
 import { ThemeToggle } from './components/ThemeToggle';
 import { RemoteControl } from './components/RemoteControl';
+import { SettingsPage } from './components/SettingsPage';
+import { LayoutDashboard } from 'lucide-react';
 
 type ViewMode = 'scoreboard' | 'dashboard' | 'overlay' | 'stats' | 'possession';
 
@@ -34,14 +36,46 @@ function App() {
     return <RemoteControl />;
   }
 
+  if (route === '#/settings') {
+    return (
+      <div className="App">
+        <ThemeToggle theme={theme} onToggle={toggleTheme} />
+        <SettingsPage
+          gameState={gameState.gameState}
+          updateTeam={gameState.updateTeam}
+          resetGame={gameState.resetGame}
+        />
+        <ControlPanelButton
+          icon={LayoutDashboard}
+          ariaLabel="Open control panel"
+          onClick={() => {
+            window.location.hash = '';
+            setViewMode('dashboard');
+          }}
+        />
+      </div>
+    );
+  }
+
   return (
     <div className="App">
       <ThemeToggle theme={theme} onToggle={toggleTheme} />
       {viewMode === 'overlay' ? (
         <div className="relative min-h-screen bg-transparent">
           <Overlay gameState={gameState.gameState} />
-          {/* Floating control button */}
-          <ControlPanelButton onClick={() => setViewMode('dashboard')} />
+          {/* Floating buttons */}
+          <ControlPanelButton
+            icon={LayoutDashboard}
+            ariaLabel="Open control panel"
+            className="right-36"
+            onClick={() => setViewMode('dashboard')}
+          />
+          <ControlPanelButton
+            ariaLabel="Open settings"
+            onClick={() => {
+              window.location.hash = '#/settings';
+            }}
+          />
         </div>
       ) : viewMode === 'stats' ? (
         <div className="relative">
@@ -55,14 +89,36 @@ function App() {
             undo={gameState.undo}
             redo={gameState.redo}
           />
-          {/* Floating control button */}
-          <ControlPanelButton onClick={() => setViewMode('dashboard')} />
+          {/* Floating buttons */}
+          <ControlPanelButton
+            icon={LayoutDashboard}
+            ariaLabel="Open control panel"
+            className="right-36"
+            onClick={() => setViewMode('dashboard')}
+          />
+          <ControlPanelButton
+            ariaLabel="Open settings"
+            onClick={() => {
+              window.location.hash = '#/settings';
+            }}
+          />
         </div>
       ) : viewMode === 'scoreboard' ? (
         <div className="relative">
           <Scoreboard gameState={gameState.gameState} />
-          {/* Floating control button */}
-          <ControlPanelButton onClick={() => setViewMode('dashboard')} />
+          {/* Floating buttons */}
+          <ControlPanelButton
+            icon={LayoutDashboard}
+            ariaLabel="Open control panel"
+            className="right-36"
+            onClick={() => setViewMode('dashboard')}
+          />
+          <ControlPanelButton
+            ariaLabel="Open settings"
+            onClick={() => {
+              window.location.hash = '#/settings';
+            }}
+          />
         </div>
       ) : viewMode === 'possession' ? (
         <div className="relative">
@@ -70,26 +126,44 @@ function App() {
             gameState={gameState.gameState}
             switchBallPossession={gameState.switchBallPossession}
           />
-          {/* Floating control button */}
-          <ControlPanelButton onClick={() => setViewMode('dashboard')} />
+          {/* Floating buttons */}
+          <ControlPanelButton
+            icon={LayoutDashboard}
+            ariaLabel="Open control panel"
+            className="right-36"
+            onClick={() => setViewMode('dashboard')}
+          />
+          <ControlPanelButton
+            ariaLabel="Open settings"
+            onClick={() => {
+              window.location.hash = '#/settings';
+            }}
+          />
         </div>
       ) : (
-        <Dashboard
-          gameState={gameState.gameState}
-          updateTeam={gameState.updateTeam}
-          updateTournamentLogo={gameState.updateTournamentLogo}
-          updateTime={gameState.updateTime}
-          toggleTimer={gameState.toggleTimer}
-          resetTimer={gameState.resetTimer}
-          updatePeriod={gameState.updatePeriod}
-          changeGamePreset={gameState.changeGamePreset}
-          resetGame={gameState.resetGame}
-          undo={gameState.undo}
-          redo={gameState.redo}
-          addPlayer={gameState.addPlayer}
-          removePlayer={gameState.removePlayer}
-          onViewChange={handleViewChange}
-        />
+        <>
+          <Dashboard
+            gameState={gameState.gameState}
+            updateTeam={gameState.updateTeam}
+            updateTournamentLogo={gameState.updateTournamentLogo}
+            updateTime={gameState.updateTime}
+            toggleTimer={gameState.toggleTimer}
+            resetTimer={gameState.resetTimer}
+            updatePeriod={gameState.updatePeriod}
+            changeGamePreset={gameState.changeGamePreset}
+            undo={gameState.undo}
+            redo={gameState.redo}
+            addPlayer={gameState.addPlayer}
+            removePlayer={gameState.removePlayer}
+            onViewChange={handleViewChange}
+          />
+          <ControlPanelButton
+            ariaLabel="Open settings"
+            onClick={() => {
+              window.location.hash = '#/settings';
+            }}
+          />
+        </>
       )}
     </div>
   );
