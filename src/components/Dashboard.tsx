@@ -59,6 +59,9 @@ export const Dashboard: React.FC<DashboardProps> = ({
   const [homePlayerName, setHomePlayerName] = useState('');
   const [awayPlayerName, setAwayPlayerName] = useState('');
 
+  const homePlayers = gameState.homeTeam.players ?? [];
+  const awayPlayers = gameState.awayTeam.players ?? [];
+
   const handleImageUpload = (team: 'home' | 'away', event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
@@ -403,7 +406,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
                     </button>
                   </div>
                   <ul className="space-y-1 max-h-40 overflow-y-auto">
-                    {gameState.homeTeam.players.map((p) => (
+                    {homePlayers.map((p) => (
                       <li
                         key={p.id}
                         className="flex items-center justify-between text-sm text-gray-700 dark:text-gray-300"
@@ -529,7 +532,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
                     </button>
                   </div>
                   <ul className="space-y-1 max-h-40 overflow-y-auto">
-                    {gameState.awayTeam.players.map((p) => (
+                    {awayPlayers.map((p) => (
                       <li
                         key={p.id}
                         className="flex items-center justify-between text-sm text-gray-700 dark:text-gray-300"
