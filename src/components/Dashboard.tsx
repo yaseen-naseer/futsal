@@ -185,10 +185,10 @@ export const Dashboard: React.FC<DashboardProps> = ({
         {activeTab === 'teams' && (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {/* Tournament Logo Section */}
-            <div className="lg:col-span-2 bg-purple-50 rounded-xl border border-purple-200 p-6 mb-6">
-              <h3 className="text-lg font-semibold text-purple-900 mb-4">Tournament Logo</h3>
+            <div className="lg:col-span-2 bg-purple-50 dark:bg-purple-900 rounded-xl border border-purple-200 dark:border-purple-700 p-6 mb-6">
+              <h3 className="text-lg font-semibold text-purple-900 dark:text-purple-100 mb-4">Tournament Logo</h3>
               <div className="flex items-center gap-6">
-                <div className="w-20 h-20 bg-gray-100 rounded-lg overflow-hidden flex items-center justify-center border-2 border-gray-300">
+                <div className="w-20 h-20 bg-gray-100 dark:bg-gray-700 rounded-lg overflow-hidden flex items-center justify-center border-2 border-gray-300 dark:border-gray-600">
                   {gameState.tournamentLogo ? (
                     <img src={gameState.tournamentLogo} alt="Tournament" className="w-full h-full object-contain" />
                   ) : (
@@ -196,7 +196,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
                   )}
                 </div>
                 <div className="flex gap-3">
-                  <label className="cursor-pointer inline-flex items-center gap-2 px-4 py-2 bg-purple-100 text-purple-700 rounded-lg hover:bg-purple-200 transition-colors">
+                  <label className="cursor-pointer inline-flex items-center gap-2 px-4 py-2 bg-purple-100 text-purple-700 rounded-lg hover:bg-purple-200 transition-colors dark:bg-purple-900 dark:text-purple-200 dark:hover:bg-purple-800">
                     <Upload className="w-4 h-4" />
                     Upload Tournament Logo
                     <input
@@ -209,43 +209,45 @@ export const Dashboard: React.FC<DashboardProps> = ({
                   {gameState.tournamentLogo && (
                     <button
                       onClick={() => updateTournamentLogo('')}
-                      className="px-4 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors"
+                      className="px-4 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors dark:bg-red-900 dark:text-red-200 dark:hover:bg-red-800"
                     >
                       Remove Logo
                     </button>
                   )}
                 </div>
-                <div className="text-sm text-gray-600">
+                <div className="text-sm text-gray-600 dark:text-gray-300">
                   <p>Upload a tournament logo to display at the top of the scoreboard.</p>
-                  <p className="text-xs text-gray-500 mt-1">Leave blank to show no header logo.</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Leave blank to show no header logo.</p>
                 </div>
               </div>
               {tournamentLogoError && (
-                <p className="text-sm text-red-600 mt-2">{tournamentLogoError}</p>
+                <p className="text-sm text-red-600 dark:text-red-400 mt-2">{tournamentLogoError}</p>
               )}
             </div>
 
             {/* Timer Controls - Quick Access */}
-            <div className="lg:col-span-2 bg-green-50 rounded-xl border border-green-200 p-4 mb-4">
+            <div className="lg:col-span-2 bg-green-50 dark:bg-green-900 rounded-xl border border-green-200 dark:border-green-700 p-4 mb-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
-                  <div className="text-2xl font-mono font-bold text-green-600">
+                  <div className="text-2xl font-mono font-bold text-green-600 dark:text-green-400">
                     {gameState.time.minutes.toString().padStart(2, '0')}:
                     {gameState.time.seconds.toString().padStart(2, '0')}
                   </div>
                   <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm ${
-                    gameState.isRunning 
-                      ? 'bg-green-100 text-green-700' 
-                      : 'bg-red-100 text-red-700'
+                    gameState.isRunning
+                      ? 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-200'
+                      : 'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-200'
                   }`}>
                     <div className={`w-2 h-2 rounded-full ${
-                      gameState.isRunning ? 'bg-green-500' : 'bg-red-500'
+                      gameState.isRunning
+                        ? 'bg-green-500 dark:bg-green-400'
+                        : 'bg-red-500 dark:bg-red-400'
                     } ${gameState.isRunning ? 'animate-pulse' : ''}`}></div>
                     <span className="font-semibold">
                       {gameState.isRunning ? 'RUNNING' : 'PAUSED'}
                     </span>
                   </div>
-                  <span className="text-sm text-gray-600">Period {gameState.period}</span>
+                  <span className="text-sm text-gray-600 dark:text-gray-300">Period {gameState.period}</span>
                 </div>
                 <div className="flex gap-2">
                   <button
@@ -261,7 +263,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
                   </button>
                   <button
                     onClick={resetTimer}
-                    className="inline-flex items-center gap-2 px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors dark:bg-gray-700 dark:hover:bg-gray-600"
                   >
                     <RotateCcw className="w-4 h-4" />
                     Reset
@@ -272,30 +274,30 @@ export const Dashboard: React.FC<DashboardProps> = ({
 
             {/* Home Team */}
             <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-              <h3 className="text-lg font-semibold text-blue-600 mb-6">Home Team</h3>
+              <h3 className="text-lg font-semibold text-blue-600 dark:text-blue-300 mb-6">Home Team</h3>
               
               <div className="space-y-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Team Name</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Team Name</label>
                   <input
                     type="text"
                     value={gameState.homeTeam.name}
                     onChange={(e) => updateTeam('home', 'name', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-gray-100"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Team Logo</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Team Logo</label>
                   <div className="flex items-center gap-4">
-                    <div className="w-16 h-16 bg-gray-100 rounded-full overflow-hidden flex items-center justify-center">
+                    <div className="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden flex items-center justify-center">
                       {gameState.homeTeam.logo ? (
                         <img src={gameState.homeTeam.logo} alt="Home" className="w-full h-full object-cover" />
                       ) : (
                         <span className="text-2xl font-bold text-gray-400">{gameState.homeTeam.name.charAt(0)}</span>
                       )}
                     </div>
-                    <label className="cursor-pointer inline-flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
+                    <label className="cursor-pointer inline-flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600">
                       <Upload className="w-4 h-4" />
                       Upload Logo
                       <input
@@ -307,25 +309,25 @@ export const Dashboard: React.FC<DashboardProps> = ({
                     </label>
                   </div>
                   {homeLogoError && (
-                    <p className="text-sm text-red-600 mt-2">{homeLogoError}</p>
+                    <p className="text-sm text-red-600 dark:text-red-400 mt-2">{homeLogoError}</p>
                   )}
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Score</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Score</label>
                   <div className="flex items-center gap-3">
                     <button
                       onClick={() => adjustScore('home', -1)}
-                      className="w-10 h-10 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 flex items-center justify-center transition-colors"
+                      className="w-10 h-10 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 flex items-center justify-center transition-colors dark:bg-red-900 dark:text-red-200 dark:hover:bg-red-800"
                     >
                       <Minus className="w-4 h-4" />
                     </button>
-                    <span className="text-3xl font-bold text-blue-600 min-w-[4rem] text-center">
+                    <span className="text-3xl font-bold text-blue-600 dark:text-blue-300 min-w-[4rem] text-center">
                       {gameState.homeTeam.score}
                     </span>
                     <button
                       onClick={() => adjustScore('home', 1)}
-                      className="w-10 h-10 bg-green-100 text-green-600 rounded-lg hover:bg-green-200 flex items-center justify-center transition-colors"
+                      className="w-10 h-10 bg-green-100 text-green-600 rounded-lg hover:bg-green-200 flex items-center justify-center transition-colors dark:bg-green-900 dark:text-green-200 dark:hover:bg-green-800"
                     >
                       <Plus className="w-4 h-4" />
                     </button>
@@ -333,20 +335,20 @@ export const Dashboard: React.FC<DashboardProps> = ({
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Fouls</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Fouls</label>
                   <div className="flex items-center gap-3">
                     <button
                       onClick={() => adjustFouls('home', -1)}
-                      className="w-10 h-10 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 flex items-center justify-center transition-colors"
+                      className="w-10 h-10 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 flex items-center justify-center transition-colors dark:bg-red-900 dark:text-red-200 dark:hover:bg-red-800"
                     >
                       <Minus className="w-4 h-4" />
                     </button>
-                    <span className="text-2xl font-bold text-red-600 min-w-[3rem] text-center">
+                    <span className="text-2xl font-bold text-red-600 dark:text-red-300 min-w-[3rem] text-center">
                       {gameState.homeTeam.fouls}
                     </span>
                     <button
                       onClick={() => adjustFouls('home', 1)}
-                      className="w-10 h-10 bg-green-100 text-green-600 rounded-lg hover:bg-green-200 flex items-center justify-center transition-colors"
+                      className="w-10 h-10 bg-green-100 text-green-600 rounded-lg hover:bg-green-200 flex items-center justify-center transition-colors dark:bg-green-900 dark:text-green-200 dark:hover:bg-green-800"
                     >
                       <Plus className="w-4 h-4" />
                     </button>
@@ -357,30 +359,30 @@ export const Dashboard: React.FC<DashboardProps> = ({
 
             {/* Away Team */}
             <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-              <h3 className="text-lg font-semibold text-red-600 mb-6">Away Team</h3>
+              <h3 className="text-lg font-semibold text-red-600 dark:text-red-300 mb-6">Away Team</h3>
               
               <div className="space-y-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Team Name</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Team Name</label>
                   <input
                     type="text"
                     value={gameState.awayTeam.name}
                     onChange={(e) => updateTeam('away', 'name', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 dark:bg-gray-700 dark:text-gray-100"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Team Logo</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Team Logo</label>
                   <div className="flex items-center gap-4">
-                    <div className="w-16 h-16 bg-gray-100 rounded-full overflow-hidden flex items-center justify-center">
+                    <div className="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden flex items-center justify-center">
                       {gameState.awayTeam.logo ? (
                         <img src={gameState.awayTeam.logo} alt="Away" className="w-full h-full object-cover" />
                       ) : (
                         <span className="text-2xl font-bold text-gray-400">{gameState.awayTeam.name.charAt(0)}</span>
                       )}
                     </div>
-                    <label className="cursor-pointer inline-flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
+                    <label className="cursor-pointer inline-flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600">
                       <Upload className="w-4 h-4" />
                       Upload Logo
                       <input
@@ -392,25 +394,25 @@ export const Dashboard: React.FC<DashboardProps> = ({
                     </label>
                   </div>
                   {awayLogoError && (
-                    <p className="text-sm text-red-600 mt-2">{awayLogoError}</p>
+                    <p className="text-sm text-red-600 dark:text-red-400 mt-2">{awayLogoError}</p>
                   )}
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Score</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Score</label>
                   <div className="flex items-center gap-3">
                     <button
                       onClick={() => adjustScore('away', -1)}
-                      className="w-10 h-10 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 flex items-center justify-center transition-colors"
+                      className="w-10 h-10 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 flex items-center justify-center transition-colors dark:bg-red-900 dark:text-red-200 dark:hover:bg-red-800"
                     >
                       <Minus className="w-4 h-4" />
                     </button>
-                    <span className="text-3xl font-bold text-red-600 min-w-[4rem] text-center">
+                    <span className="text-3xl font-bold text-red-600 dark:text-red-300 min-w-[4rem] text-center">
                       {gameState.awayTeam.score}
                     </span>
                     <button
                       onClick={() => adjustScore('away', 1)}
-                      className="w-10 h-10 bg-green-100 text-green-600 rounded-lg hover:bg-green-200 flex items-center justify-center transition-colors"
+                      className="w-10 h-10 bg-green-100 text-green-600 rounded-lg hover:bg-green-200 flex items-center justify-center transition-colors dark:bg-green-900 dark:text-green-200 dark:hover:bg-green-800"
                     >
                       <Plus className="w-4 h-4" />
                     </button>
@@ -418,20 +420,20 @@ export const Dashboard: React.FC<DashboardProps> = ({
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Fouls</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Fouls</label>
                   <div className="flex items-center gap-3">
                     <button
                       onClick={() => adjustFouls('away', -1)}
-                      className="w-10 h-10 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 flex items-center justify-center transition-colors"
+                      className="w-10 h-10 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 flex items-center justify-center transition-colors dark:bg-red-900 dark:text-red-200 dark:hover:bg-red-800"
                     >
                       <Minus className="w-4 h-4" />
                     </button>
-                    <span className="text-2xl font-bold text-red-600 min-w-[3rem] text-center">
+                    <span className="text-2xl font-bold text-red-600 dark:text-red-300 min-w-[3rem] text-center">
                       {gameState.awayTeam.fouls}
                     </span>
                     <button
                       onClick={() => adjustFouls('away', 1)}
-                      className="w-10 h-10 bg-green-100 text-green-600 rounded-lg hover:bg-green-200 flex items-center justify-center transition-colors"
+                      className="w-10 h-10 bg-green-100 text-green-600 rounded-lg hover:bg-green-200 flex items-center justify-center transition-colors dark:bg-green-900 dark:text-green-200 dark:hover:bg-green-800"
                     >
                       <Plus className="w-4 h-4" />
                     </button>
@@ -446,27 +448,29 @@ export const Dashboard: React.FC<DashboardProps> = ({
         {activeTab === 'timer' && (
           <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-8 max-w-2xl mx-auto">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-8 text-center">Timer Control</h3>
-            
+
             <div className="space-y-8">
               {/* Timer Display */}
               <div className="text-center">
-                <div className="text-6xl font-mono font-bold text-green-600 mb-4">
+                <div className="text-6xl font-mono font-bold text-green-600 dark:text-green-400 mb-4">
                   {gameState.time.minutes.toString().padStart(2, '0')}:
                   {gameState.time.seconds.toString().padStart(2, '0')}
                 </div>
                 <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full ${
-                  gameState.isRunning 
-                    ? 'bg-green-100 text-green-700' 
-                    : 'bg-red-100 text-red-700'
+                  gameState.isRunning
+                    ? 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-200'
+                    : 'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-200'
                 }`}>
                   <div className={`w-2 h-2 rounded-full ${
-                    gameState.isRunning ? 'bg-green-500' : 'bg-red-500'
+                    gameState.isRunning
+                      ? 'bg-green-500 dark:bg-green-400'
+                      : 'bg-red-500 dark:bg-red-400'
                   } ${gameState.isRunning ? 'animate-pulse' : ''}`}></div>
                   <span className="font-semibold">
                     {gameState.isRunning ? 'RUNNING' : 'PAUSED'}
                   </span>
                 </div>
-                <span className="text-sm text-gray-600">
+                <span className="text-sm text-gray-600 dark:text-gray-300">
                   {getHalfName(gameState.half, gameState.gamePreset, gameState.matchPhase)}
                 </span>
               </div>
@@ -486,7 +490,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
                 </button>
                 <button
                   onClick={resetTimer}
-                  className="inline-flex items-center gap-2 px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
+                  className="inline-flex items-center gap-2 px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors dark:bg-gray-700 dark:hover:bg-gray-600"
                 >
                   <RotateCcw className="w-5 h-5" />
                   Reset
@@ -496,11 +500,11 @@ export const Dashboard: React.FC<DashboardProps> = ({
               {/* Time Adjustment */}
               <div className="grid grid-cols-2 gap-8">
                 <div className="text-center">
-                  <label className="block text-sm font-medium text-gray-700 mb-3">Minutes</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Minutes</label>
                   <div className="flex items-center justify-center gap-3">
                     <button
                       onClick={() => adjustTime('minutes', -1)}
-                      className="w-10 h-10 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 flex items-center justify-center transition-colors"
+                      className="w-10 h-10 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 flex items-center justify-center transition-colors dark:bg-red-900 dark:text-red-200 dark:hover:bg-red-800"
                     >
                       <Minus className="w-4 h-4" />
                     </button>
@@ -509,7 +513,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
                     </span>
                     <button
                       onClick={() => adjustTime('minutes', 1)}
-                      className="w-10 h-10 bg-green-100 text-green-600 rounded-lg hover:bg-green-200 flex items-center justify-center transition-colors"
+                      className="w-10 h-10 bg-green-100 text-green-600 rounded-lg hover:bg-green-200 flex items-center justify-center transition-colors dark:bg-green-900 dark:text-green-200 dark:hover:bg-green-800"
                     >
                       <Plus className="w-4 h-4" />
                     </button>
@@ -517,11 +521,11 @@ export const Dashboard: React.FC<DashboardProps> = ({
                 </div>
 
                 <div className="text-center">
-                  <label className="block text-sm font-medium text-gray-700 mb-3">Seconds</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Seconds</label>
                   <div className="flex items-center justify-center gap-3">
                     <button
                       onClick={() => adjustTime('seconds', -1)}
-                      className="w-10 h-10 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 flex items-center justify-center transition-colors"
+                      className="w-10 h-10 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 flex items-center justify-center transition-colors dark:bg-red-900 dark:text-red-200 dark:hover:bg-red-800"
                     >
                       <Minus className="w-4 h-4" />
                     </button>
@@ -530,7 +534,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
                     </span>
                     <button
                       onClick={() => adjustTime('seconds', 1)}
-                      className="w-10 h-10 bg-green-100 text-green-600 rounded-lg hover:bg-green-200 flex items-center justify-center transition-colors"
+                      className="w-10 h-10 bg-green-100 text-green-600 rounded-lg hover:bg-green-200 flex items-center justify-center transition-colors dark:bg-green-900 dark:text-green-200 dark:hover:bg-green-800"
                     >
                       <Plus className="w-4 h-4" />
                     </button>
@@ -540,11 +544,11 @@ export const Dashboard: React.FC<DashboardProps> = ({
 
               {/* Period Control */}
               <div className="text-center">
-                <label className="block text-sm font-medium text-gray-700 mb-3">Game Period</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Game Period</label>
                 {(() => {
                   const preset = gameState.gamePreset;
                   const maxHalf = preset.hasExtraTime
-                    ? preset.hasPenalties ? 5 : 4
+                    ? (preset.hasPenalties ? 5 : 4)
                     : preset.hasPenalties ? 5 : preset.totalHalves;
 
                   const getNextHalf = () => {
@@ -563,13 +567,13 @@ export const Dashboard: React.FC<DashboardProps> = ({
 
                   return (
                     <>
-                      <div className="text-sm text-gray-600 mb-3">
+                      <div className="text-sm text-gray-600 dark:text-gray-300 mb-3">
                         {getHalfName(gameState.half, preset, gameState.matchPhase)}
                       </div>
                       <div className="flex items-center justify-center gap-3">
                         <button
                           onClick={() => updatePeriod(getPrevHalf())}
-                          className="w-10 h-10 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 flex items-center justify-center transition-colors"
+                          className="w-10 h-10 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 flex items-center justify-center transition-colors dark:bg-red-900 dark:text-red-200 dark:hover:bg-red-800"
                         >
                           <Minus className="w-4 h-4" />
                         </button>
@@ -581,8 +585,8 @@ export const Dashboard: React.FC<DashboardProps> = ({
                           disabled={gameState.half >= maxHalf}
                           className={`w-10 h-10 rounded-lg flex items-center justify-center transition-colors ${
                             gameState.half >= maxHalf
-                              ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                              : 'bg-green-100 text-green-600 hover:bg-green-200'
+                              ? 'bg-gray-100 text-gray-400 dark:bg-gray-700 dark:text-gray-500 cursor-not-allowed'
+                              : 'bg-green-100 text-green-600 hover:bg-green-200 dark:bg-green-900 dark:text-green-200 dark:hover:bg-green-800'
                           }`}
                         >
                           <Plus className="w-4 h-4" />
@@ -591,7 +595,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
                     </>
                   );
                 })()}
-                <div className="mt-3 text-xs text-gray-500">
+                <div className="mt-3 text-xs text-gray-500 dark:text-gray-400">
                   Current Format: {gameState.gamePreset.name}
                 </div>
               </div>
@@ -624,7 +628,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
                   <RotateCcw className="w-5 h-5" />
                   Reset Entire Game
                 </button>
-                <p className="text-sm text-gray-500 mt-2">
+                <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
                   This will reset scores, fouls, timer, and all settings to default values.
                 </p>
               </div>
@@ -637,7 +641,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
                       updateTeam('home', 'score', 0);
                       updateTeam('away', 'score', 0);
                     }}
-                    className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+                    className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
                   >
                     Reset Scores
                   </button>
@@ -646,7 +650,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
                       updateTeam('home', 'fouls', 0);
                       updateTeam('away', 'fouls', 0);
                     }}
-                    className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+                    className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
                   >
                     Reset Fouls
                   </button>
