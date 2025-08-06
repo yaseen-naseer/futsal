@@ -1,8 +1,7 @@
 import React from 'react';
 import { GameState } from '../types';
 import { getHalfName } from '../utils/gamePresets';
-import { Crown } from 'lucide-react';
-import { formatTime, isWinning } from '../utils/format';
+import { formatTime } from '../utils/format';
 import { motion, useReducedMotion } from 'framer-motion';
 
 interface ScoreboardProps {
@@ -52,9 +51,6 @@ export const Scoreboard: React.FC<ScoreboardProps> = ({ gameState }) => {
                   <div className="w-32 h-32 bg-gradient-to-br from-blue-500 to-blue-700 rounded-full mx-auto flex items-center justify-center border-4 border-gray-600">
                     <span className="text-4xl font-bold">{homeTeam.name.charAt(0)}</span>
                   </div>
-                )}
-                {isWinning(homeTeam.score, awayTeam.score) && (
-                  <Crown className="w-8 h-8 text-yellow-400 absolute -top-3 -right-3" />
                 )}
               </div>
               <h2 className="text-3xl font-bold text-blue-400 truncate">{homeTeam.name}</h2>
@@ -109,9 +105,6 @@ export const Scoreboard: React.FC<ScoreboardProps> = ({ gameState }) => {
                   <div className="w-32 h-32 bg-gradient-to-br from-red-500 to-red-700 rounded-full mx-auto flex items-center justify-center border-4 border-gray-600">
                     <span className="text-4xl font-bold">{awayTeam.name.charAt(0)}</span>
                   </div>
-                )}
-                {isWinning(awayTeam.score, homeTeam.score) && (
-                  <Crown className="w-8 h-8 text-yellow-400 absolute -top-3 -right-3" />
                 )}
               </div>
               <h2 className="text-3xl font-bold text-red-400 truncate">{awayTeam.name}</h2>
