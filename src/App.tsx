@@ -6,7 +6,6 @@ import { Scoreboard } from './components/Scoreboard';
 import { Dashboard } from './components/Dashboard';
 import { Overlay } from './components/Overlay';
 import { StatsTracker } from './components/StatsTracker';
-import { PossessionTracker } from './components/PossessionTracker';
 import { ControlPanelButton } from './components/ControlPanelButton';
 import { ThemeToggle } from './components/ThemeToggle';
 import { RemoteControl } from './components/RemoteControl';
@@ -18,7 +17,6 @@ type ViewMode =
   | 'dashboard'
   | 'overlay'
   | 'stats'
-  | 'possession'
   | 'settings';
 
 interface MainLayoutProps {
@@ -64,19 +62,15 @@ const MainLayout: React.FC<MainLayoutProps> = ({ gameState, theme, toggleTheme }
     </div>
   );
 
-  const PossessionView: React.FC = () => (
-    <div className="relative">
-      <PossessionTracker
-        gameState={gameState.gameState}
-        switchBallPossession={gameState.switchBallPossession}
-      />
-      <ControlPanelButton onClick={() => navigate('/dashboard')} />
-    </div>
-  );
-
   const SettingsView: React.FC = () => (
     <div className="relative">
-      <SettingsPage />
+      <SettingsPage
+        gameState={gameState.gameState}
+        updateTournamentLogo={gameState.updateTournamentLogo}
+        updateTournamentName={gameState.updateTournamentName}
+        resetGame={gameState.resetGame}
+        updateTeam={gameState.updateTeam}
+      />
       <ControlPanelButton onClick={() => navigate('/dashboard')} />
     </div>
   );
@@ -91,14 +85,11 @@ const MainLayout: React.FC<MainLayoutProps> = ({ gameState, theme, toggleTheme }
             <Dashboard
               gameState={gameState.gameState}
               updateTeam={gameState.updateTeam}
-              updateTournamentLogo={gameState.updateTournamentLogo}
-              updateTournamentName={gameState.updateTournamentName}
               updateTime={gameState.updateTime}
               toggleTimer={gameState.toggleTimer}
               resetTimer={gameState.resetTimer}
               updatePeriod={gameState.updatePeriod}
               changeGamePreset={gameState.changeGamePreset}
-              resetGame={gameState.resetGame}
               undo={gameState.undo}
               redo={gameState.redo}
               addPlayer={gameState.addPlayer}
@@ -110,7 +101,6 @@ const MainLayout: React.FC<MainLayoutProps> = ({ gameState, theme, toggleTheme }
         <Route path="/scoreboard" element={<ScoreboardView />} />
         <Route path="/overlay" element={<OverlayView />} />
         <Route path="/stats" element={<StatsView />} />
-        <Route path="/possession" element={<PossessionView />} />
         <Route path="/settings" element={<SettingsView />} />
         <Route path="/" element={<Navigate to="/dashboard" replace />} />
         <Route path="*" element={<Navigate to="/dashboard" replace />} />
@@ -119,21 +109,27 @@ const MainLayout: React.FC<MainLayoutProps> = ({ gameState, theme, toggleTheme }
   );
 };
 
-function App() {
+const AppContent: React.FC = () => {
   const gameState = useGameState();
   const { theme, toggleTheme } = useTheme();
 
   return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/remote" element={<RemoteControl />} />
+        <Route
+          path="/*"
+          element={<MainLayout gameState={gameState} theme={theme} toggleTheme={toggleTheme} />}
+        />
+      </Routes>
+    </BrowserRouter>
+  );
+};
+
+function App() {
+  return (
     <SettingsProvider>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/remote" element={<RemoteControl />} />
-          <Route
-            path="/*"
-            element={<MainLayout gameState={gameState} theme={theme} toggleTheme={toggleTheme} />}
-          />
-        </Routes>
-      </BrowserRouter>
+      <AppContent />
     </SettingsProvider>
   );
 }
