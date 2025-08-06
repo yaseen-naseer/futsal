@@ -86,6 +86,7 @@ const initialState: GameState = {
 };
 
 const STORAGE_KEY = 'gameState';
+const HISTORY_LIMIT = 100;
 
 export const useGameState = () => {
   const [gameState, _setGameState] = useState<GameState>(() => {
@@ -148,6 +149,9 @@ export const useGameState = () => {
             ? (updater as (p: GameState) => GameState)(prev)
             : updater;
         historyRef.current.past.push(prev);
+        if (historyRef.current.past.length > HISTORY_LIMIT) {
+          historyRef.current.past.shift();
+        }
         historyRef.current.future = [];
         return newState;
       });
