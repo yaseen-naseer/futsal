@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { GameState } from '../types';
 import { ExternalControlInfo } from './ExternalControlInfo';
 import { GamePresetSelector } from './GamePresetSelector';
@@ -59,6 +59,10 @@ export const Dashboard: React.FC<DashboardProps> = ({
   const [homePlayerName, setHomePlayerName] = useState('');
   const [awayPlayerName, setAwayPlayerName] = useState('');
 
+  const homeLogoUrlRef = useRef<string | null>(null);
+  const awayLogoUrlRef = useRef<string | null>(null);
+  const tournamentLogoUrlRef = useRef<string | null>(null);
+
   const homePlayers = gameState.homeTeam.players ?? [];
   const awayPlayers = gameState.awayTeam.players ?? [];
 
@@ -77,6 +81,11 @@ export const Dashboard: React.FC<DashboardProps> = ({
     }
 
     const url = URL.createObjectURL(file);
+    const logoUrlRef = team === 'home' ? homeLogoUrlRef : awayLogoUrlRef;
+    if (logoUrlRef.current) {
+      URL.revokeObjectURL(logoUrlRef.current);
+    }
+    logoUrlRef.current = url;
     updateTeam(team, 'logo', url);
 
     if (team === 'home') {
@@ -96,6 +105,10 @@ export const Dashboard: React.FC<DashboardProps> = ({
     }
 
     const url = URL.createObjectURL(file);
+    if (tournamentLogoUrlRef.current) {
+      URL.revokeObjectURL(tournamentLogoUrlRef.current);
+    }
+    tournamentLogoUrlRef.current = url;
     updateTournamentLogo(url);
     setTournamentLogoError('');
   };
@@ -111,6 +124,23 @@ export const Dashboard: React.FC<DashboardProps> = ({
     const newFouls = Math.max(0, currentFouls + delta);
     updateTeam(team, 'fouls', newFouls);
   };
+
+  useEffect(() => {
+    const homeUrl = homeLogoUrlRef.current;
+    const awayUrl = awayLogoUrlRef.current;
+    const tournamentUrl = tournamentLogoUrlRef.current;
+    return () => {
+      if (homeUrl) {
+        URL.revokeObjectURL(homeUrl);
+      }
+      if (awayUrl) {
+        URL.revokeObjectURL(awayUrl);
+      }
+      if (tournamentUrl) {
+        URL.revokeObjectURL(tournamentUrl);
+      }
+    };
+  }, []);
 
   const adjustTime = (type: 'minutes' | 'seconds', delta: number) => {
     const { minutes, seconds } = gameState.time;
