@@ -86,7 +86,7 @@ const initialState: GameState = {
 const STORAGE_KEY = 'gameState';
 
 export const useGameState = () => {
-  const [gameState, setGameState] = useState<GameState>(() => {
+  const [gameState, _setGameState] = useState<GameState>(() => {
     if (typeof window !== 'undefined') {
       const stored = window.localStorage.getItem(STORAGE_KEY);
       if (stored) {
@@ -99,9 +99,25 @@ export const useGameState = () => {
     }
     return initialState;
   });
+  const historyRef = useRef<{ past: GameState[]; future: GameState[] }>({ past: [], future: [] });
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const keyboardListenerRef = useRef<((event: KeyboardEvent) => void) | null>(null);
   const skipStorageRef = useRef(false);
+
+  const setGameState = useCallback(
+    (updater: GameState | ((prev: GameState) => GameState)) => {
+      _setGameState(prev => {
+        const newState =
+          typeof updater === 'function'
+            ? (updater as (p: GameState) => GameState)(prev)
+            : updater;
+        historyRef.current.past.push(prev);
+        historyRef.current.future = [];
+        return newState;
+      });
+    },
+    [],
+  );
 
   const updateTeam = useCallback(
     <K extends keyof Pick<Team, 'name' | 'score' | 'fouls' | 'logo'>>(
@@ -117,7 +133,7 @@ export const useGameState = () => {
         },
       }));
     },
-    [],
+    [setGameState],
   );
 
   const updateTournamentLogo = useCallback((logo: string) => {
@@ -125,7 +141,7 @@ export const useGameState = () => {
       ...prev,
       tournamentLogo: logo,
     }));
-  }, []);
+  }, [setGameState]);
 
   const updateTeamStats = useCallback((team: 'home' | 'away', stat: keyof Team['stats'], value: number) => {
     setGameState(prev => {
@@ -141,7 +157,7 @@ export const useGameState = () => {
         },
       };
     });
-  }, []);
+  }, [setGameState]);
 
   const switchBallPossession = useCallback((newTeam: 'home' | 'away') => {
     setGameState(prev => {
@@ -175,13 +191,13 @@ export const useGameState = () => {
         },
       };
     });
-  }, []);
+  }, [setGameState]);
   const updateTime = useCallback((minutes: number, seconds: number) => {
     setGameState(prev => ({
       ...prev,
       time: { minutes, seconds },
     }));
-  }, []);
+  }, [setGameState]);
 
   const toggleTimer = useCallback(() => {
     setGameState(prev => {
@@ -206,7 +222,7 @@ export const useGameState = () => {
       }
       return { ...prev, isRunning: true, possessionStartTime: now };
     });
-  }, []);
+  }, [setGameState]);
 
   const resetTimer = useCallback(() => {
     setGameState(prev => {
@@ -235,7 +251,7 @@ export const useGameState = () => {
         },
       };
     });
-  }, []);
+  }, [setGameState]);
 
   const updatePeriod = useCallback((period: number) => {
     setGameState(prev => {
@@ -306,7 +322,7 @@ export const useGameState = () => {
         },
       };
     });
-  }, []);
+  }, [setGameState]);
 
   const changeGamePreset = useCallback((presetIndex: number) => {
     const preset = GAME_PRESETS[presetIndex];
@@ -339,7 +355,7 @@ export const useGameState = () => {
         ),
       };
     });
-  }, []);
+  }, [setGameState]);
   const resetGame = useCallback(() => {
     skipStorageRef.current = true;
     if (typeof window !== 'undefined') {
@@ -358,6 +374,26 @@ export const useGameState = () => {
         homeTeam: adjustTeamStatsForType(base.homeTeam, prev.gamePreset.type),
         awayTeam: adjustTeamStatsForType(base.awayTeam, prev.gamePreset.type),
       };
+    });
+  }, [setGameState]);
+
+  const undo = useCallback(() => {
+    _setGameState(prev => {
+      const past = historyRef.current.past;
+      if (past.length === 0) return prev;
+      const previous = past.pop() as GameState;
+      historyRef.current.future.push(prev);
+      return previous;
+    });
+  }, []);
+
+  const redo = useCallback(() => {
+    _setGameState(prev => {
+      const future = historyRef.current.future;
+      if (future.length === 0) return prev;
+      const next = future.pop() as GameState;
+      historyRef.current.past.push(prev);
+      return next;
     });
   }, []);
 
@@ -415,7 +451,7 @@ export const useGameState = () => {
         document.removeEventListener('keydown', keyboardListenerRef.current);
       }
     };
-  }, [toggleTimer, resetTimer, switchBallPossession]);
+  }, [toggleTimer, resetTimer, switchBallPossession, setGameState]);
 
   // API endpoint simulation for external control
   useEffect(() => {
@@ -457,12 +493,12 @@ export const useGameState = () => {
 
     window.addEventListener('message', handleMessage);
     return () => window.removeEventListener('message', handleMessage);
-  }, [toggleTimer, resetTimer]);
+  }, [toggleTimer, resetTimer, setGameState]);
 
   useEffect(() => {
     if (gameState.isRunning) {
       intervalRef.current = setInterval(() => {
-        setGameState(prev => {
+        _setGameState(prev => {
           const { minutes, seconds } = prev.time;
           const now = Date.now();
           const { updatedPossessionTime, homePossession, awayPossession } =
@@ -581,5 +617,7 @@ export const useGameState = () => {
     updatePeriod,
     changeGamePreset,
     resetGame,
+    undo,
+    redo,
   };
 };

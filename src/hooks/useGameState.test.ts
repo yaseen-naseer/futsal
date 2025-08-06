@@ -26,3 +26,18 @@ describe('useGameState message handling', () => {
   });
 });
 
+describe('useGameState history', () => {
+  it('supports undo and redo of state changes', () => {
+    const { result } = renderHook(() => useGameState());
+
+    result.current.updateTeam('home', 'score', 1);
+    expect(result.current.gameState.homeTeam.score).toBe(1);
+
+    result.current.undo();
+    expect(result.current.gameState.homeTeam.score).toBe(0);
+
+    result.current.redo();
+    expect(result.current.gameState.homeTeam.score).toBe(1);
+  });
+});
+

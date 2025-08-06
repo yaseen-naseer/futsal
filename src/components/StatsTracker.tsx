@@ -9,7 +9,9 @@ import {
   AlertTriangle,
   Square,
   Timer,
-  Goal
+  Goal,
+  Undo2,
+  Redo2,
 } from 'lucide-react';
 import { formatTime } from '../utils/format';
 
@@ -18,6 +20,8 @@ interface StatsTrackerProps {
   updateTeamStats: (team: 'home' | 'away', stat: keyof Team['stats'], value: number) => void;
   updateTeamScore: (team: 'home' | 'away', value: number) => void;
   switchBallPossession: (team: 'home' | 'away') => void;
+  undo: () => void;
+  redo: () => void;
 }
 
 export const StatsTracker: React.FC<StatsTrackerProps> = ({
@@ -25,6 +29,8 @@ export const StatsTracker: React.FC<StatsTrackerProps> = ({
   updateTeamStats,
   updateTeamScore,
   switchBallPossession,
+  undo,
+  redo,
 }) => {
   const { homeTeam, awayTeam, ballPossession } = gameState;
 
@@ -198,22 +204,38 @@ export const StatsTracker: React.FC<StatsTrackerProps> = ({
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-4">
             <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Match Statistics Tracker</h1>
-            <div className="flex items-center gap-6 text-sm text-gray-600 dark:text-gray-400">
-              <div>
-                {homeTeam.name} vs {awayTeam.name}
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-6 text-sm text-gray-600 dark:text-gray-400">
+                <div>
+                  {homeTeam.name} vs {awayTeam.name}
+                </div>
+                <div className="flex items-center gap-2">
+                  <Timer className="w-4 h-4" />
+                  <span>{formatTime(gameState.time.minutes, gameState.time.seconds)}</span>
+                </div>
+                <div
+                  className={`px-2 py-1 rounded-full font-medium ${
+                    gameState.isRunning
+                      ? 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300'
+                      : 'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300'
+                  }`}
+                >
+                  {gameState.isRunning ? 'Live' : 'Paused'}
+                </div>
               </div>
-              <div className="flex items-center gap-2">
-                <Timer className="w-4 h-4" />
-                <span>{formatTime(gameState.time.minutes, gameState.time.seconds)}</span>
-              </div>
-              <div
-                className={`px-2 py-1 rounded-full font-medium ${
-                  gameState.isRunning
-                    ? 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300'
-                    : 'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300'
-                }`}
-              >
-                {gameState.isRunning ? 'Live' : 'Paused'}
+              <div className="flex gap-2">
+                <button
+                  onClick={undo}
+                  className="inline-flex items-center gap-2 px-3 py-1 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 transition-colors"
+                >
+                  <Undo2 className="w-4 h-4" /> Undo
+                </button>
+                <button
+                  onClick={redo}
+                  className="inline-flex items-center gap-2 px-3 py-1 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 transition-colors"
+                >
+                  <Redo2 className="w-4 h-4" /> Redo
+                </button>
               </div>
             </div>
           </div>

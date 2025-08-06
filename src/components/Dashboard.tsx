@@ -12,7 +12,9 @@ import {
   Upload,
   Monitor,
   BarChart3,
-  Timer
+  Timer,
+  Undo2,
+  Redo2,
 } from 'lucide-react';
 
 interface DashboardProps {
@@ -25,6 +27,8 @@ interface DashboardProps {
   updatePeriod: (period: number) => void;
   changeGamePreset: (presetIndex: number) => void;
   resetGame: () => void;
+  undo: () => void;
+  redo: () => void;
   onViewChange: (view: 'scoreboard' | 'dashboard' | 'overlay' | 'stats' | 'possession') => void;
 }
 
@@ -38,6 +42,8 @@ export const Dashboard: React.FC<DashboardProps> = ({
   updatePeriod,
   changeGamePreset,
   resetGame,
+  undo,
+  redo,
   onViewChange,
 }) => {
   const [activeTab, setActiveTab] = useState<'teams' | 'timer' | 'format' | 'settings'>('teams');
@@ -153,6 +159,20 @@ export const Dashboard: React.FC<DashboardProps> = ({
               >
                 <Timer className="w-4 h-4" />
                 Possession Control
+              </button>
+              <button
+                onClick={undo}
+                className="inline-flex items-center gap-2 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 transition-colors"
+              >
+                <Undo2 className="w-4 h-4" />
+                Undo
+              </button>
+              <button
+                onClick={redo}
+                className="inline-flex items-center gap-2 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 transition-colors"
+              >
+                <Redo2 className="w-4 h-4" />
+                Redo
               </button>
             </div>
           </div>
