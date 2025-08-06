@@ -104,6 +104,18 @@ describe('useGameState initialization', () => {
   });
 });
 
+describe('tournament settings', () => {
+  it('updates tournament name and logo', () => {
+    const { result } = renderHook(() => useGameState());
+
+    result.current.updateTournamentName('Championship');
+    result.current.updateTournamentLogo('logo-url');
+
+    expect(result.current.gameState.tournamentName).toBe('Championship');
+    expect(result.current.gameState.tournamentLogo).toBe('logo-url');
+  });
+});
+
 describe('useGameState player management', () => {
   it('removes player and adjusts team totals', () => {
     const { result } = renderHook(() => useGameState());
