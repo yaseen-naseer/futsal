@@ -34,6 +34,7 @@ function App() {
           <StatsTracker
             gameState={gameState.gameState}
             updateTeamStats={gameState.updateTeamStats}
+            updateTeamScore={(team, value) => gameState.updateTeam(team, 'score', value)}
             switchBallPossession={gameState.switchBallPossession}
           />
           {/* Floating control button */}

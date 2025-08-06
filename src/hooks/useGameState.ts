@@ -113,16 +113,19 @@ export const useGameState = () => {
   }, []);
 
   const updateTeamStats = useCallback((team: 'home' | 'away', stat: keyof Team['stats'], value: number) => {
-    setGameState(prev => ({
-      ...prev,
-      [team === 'home' ? 'homeTeam' : 'awayTeam']: {
-        ...prev[team === 'home' ? 'homeTeam' : 'awayTeam'],
-        stats: {
-          ...prev[team === 'home' ? 'homeTeam' : 'awayTeam'].stats,
-          [stat]: Math.max(0, value),
+    setGameState(prev => {
+      if (!prev.isRunning) return prev;
+      return {
+        ...prev,
+        [team === 'home' ? 'homeTeam' : 'awayTeam']: {
+          ...prev[team === 'home' ? 'homeTeam' : 'awayTeam'],
+          stats: {
+            ...prev[team === 'home' ? 'homeTeam' : 'awayTeam'].stats,
+            [stat]: Math.max(0, value),
+          },
         },
-      },
-    }));
+      };
+    });
   }, []);
 
   const switchBallPossession = useCallback((newTeam: 'home' | 'away') => {
