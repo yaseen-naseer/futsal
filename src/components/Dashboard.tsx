@@ -33,6 +33,7 @@ interface DashboardProps {
   addPlayer: (team: 'home' | 'away', name: string) => void;
   removePlayer: (team: 'home' | 'away', playerId: string) => void;
   onViewChange: (view: 'scoreboard' | 'dashboard' | 'overlay' | 'stats' | 'possession') => void;
+  setShowUndoRedo: (show: boolean) => void;
 }
 
 export const Dashboard: React.FC<DashboardProps> = ({
@@ -50,6 +51,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
   addPlayer,
   removePlayer,
   onViewChange,
+  setShowUndoRedo,
 }) => {
   const [activeTab, setActiveTab] = useState<'teams' | 'timer' | 'format' | 'settings'>('teams');
   const tabs = ['teams', 'timer', 'format', 'settings'] as const;
@@ -237,20 +239,24 @@ export const Dashboard: React.FC<DashboardProps> = ({
                 <Timer className="w-4 h-4" />
                 Possession Control
               </button>
-              <button
-                onClick={undo}
-                className="inline-flex items-center gap-2 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 transition-colors"
-              >
-                <Undo2 className="w-4 h-4" />
-                Undo
-              </button>
-              <button
-                onClick={redo}
-                className="inline-flex items-center gap-2 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 transition-colors"
-              >
-                <Redo2 className="w-4 h-4" />
-                Redo
-              </button>
+              {gameState.showUndoRedo && (
+                <>
+                  <button
+                    onClick={undo}
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 transition-colors"
+                  >
+                    <Undo2 className="w-4 h-4" />
+                    Undo
+                  </button>
+                  <button
+                    onClick={redo}
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 transition-colors"
+                  >
+                    <Redo2 className="w-4 h-4" />
+                    Redo
+                  </button>
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -706,13 +712,26 @@ export const Dashboard: React.FC<DashboardProps> = ({
           <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-8 max-w-2xl mx-auto">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-8 text-center">Game Settings</h3>
             
-            <div className="space-y-8">
-              {/* External Control Info */}
-              <ExternalControlInfo />
+              <div className="space-y-8">
+                {/* External Control Info */}
+                <ExternalControlInfo />
 
-              <div className="text-center">
-                <button
-                  onClick={handleResetGame}
+                <div className="border-t pt-6">
+                  <h4 className="font-semibold text-gray-900 dark:text-gray-100 mb-4">Display Options</h4>
+                  <label className="flex items-center justify-between">
+                    <span className="text-gray-700 dark:text-gray-300">Show Undo/Redo Buttons</span>
+                    <input
+                      type="checkbox"
+                      checked={gameState.showUndoRedo}
+                      onChange={e => setShowUndoRedo(e.target.checked)}
+                      className="w-4 h-4"
+                    />
+                  </label>
+                </div>
+
+                <div className="text-center">
+                  <button
+                    onClick={handleResetGame}
                   className="inline-flex items-center gap-2 px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-semibold"
                 >
                   <RotateCcw className="w-5 h-5" />

@@ -104,6 +104,17 @@ describe('useGameState initialization', () => {
   });
 });
 
+describe('useGameState settings', () => {
+  it('toggles showUndoRedo setting', () => {
+    const { result } = renderHook(() => useGameState());
+
+    expect(result.current.gameState.showUndoRedo).toBe(true);
+
+    result.current.setShowUndoRedo(false);
+    expect(result.current.gameState.showUndoRedo).toBe(false);
+  });
+});
+
 describe('useGameState player management', () => {
   it('removes player and adjusts team totals', () => {
     const { result } = renderHook(() => useGameState());

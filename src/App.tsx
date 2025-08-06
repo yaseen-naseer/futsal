@@ -96,6 +96,7 @@ function App() {
                 addPlayer={gameState.addPlayer}
                 removePlayer={gameState.removePlayer}
                 onViewChange={handleViewChange}
+                setShowUndoRedo={gameState.setShowUndoRedo}
               />
             }
           />

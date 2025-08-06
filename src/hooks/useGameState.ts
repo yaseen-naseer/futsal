@@ -83,6 +83,7 @@ const initialState: GameState = {
   },
   gamePreset: GAME_PRESETS[3], // Default to Futsal Regular
   matchPhase: 'regular',
+  showUndoRedo: true,
 };
 
 const STORAGE_KEY = 'gameState';
@@ -283,6 +284,10 @@ export const useGameState = () => {
     },
     [setGameState],
   );
+
+  const setShowUndoRedo = useCallback((show: boolean) => {
+    _setGameState(prev => ({ ...prev, showUndoRedo: show }));
+  }, []);
 
   const switchBallPossession = useCallback((newTeam: 'home' | 'away') => {
     setGameState(prev => {
@@ -827,5 +832,6 @@ export const useGameState = () => {
     resetGame,
     undo,
     redo,
+    setShowUndoRedo,
   };
 };
