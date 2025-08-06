@@ -467,7 +467,9 @@ export const useGameState = () => {
     if (typeof window !== 'undefined') {
       window.localStorage.removeItem(STORAGE_KEY);
     }
-    setGameState(prev => {
+    historyRef.current.past = [];
+    historyRef.current.future = [];
+    _setGameState(prev => {
       const base = {
         ...initialState,
         gamePreset: prev.gamePreset, // Keep current preset
@@ -481,7 +483,7 @@ export const useGameState = () => {
         awayTeam: adjustTeamStatsForType(base.awayTeam, prev.gamePreset.type),
       };
     });
-  }, [setGameState]);
+  }, []);
 
   const undo = useCallback(() => {
     _setGameState(prev => {
