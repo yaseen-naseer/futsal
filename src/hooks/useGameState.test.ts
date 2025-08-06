@@ -41,3 +41,25 @@ describe('useGameState history', () => {
   });
 });
 
+describe('useGameState initialization', () => {
+  it('merges stored state with defaults', () => {
+    const partial = {
+      homeTeam: { name: 'Saved Home' },
+      awayTeam: { name: 'Saved Away' },
+      time: { minutes: 15 },
+    };
+    window.localStorage.setItem('gameState', JSON.stringify(partial));
+
+    const { result } = renderHook(() => useGameState());
+
+    expect(result.current.gameState.homeTeam.name).toBe('Saved Home');
+    expect(result.current.gameState.awayTeam.name).toBe('Saved Away');
+    expect(result.current.gameState.homeTeam.players).toEqual([]);
+    expect(result.current.gameState.awayTeam.players).toEqual([]);
+    expect(result.current.gameState.time.minutes).toBe(15);
+    expect(result.current.gameState.time.seconds).toBe(0);
+
+    window.localStorage.removeItem('gameState');
+  });
+});
+
