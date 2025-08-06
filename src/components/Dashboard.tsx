@@ -3,6 +3,7 @@ import { GameState } from '../types';
 import { ExternalControlInfo } from './ExternalControlInfo';
 import { GamePresetSelector } from './GamePresetSelector';
 import { getHalfName } from '../utils/gamePresets';
+import { ConfirmModal } from './ConfirmModal';
 import {
   Play,
   Pause,
@@ -58,6 +59,8 @@ export const Dashboard: React.FC<DashboardProps> = ({
   const [tournamentLogoError, setTournamentLogoError] = useState('');
   const [homePlayerName, setHomePlayerName] = useState('');
   const [awayPlayerName, setAwayPlayerName] = useState('');
+
+  const [showResetConfirm, setShowResetConfirm] = useState(false);
 
   const homeLogoUrlRef = useRef<string | null>(null);
   const awayLogoUrlRef = useRef<string | null>(null);
@@ -182,9 +185,20 @@ export const Dashboard: React.FC<DashboardProps> = ({
       Object.values(gameState.homeTeam.stats).some(v => v !== 0) ||
       Object.values(gameState.awayTeam.stats).some(v => v !== 0);
 
-    if (!hasStarted || window.confirm('Are you sure you want to reset the entire game?')) {
+    if (!hasStarted) {
       resetGame({ force: true });
+    } else {
+      setShowResetConfirm(true);
     }
+  };
+
+  const confirmResetGame = () => {
+    resetGame({ force: true });
+    setShowResetConfirm(false);
+  };
+
+  const cancelResetGame = () => {
+    setShowResetConfirm(false);
   };
 
   return (
@@ -736,6 +750,15 @@ export const Dashboard: React.FC<DashboardProps> = ({
           </div>
         )}
       </div>
+      <ConfirmModal
+        isOpen={showResetConfirm}
+        title="Reset Game"
+        message="Are you sure you want to reset the entire game?"
+        confirmText="Reset"
+        cancelText="Cancel"
+        onConfirm={confirmResetGame}
+        onCancel={cancelResetGame}
+      />
     </div>
   );
 };
