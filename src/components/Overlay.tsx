@@ -9,7 +9,7 @@ interface OverlayProps {
   showStats?: boolean;
 }
 
-export const Overlay: React.FC<OverlayProps> = ({ gameState, showStats = true }) => {
+export const Overlay: React.FC<OverlayProps> = ({ gameState, showStats = false }) => {
   const shouldReduceMotion = useReducedMotion();
   if (!gameState) return null;
 
@@ -96,18 +96,12 @@ export const Overlay: React.FC<OverlayProps> = ({ gameState, showStats = true })
                   <span className="text-blue-600 dark:text-blue-400 font-medium">{homeTeam.name}</span>
                   <span className="text-gray-600 dark:text-white/60">Fouls:</span>
                   <span className="text-red-600 dark:text-red-400 font-bold">{homeTeam.fouls}</span>
-                  <span className="text-gray-600 dark:text-white/60">|</span>
-                  <span className="text-gray-600 dark:text-white/60">Poss:</span>
-                  <span className="text-blue-600 dark:text-blue-400 font-bold">{homeTeam.stats.possession}%</span>
                 </div>
                 <div className="w-px h-4 bg-gray-300 dark:bg-white/20"></div>
                 <div className="flex items-center gap-2">
                   <span className="text-red-600 dark:text-red-400 font-medium">{awayTeam.name}</span>
                   <span className="text-gray-600 dark:text-white/60">Fouls:</span>
                   <span className="text-red-600 dark:text-red-400 font-bold">{awayTeam.fouls}</span>
-                  <span className="text-gray-600 dark:text-white/60">|</span>
-                  <span className="text-gray-600 dark:text-white/60">Poss:</span>
-                  <span className="text-red-600 dark:text-red-400 font-bold">{awayTeam.stats.possession}%</span>
                 </div>
               </div>
             </div>

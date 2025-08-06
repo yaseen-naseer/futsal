@@ -25,7 +25,7 @@ function App() {
       <ThemeToggle theme={theme} onToggle={toggleTheme} />
       {viewMode === 'overlay' ? (
         <div className="relative min-h-screen bg-transparent">
-          <Overlay gameState={gameState.gameState} showStats />
+          <Overlay gameState={gameState.gameState} />
           {/* Floating control button */}
           <ControlPanelButton onClick={() => setViewMode('dashboard')} />
         </div>
