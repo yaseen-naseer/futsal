@@ -15,6 +15,7 @@ import {
   Timer,
   Undo2,
   Redo2,
+  FileText,
 } from 'lucide-react';
 
 interface DashboardProps {
@@ -31,7 +32,9 @@ interface DashboardProps {
   redo: () => void;
   addPlayer: (team: 'home' | 'away', name: string) => void;
   removePlayer: (team: 'home' | 'away', playerId: string) => void;
-  onViewChange: (view: 'scoreboard' | 'dashboard' | 'overlay' | 'stats' | 'possession') => void;
+  onViewChange: (
+    view: 'scoreboard' | 'dashboard' | 'overlay' | 'stats' | 'possession' | 'summary'
+  ) => void;
 }
 
 export const Dashboard: React.FC<DashboardProps> = ({
@@ -195,6 +198,13 @@ export const Dashboard: React.FC<DashboardProps> = ({
           <div className="flex justify-between items-center py-4">
             <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Futsal Scoreboard Control</h1>
             <div className="flex gap-3">
+              <button
+                onClick={() => onViewChange('summary')}
+                className="inline-flex items-center gap-2 px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-colors"
+              >
+                <FileText className="w-4 h-4" />
+                Match Summary
+              </button>
               <button
                 onClick={() => onViewChange('scoreboard')}
                 className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"

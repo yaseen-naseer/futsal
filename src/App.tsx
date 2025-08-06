@@ -9,8 +9,15 @@ import { PossessionTracker } from './components/PossessionTracker';
 import { ControlPanelButton } from './components/ControlPanelButton';
 import { ThemeToggle } from './components/ThemeToggle';
 import { RemoteControl } from './components/RemoteControl';
+import { MatchSummary } from './components/MatchSummary';
 
-type ViewMode = 'scoreboard' | 'dashboard' | 'overlay' | 'stats' | 'possession';
+type ViewMode =
+  | 'scoreboard'
+  | 'dashboard'
+  | 'overlay'
+  | 'stats'
+  | 'possession'
+  | 'summary';
 
 function App() {
   const [route, setRoute] = useState(
@@ -70,6 +77,12 @@ function App() {
             gameState={gameState.gameState}
             switchBallPossession={gameState.switchBallPossession}
           />
+          {/* Floating control button */}
+          <ControlPanelButton onClick={() => setViewMode('dashboard')} />
+        </div>
+      ) : viewMode === 'summary' ? (
+        <div className="relative">
+          <MatchSummary gameState={gameState.gameState} />
           {/* Floating control button */}
           <ControlPanelButton onClick={() => setViewMode('dashboard')} />
         </div>
