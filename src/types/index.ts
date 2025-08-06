@@ -1,3 +1,12 @@
+export interface Player {
+  id: string;
+  name: string;
+  number?: number;
+  goals: number;
+  yellowCards: number;
+  redCards: number;
+}
+
 export interface Team {
   name: string;
   logo?: string;
@@ -12,6 +21,7 @@ export interface Team {
     redCards: number;
     possession: number; // percentage
   };
+  players: Player[];
 }
 
 export type GameType = 'football' | 'futsal';

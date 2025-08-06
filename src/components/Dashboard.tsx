@@ -29,6 +29,8 @@ interface DashboardProps {
   resetGame: () => void;
   undo: () => void;
   redo: () => void;
+  addPlayer: (team: 'home' | 'away', name: string) => void;
+  removePlayer: (team: 'home' | 'away', playerId: string) => void;
   onViewChange: (view: 'scoreboard' | 'dashboard' | 'overlay' | 'stats' | 'possession') => void;
 }
 
@@ -44,6 +46,8 @@ export const Dashboard: React.FC<DashboardProps> = ({
   resetGame,
   undo,
   redo,
+  addPlayer,
+  removePlayer,
   onViewChange,
 }) => {
   const [activeTab, setActiveTab] = useState<'teams' | 'timer' | 'format' | 'settings'>('teams');
@@ -52,6 +56,8 @@ export const Dashboard: React.FC<DashboardProps> = ({
   const [homeLogoError, setHomeLogoError] = useState('');
   const [awayLogoError, setAwayLogoError] = useState('');
   const [tournamentLogoError, setTournamentLogoError] = useState('');
+  const [homePlayerName, setHomePlayerName] = useState('');
+  const [awayPlayerName, setAwayPlayerName] = useState('');
 
   const handleImageUpload = (team: 'home' | 'away', event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -374,6 +380,47 @@ export const Dashboard: React.FC<DashboardProps> = ({
                     </button>
                   </div>
                 </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Players</label>
+                  <div className="flex gap-2 mb-2">
+                    <input
+                      type="text"
+                      value={homePlayerName}
+                      onChange={(e) => setHomePlayerName(e.target.value)}
+                      placeholder="Player name"
+                      className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-gray-100"
+                    />
+                    <button
+                      onClick={() => {
+                        if (homePlayerName.trim()) {
+                          addPlayer('home', homePlayerName.trim());
+                          setHomePlayerName('');
+                        }
+                      }}
+                      className="px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                    >
+                      Add
+                    </button>
+                  </div>
+                  <ul className="space-y-1 max-h-40 overflow-y-auto">
+                    {gameState.homeTeam.players.map((p) => (
+                      <li
+                        key={p.id}
+                        className="flex items-center justify-between text-sm text-gray-700 dark:text-gray-300"
+                      >
+                        <span>
+                          {p.name} - G:{p.goals} YC:{p.yellowCards} RC:{p.redCards}
+                        </span>
+                        <button
+                          onClick={() => removePlayer('home', p.id)}
+                          className="text-red-500 hover:text-red-700"
+                        >
+                          Remove
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               </div>
             </div>
 
@@ -458,6 +505,47 @@ export const Dashboard: React.FC<DashboardProps> = ({
                       <Plus className="w-4 h-4" />
                     </button>
                   </div>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Players</label>
+                  <div className="flex gap-2 mb-2">
+                    <input
+                      type="text"
+                      value={awayPlayerName}
+                      onChange={(e) => setAwayPlayerName(e.target.value)}
+                      placeholder="Player name"
+                      className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 dark:bg-gray-700 dark:text-gray-100"
+                    />
+                    <button
+                      onClick={() => {
+                        if (awayPlayerName.trim()) {
+                          addPlayer('away', awayPlayerName.trim());
+                          setAwayPlayerName('');
+                        }
+                      }}
+                      className="px-3 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+                    >
+                      Add
+                    </button>
+                  </div>
+                  <ul className="space-y-1 max-h-40 overflow-y-auto">
+                    {gameState.awayTeam.players.map((p) => (
+                      <li
+                        key={p.id}
+                        className="flex items-center justify-between text-sm text-gray-700 dark:text-gray-300"
+                      >
+                        <span>
+                          {p.name} - G:{p.goals} YC:{p.yellowCards} RC:{p.redCards}
+                        </span>
+                        <button
+                          onClick={() => removePlayer('away', p.id)}
+                          className="text-red-500 hover:text-red-700"
+                        >
+                          Remove
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
               </div>
             </div>

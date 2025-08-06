@@ -19,6 +19,12 @@ interface StatsTrackerProps {
   gameState: GameState;
   updateTeamStats: (team: 'home' | 'away', stat: keyof Team['stats'], value: number) => void;
   updateTeamScore: (team: 'home' | 'away', value: number) => void;
+  updatePlayerStats: (
+    team: 'home' | 'away',
+    playerId: string,
+    field: 'goals' | 'yellowCards' | 'redCards',
+    value: number,
+  ) => void;
   switchBallPossession: (team: 'home' | 'away') => void;
   undo: () => void;
   redo: () => void;
@@ -28,6 +34,7 @@ export const StatsTracker: React.FC<StatsTrackerProps> = ({
   gameState,
   updateTeamStats,
   updateTeamScore,
+  updatePlayerStats,
   switchBallPossession,
   undo,
   redo,
@@ -108,6 +115,20 @@ export const StatsTracker: React.FC<StatsTrackerProps> = ({
     if (!gameState.isRunning) return;
     const currentScore = gameState[team === 'home' ? 'homeTeam' : 'awayTeam'].score;
     updateTeamScore(team, Math.max(0, currentScore + delta));
+  };
+
+  const adjustPlayerStat = (
+    team: 'home' | 'away',
+    playerId: string,
+    field: 'goals' | 'yellowCards' | 'redCards',
+    delta: number,
+  ) => {
+    if (!gameState.isRunning) return;
+    const teamObj = team === 'home' ? homeTeam : awayTeam;
+    const player = teamObj.players.find(p => p.id === playerId);
+    if (!player) return;
+    const newValue = Math.max(0, player[field] + delta);
+    updatePlayerStats(team, playerId, field, newValue);
   };
 
   const StatControl = ({ 
@@ -424,6 +445,167 @@ export const StatsTracker: React.FC<StatsTrackerProps> = ({
             homeValue={homeTeam.stats.redCards}
             awayValue={awayTeam.stats.redCards}
           />
+        </div>
+
+        {/* Player Stats */}
+        <div className="mt-8">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Player Stats</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
+              <h4 className="text-center font-medium text-blue-600 dark:text-blue-400 mb-4">{homeTeam.name}</h4>
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="text-gray-600 dark:text-gray-400">
+                    <th className="text-left">Player</th>
+                    <th className="text-center">G</th>
+                    <th className="text-center">YC</th>
+                    <th className="text-center">RC</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {homeTeam.players.map(p => (
+                    <tr key={p.id} className="text-gray-700 dark:text-gray-300">
+                      <td className="py-1">{p.name}</td>
+                      <td className="py-1">
+                        <div className="flex items-center justify-center gap-1">
+                          <button
+                            onClick={() => adjustPlayerStat('home', p.id, 'goals', -1)}
+                            disabled={!gameState.isRunning}
+                            className={`w-6 h-6 bg-red-100 text-red-600 rounded flex items-center justify-center dark:bg-red-900 dark:text-red-400 ${gameState.isRunning ? 'hover:bg-red-200 dark:hover:bg-red-800' : 'opacity-50 cursor-not-allowed'}`}
+                          >
+                            <Minus className="w-3 h-3" />
+                          </button>
+                          <span>{p.goals}</span>
+                          <button
+                            onClick={() => adjustPlayerStat('home', p.id, 'goals', 1)}
+                            disabled={!gameState.isRunning}
+                            className={`w-6 h-6 bg-green-100 text-green-600 rounded flex items-center justify-center dark:bg-green-900 dark:text-green-400 ${gameState.isRunning ? 'hover:bg-green-200 dark:hover:bg-green-800' : 'opacity-50 cursor-not-allowed'}`}
+                          >
+                            <Plus className="w-3 h-3" />
+                          </button>
+                        </div>
+                      </td>
+                      <td className="py-1">
+                        <div className="flex items-center justify-center gap-1">
+                          <button
+                            onClick={() => adjustPlayerStat('home', p.id, 'yellowCards', -1)}
+                            disabled={!gameState.isRunning}
+                            className={`w-6 h-6 bg-red-100 text-red-600 rounded flex items-center justify-center dark:bg-red-900 dark:text-red-400 ${gameState.isRunning ? 'hover:bg-red-200 dark:hover:bg-red-800' : 'opacity-50 cursor-not-allowed'}`}
+                          >
+                            <Minus className="w-3 h-3" />
+                          </button>
+                          <span>{p.yellowCards}</span>
+                          <button
+                            onClick={() => adjustPlayerStat('home', p.id, 'yellowCards', 1)}
+                            disabled={!gameState.isRunning}
+                            className={`w-6 h-6 bg-green-100 text-green-600 rounded flex items-center justify-center dark:bg-green-900 dark:text-green-400 ${gameState.isRunning ? 'hover:bg-green-200 dark:hover:bg-green-800' : 'opacity-50 cursor-not-allowed'}`}
+                          >
+                            <Plus className="w-3 h-3" />
+                          </button>
+                        </div>
+                      </td>
+                      <td className="py-1">
+                        <div className="flex items-center justify-center gap-1">
+                          <button
+                            onClick={() => adjustPlayerStat('home', p.id, 'redCards', -1)}
+                            disabled={!gameState.isRunning}
+                            className={`w-6 h-6 bg-red-100 text-red-600 rounded flex items-center justify-center dark:bg-red-900 dark:text-red-400 ${gameState.isRunning ? 'hover:bg-red-200 dark:hover:bg-red-800' : 'opacity-50 cursor-not-allowed'}`}
+                          >
+                            <Minus className="w-3 h-3" />
+                          </button>
+                          <span>{p.redCards}</span>
+                          <button
+                            onClick={() => adjustPlayerStat('home', p.id, 'redCards', 1)}
+                            disabled={!gameState.isRunning}
+                            className={`w-6 h-6 bg-green-100 text-green-600 rounded flex items-center justify-center dark:bg-green-900 dark:text-green-400 ${gameState.isRunning ? 'hover:bg-green-200 dark:hover:bg-green-800' : 'opacity-50 cursor-not-allowed'}`}
+                          >
+                            <Plus className="w-3 h-3" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
+              <h4 className="text-center font-medium text-red-600 dark:text-red-400 mb-4">{awayTeam.name}</h4>
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="text-gray-600 dark:text-gray-400">
+                    <th className="text-left">Player</th>
+                    <th className="text-center">G</th>
+                    <th className="text-center">YC</th>
+                    <th className="text-center">RC</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {awayTeam.players.map(p => (
+                    <tr key={p.id} className="text-gray-700 dark:text-gray-300">
+                      <td className="py-1">{p.name}</td>
+                      <td className="py-1">
+                        <div className="flex items-center justify-center gap-1">
+                          <button
+                            onClick={() => adjustPlayerStat('away', p.id, 'goals', -1)}
+                            disabled={!gameState.isRunning}
+                            className={`w-6 h-6 bg-red-100 text-red-600 rounded flex items-center justify-center dark:bg-red-900 dark:text-red-400 ${gameState.isRunning ? 'hover:bg-red-200 dark:hover:bg-red-800' : 'opacity-50 cursor-not-allowed'}`}
+                          >
+                            <Minus className="w-3 h-3" />
+                          </button>
+                          <span>{p.goals}</span>
+                          <button
+                            onClick={() => adjustPlayerStat('away', p.id, 'goals', 1)}
+                            disabled={!gameState.isRunning}
+                            className={`w-6 h-6 bg-green-100 text-green-600 rounded flex items-center justify-center dark:bg-green-900 dark:text-green-400 ${gameState.isRunning ? 'hover:bg-green-200 dark:hover:bg-green-800' : 'opacity-50 cursor-not-allowed'}`}
+                          >
+                            <Plus className="w-3 h-3" />
+                          </button>
+                        </div>
+                      </td>
+                      <td className="py-1">
+                        <div className="flex items-center justify-center gap-1">
+                          <button
+                            onClick={() => adjustPlayerStat('away', p.id, 'yellowCards', -1)}
+                            disabled={!gameState.isRunning}
+                            className={`w-6 h-6 bg-red-100 text-red-600 rounded flex items-center justify-center dark:bg-red-900 dark:text-red-400 ${gameState.isRunning ? 'hover:bg-red-200 dark:hover:bg-red-800' : 'opacity-50 cursor-not-allowed'}`}
+                          >
+                            <Minus className="w-3 h-3" />
+                          </button>
+                          <span>{p.yellowCards}</span>
+                          <button
+                            onClick={() => adjustPlayerStat('away', p.id, 'yellowCards', 1)}
+                            disabled={!gameState.isRunning}
+                            className={`w-6 h-6 bg-green-100 text-green-600 rounded flex items-center justify-center dark:bg-green-900 dark:text-green-400 ${gameState.isRunning ? 'hover:bg-green-200 dark:hover:bg-green-800' : 'opacity-50 cursor-not-allowed'}`}
+                          >
+                            <Plus className="w-3 h-3" />
+                          </button>
+                        </div>
+                      </td>
+                      <td className="py-1">
+                        <div className="flex items-center justify-center gap-1">
+                          <button
+                            onClick={() => adjustPlayerStat('away', p.id, 'redCards', -1)}
+                            disabled={!gameState.isRunning}
+                            className={`w-6 h-6 bg-red-100 text-red-600 rounded flex items-center justify-center dark:bg-red-900 dark:text-red-400 ${gameState.isRunning ? 'hover:bg-red-200 dark:hover:bg-red-800' : 'opacity-50 cursor-not-allowed'}`}
+                          >
+                            <Minus className="w-3 h-3" />
+                          </button>
+                          <span>{p.redCards}</span>
+                          <button
+                            onClick={() => adjustPlayerStat('away', p.id, 'redCards', 1)}
+                            disabled={!gameState.isRunning}
+                            className={`w-6 h-6 bg-green-100 text-green-600 rounded flex items-center justify-center dark:bg-green-900 dark:text-green-400 ${gameState.isRunning ? 'hover:bg-green-200 dark:hover:bg-green-800' : 'opacity-50 cursor-not-allowed'}`}
+                          >
+                            <Plus className="w-3 h-3" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>
 
         {/* Quick Stats Summary */}
