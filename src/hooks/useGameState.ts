@@ -9,10 +9,17 @@ const calculatePossession = (prev: GameState, now: number) => {
     [prev.ballPossession]: prev.totalPossessionTime[prev.ballPossession] + timeDiff,
   } as const;
   const totalTime = updatedPossessionTime.home + updatedPossessionTime.away;
-  const homePossession =
-    totalTime > 0 ? Math.round((updatedPossessionTime.home / totalTime) * 100) : 50;
-  const awayPossession = 100 - homePossession;
-  return { updatedPossessionTime, homePossession, awayPossession };
+  if (totalTime < 1000) {
+    return {
+      updatedPossessionTime,
+      homePossession: 50,
+      awayPossession: 50,
+    };
+  }
+
+  const home = parseFloat(((updatedPossessionTime.home / totalTime) * 100).toFixed(1));
+  const away = parseFloat((100 - home).toFixed(1));
+  return { updatedPossessionTime, homePossession: home, awayPossession: away };
 };
 
 const adjustTeamStatsForType = (team: Team, type: GameState['gamePreset']['type']): Team => {
