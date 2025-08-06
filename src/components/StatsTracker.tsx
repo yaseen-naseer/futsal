@@ -8,19 +8,22 @@ import {
   Flag,
   AlertTriangle,
   Square,
-  Timer
+  Timer,
+  Goal
 } from 'lucide-react';
 import { formatTime } from '../utils/format';
 
 interface StatsTrackerProps {
   gameState: GameState;
   updateTeamStats: (team: 'home' | 'away', stat: keyof Team['stats'], value: number) => void;
+  updateTeamScore: (team: 'home' | 'away', value: number) => void;
   switchBallPossession: (team: 'home' | 'away') => void;
 }
 
 export const StatsTracker: React.FC<StatsTrackerProps> = ({
   gameState,
   updateTeamStats,
+  updateTeamScore,
   switchBallPossession,
 }) => {
   const { homeTeam, awayTeam, ballPossession } = gameState;
@@ -89,8 +92,16 @@ export const StatsTracker: React.FC<StatsTrackerProps> = ({
   ];
 
   const adjustStat = (team: 'home' | 'away', stat: keyof Team['stats'], delta: number) => {
-    const currentValue = gameState[team === 'home' ? 'homeTeam' : 'awayTeam'].stats[stat];
+    if (!gameState.isRunning) return;
+    const currentValue =
+      gameState[team === 'home' ? 'homeTeam' : 'awayTeam'].stats[stat];
     updateTeamStats(team, stat, currentValue + delta);
+  };
+
+  const adjustScore = (team: 'home' | 'away', delta: number) => {
+    if (!gameState.isRunning) return;
+    const currentScore = gameState[team === 'home' ? 'homeTeam' : 'awayTeam'].score;
+    updateTeamScore(team, Math.max(0, currentScore + delta));
   };
 
   const StatControl = ({ 
@@ -119,7 +130,12 @@ export const StatsTracker: React.FC<StatsTrackerProps> = ({
           <div className="flex items-center justify-center gap-2">
             <button
               onClick={() => adjustStat('home', stat, -1)}
-              className="w-8 h-8 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 flex items-center justify-center transition-colors dark:bg-red-900 dark:text-red-400 dark:hover:bg-red-800"
+              disabled={!gameState.isRunning}
+              className={`w-8 h-8 bg-red-100 text-red-600 rounded-lg flex items-center justify-center transition-colors dark:bg-red-900 dark:text-red-400 ${
+                gameState.isRunning
+                  ? 'hover:bg-red-200 dark:hover:bg-red-800'
+                  : 'opacity-50 cursor-not-allowed'
+              }`}
             >
               <Minus className="w-4 h-4" />
             </button>
@@ -128,7 +144,12 @@ export const StatsTracker: React.FC<StatsTrackerProps> = ({
             </span>
             <button
               onClick={() => adjustStat('home', stat, 1)}
-              className="w-8 h-8 bg-green-100 text-green-600 rounded-lg hover:bg-green-200 flex items-center justify-center transition-colors dark:bg-green-900 dark:text-green-400 dark:hover:bg-green-800"
+              disabled={!gameState.isRunning}
+              className={`w-8 h-8 bg-green-100 text-green-600 rounded-lg flex items-center justify-center transition-colors dark:bg-green-900 dark:text-green-400 ${
+                gameState.isRunning
+                  ? 'hover:bg-green-200 dark:hover:bg-green-800'
+                  : 'opacity-50 cursor-not-allowed'
+              }`}
             >
               <Plus className="w-4 h-4" />
             </button>
@@ -141,7 +162,12 @@ export const StatsTracker: React.FC<StatsTrackerProps> = ({
           <div className="flex items-center justify-center gap-2">
             <button
               onClick={() => adjustStat('away', stat, -1)}
-              className="w-8 h-8 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 flex items-center justify-center transition-colors dark:bg-red-900 dark:text-red-400 dark:hover:bg-red-800"
+              disabled={!gameState.isRunning}
+              className={`w-8 h-8 bg-red-100 text-red-600 rounded-lg flex items-center justify-center transition-colors dark:bg-red-900 dark:text-red-400 ${
+                gameState.isRunning
+                  ? 'hover:bg-red-200 dark:hover:bg-red-800'
+                  : 'opacity-50 cursor-not-allowed'
+              }`}
             >
               <Minus className="w-4 h-4" />
             </button>
@@ -150,7 +176,12 @@ export const StatsTracker: React.FC<StatsTrackerProps> = ({
             </span>
             <button
               onClick={() => adjustStat('away', stat, 1)}
-              className="w-8 h-8 bg-green-100 text-green-600 rounded-lg hover:bg-green-200 flex items-center justify-center transition-colors dark:bg-green-900 dark:text-green-400 dark:hover:bg-green-800"
+              disabled={!gameState.isRunning}
+              className={`w-8 h-8 bg-green-100 text-green-600 rounded-lg flex items-center justify-center transition-colors dark:bg-green-900 dark:text-green-400 ${
+                gameState.isRunning
+                  ? 'hover:bg-green-200 dark:hover:bg-green-800'
+                  : 'opacity-50 cursor-not-allowed'
+              }`}
             >
               <Plus className="w-4 h-4" />
             </button>
@@ -249,6 +280,79 @@ export const StatsTracker: React.FC<StatsTrackerProps> = ({
 
         {/* Statistics Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
+            <div className="flex items-center gap-2 mb-3">
+              <Goal className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+              <h4 className="font-medium text-gray-900 dark:text-gray-100">Goals</h4>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              {/* Home Team */}
+              <div className="text-center">
+                <div className="text-sm text-blue-600 font-medium mb-2 dark:text-blue-400">{homeTeam.name}</div>
+                <div className="flex items-center justify-center gap-2">
+                  <button
+                    onClick={() => adjustScore('home', -1)}
+                    disabled={!gameState.isRunning}
+                    className={`w-8 h-8 bg-red-100 text-red-600 rounded-lg flex items-center justify-center transition-colors dark:bg-red-900 dark:text-red-400 ${
+                      gameState.isRunning
+                        ? 'hover:bg-red-200 dark:hover:bg-red-800'
+                        : 'opacity-50 cursor-not-allowed'
+                    }`}
+                  >
+                    <Minus className="w-4 h-4" />
+                  </button>
+                  <span className="text-xl font-bold text-blue-600 min-w-[2rem] dark:text-blue-400">
+                    {homeTeam.score}
+                  </span>
+                  <button
+                    onClick={() => adjustScore('home', 1)}
+                    disabled={!gameState.isRunning}
+                    className={`w-8 h-8 bg-green-100 text-green-600 rounded-lg flex items-center justify-center transition-colors dark:bg-green-900 dark:text-green-400 ${
+                      gameState.isRunning
+                        ? 'hover:bg-green-200 dark:hover:bg-green-800'
+                        : 'opacity-50 cursor-not-allowed'
+                    }`}
+                  >
+                    <Plus className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+
+              {/* Away Team */}
+              <div className="text-center">
+                <div className="text-sm text-red-600 font-medium mb-2 dark:text-red-400">{awayTeam.name}</div>
+                <div className="flex items-center justify-center gap-2">
+                  <button
+                    onClick={() => adjustScore('away', -1)}
+                    disabled={!gameState.isRunning}
+                    className={`w-8 h-8 bg-red-100 text-red-600 rounded-lg flex items-center justify-center transition-colors dark:bg-red-900 dark:text-red-400 ${
+                      gameState.isRunning
+                        ? 'hover:bg-red-200 dark:hover:bg-red-800'
+                        : 'opacity-50 cursor-not-allowed'
+                    }`}
+                  >
+                    <Minus className="w-4 h-4" />
+                  </button>
+                  <span className="text-xl font-bold text-red-600 min-w-[2rem] dark:text-red-400">
+                    {awayTeam.score}
+                  </span>
+                  <button
+                    onClick={() => adjustScore('away', 1)}
+                    disabled={!gameState.isRunning}
+                    className={`w-8 h-8 bg-green-100 text-green-600 rounded-lg flex items-center justify-center transition-colors dark:bg-green-900 dark:text-green-400 ${
+                      gameState.isRunning
+                        ? 'hover:bg-green-200 dark:hover:bg-green-800'
+                        : 'opacity-50 cursor-not-allowed'
+                    }`}
+                  >
+                    <Plus className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <StatControl
             label="Shots Off Target"
             icon={Target}
@@ -305,13 +409,13 @@ export const StatsTracker: React.FC<StatsTrackerProps> = ({
           <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Match Summary</h3>
 
           <div className="grid grid-cols-3 gap-4 text-center">
-            <div className="font-semibold text-gray-600 dark:text-gray-400">Stat</div>
             <div className="font-semibold text-blue-600 dark:text-blue-400">{homeTeam.name}</div>
+            <div className="font-semibold text-gray-600 dark:text-gray-400">Stat</div>
             <div className="font-semibold text-red-600 dark:text-red-400">{awayTeam.name}</div>
             {summaryStats.map((row) => (
               <React.Fragment key={row.label}>
-                <div className="text-gray-600 dark:text-gray-400">{row.label}</div>
                 <div className="font-medium text-gray-900 dark:text-gray-100">{row.home}</div>
+                <div className="text-gray-600 dark:text-gray-400">{row.label}</div>
                 <div className="font-medium text-gray-900 dark:text-gray-100">{row.away}</div>
               </React.Fragment>
             ))}
