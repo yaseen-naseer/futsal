@@ -4,7 +4,7 @@ export interface Team {
   score: number;
   fouls: number;
   stats: {
-    shots: number;
+    shotsOffTarget: number;
     shotsOnTarget: number;
     corners: number;
     offsides?: number;
