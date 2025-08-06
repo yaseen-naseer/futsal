@@ -47,24 +47,24 @@ export const StatsTracker: React.FC<StatsTrackerProps> = ({
         <Icon className="w-5 h-5 text-gray-600 dark:text-gray-400" />
         <h4 className="font-medium text-gray-900 dark:text-gray-100">{label}</h4>
       </div>
-      
+
       <div className="grid grid-cols-2 gap-4">
         {/* Home Team */}
         <div className="text-center">
-          <div className="text-sm text-blue-600 font-medium mb-2">{homeTeam.name}</div>
+          <div className="text-sm text-blue-600 font-medium mb-2 dark:text-blue-400">{homeTeam.name}</div>
           <div className="flex items-center justify-center gap-2">
             <button
               onClick={() => adjustStat('home', stat, -1)}
-              className="w-8 h-8 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 flex items-center justify-center transition-colors"
+              className="w-8 h-8 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 flex items-center justify-center transition-colors dark:bg-red-900 dark:text-red-400 dark:hover:bg-red-800"
             >
               <Minus className="w-4 h-4" />
             </button>
-            <span className="text-xl font-bold text-blue-600 min-w-[2rem]">
+            <span className="text-xl font-bold text-blue-600 min-w-[2rem] dark:text-blue-400">
               {stat === 'possession' ? `${homeValue}%` : homeValue}
             </span>
             <button
               onClick={() => adjustStat('home', stat, 1)}
-              className="w-8 h-8 bg-green-100 text-green-600 rounded-lg hover:bg-green-200 flex items-center justify-center transition-colors"
+              className="w-8 h-8 bg-green-100 text-green-600 rounded-lg hover:bg-green-200 flex items-center justify-center transition-colors dark:bg-green-900 dark:text-green-400 dark:hover:bg-green-800"
             >
               <Plus className="w-4 h-4" />
             </button>
@@ -73,20 +73,20 @@ export const StatsTracker: React.FC<StatsTrackerProps> = ({
 
         {/* Away Team */}
         <div className="text-center">
-          <div className="text-sm text-red-600 font-medium mb-2">{awayTeam.name}</div>
+          <div className="text-sm text-red-600 font-medium mb-2 dark:text-red-400">{awayTeam.name}</div>
           <div className="flex items-center justify-center gap-2">
             <button
               onClick={() => adjustStat('away', stat, -1)}
-              className="w-8 h-8 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 flex items-center justify-center transition-colors"
+              className="w-8 h-8 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 flex items-center justify-center transition-colors dark:bg-red-900 dark:text-red-400 dark:hover:bg-red-800"
             >
               <Minus className="w-4 h-4" />
             </button>
-            <span className="text-xl font-bold text-red-600 min-w-[2rem]">
+            <span className="text-xl font-bold text-red-600 min-w-[2rem] dark:text-red-400">
               {stat === 'possession' ? `${awayValue}%` : awayValue}
             </span>
             <button
               onClick={() => adjustStat('away', stat, 1)}
-              className="w-8 h-8 bg-green-100 text-green-600 rounded-lg hover:bg-green-200 flex items-center justify-center transition-colors"
+              className="w-8 h-8 bg-green-100 text-green-600 rounded-lg hover:bg-green-200 flex items-center justify-center transition-colors dark:bg-green-900 dark:text-green-400 dark:hover:bg-green-800"
             >
               <Plus className="w-4 h-4" />
             </button>
@@ -123,7 +123,7 @@ export const StatsTracker: React.FC<StatsTrackerProps> = ({
               onClick={() => switchBallPossession('home')}
               className={`p-4 rounded-lg border-2 transition-all ${
                 ballPossession === 'home'
-                  ? 'border-blue-500 bg-blue-50 text-blue-700'
+                  ? 'border-blue-500 bg-blue-50 text-blue-700 dark:bg-blue-900 dark:text-blue-300'
                   : 'border-gray-200 bg-white text-gray-600 hover:border-blue-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:border-blue-500'
               }`}
             >
@@ -138,8 +138,8 @@ export const StatsTracker: React.FC<StatsTrackerProps> = ({
               <div className="text-sm text-gray-600 dark:text-gray-400 mb-2">Current Possession</div>
               <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full font-semibold ${
                 ballPossession === 'home'
-                  ? 'bg-blue-100 text-blue-700'
-                  : 'bg-red-100 text-red-700'
+                  ? 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300'
+                  : 'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300'
               }`}>
                 <div className={`w-2 h-2 rounded-full animate-pulse ${
                   ballPossession === 'home' ? 'bg-blue-500' : 'bg-red-500'
@@ -155,7 +155,7 @@ export const StatsTracker: React.FC<StatsTrackerProps> = ({
               onClick={() => switchBallPossession('away')}
               className={`p-4 rounded-lg border-2 transition-all ${
                 ballPossession === 'away'
-                  ? 'border-red-500 bg-red-50 text-red-700'
+                  ? 'border-red-500 bg-red-50 text-red-700 dark:bg-red-900 dark:text-red-300'
                   : 'border-gray-200 bg-white text-gray-600 hover:border-red-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:border-red-500'
               }`}
             >
