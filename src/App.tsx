@@ -8,6 +8,7 @@ import { StatsTracker } from './components/StatsTracker';
 import { PossessionTracker } from './components/PossessionTracker';
 import { ControlPanelButton } from './components/ControlPanelButton';
 import { ThemeToggle } from './components/ThemeToggle';
+import { RemoteControl } from './components/RemoteControl';
 
 type ViewMode = 'scoreboard' | 'dashboard' | 'overlay' | 'stats' | 'possession';
 
@@ -19,6 +20,10 @@ function App() {
   const handleViewChange = (view: ViewMode) => {
     setViewMode(view);
   };
+
+  if (window.location.pathname === '/remote') {
+    return <RemoteControl />;
+  }
 
   return (
     <div className="App">
