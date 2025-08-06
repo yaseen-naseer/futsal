@@ -9,14 +9,13 @@ A modern React + TypeScript scoreboard for tracking futsal matches with a polish
 - Route-based views for dashboard, scoreboard, statistics, and overlays
 - Progressive Web App (PWA) support so the app can be installed on devices
 - Detailed stats tracker with shot accuracy, cards, and corner tracking
-- Dedicated ball possession operator interface with keyboard shortcuts (A/1 for home, D/2 for away)
+- Customizable keyboard shortcuts for switching ball possession
 - External timer control options: keyboard shortcuts, hardware integration, and a mobile remote at `/#/remote`
 
 ## Screenshots
 
 ![Dashboard view](docs/ui-dashboard.svg)
 ![Stats tracker](docs/ui-stats.svg)
-![Possession interface](docs/ui-possession.svg)
 ![Dark mode](docs/ui-dark-mode.svg)
 
 ## Setup

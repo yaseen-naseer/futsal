@@ -1,6 +1,7 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { GameState, Team, Player } from '../types';
 import { GAME_PRESETS, shouldAutoAdvance } from '../utils/gamePresets';
+import { useSettings } from './useSettings';
 
 const calculatePossession = (prev: GameState, now: number) => {
   const timeDiff = now - prev.possessionStartTime;
@@ -142,6 +143,8 @@ export const useGameState = () => {
   const keyboardListenerRef = useRef<((event: KeyboardEvent) => void) | null>(null);
   const skipStorageRef = useRef(false);
   const channelRef = useRef<BroadcastChannel | null>(null);
+
+  const { settings } = useSettings();
 
   const setGameState = useCallback(
     (updater: GameState | ((prev: GameState) => GameState)) => {
@@ -597,6 +600,17 @@ export const useGameState = () => {
         return;
       }
 
+      if (event.code === settings.homeShortcut) {
+        event.preventDefault();
+        switchBallPossession('home');
+        return;
+      }
+      if (event.code === settings.awayShortcut) {
+        event.preventDefault();
+        switchBallPossession('away');
+        return;
+      }
+
       switch (event.code) {
         case 'Space':
           event.preventDefault();
@@ -612,16 +626,6 @@ export const useGameState = () => {
           event.preventDefault();
           setGameState(prev => ({ ...prev, isRunning: false }));
           break;
-        case 'KeyA':
-        case 'Digit1':
-          event.preventDefault();
-          switchBallPossession('home');
-          break;
-        case 'KeyD':
-        case 'Digit2':
-          event.preventDefault();
-          switchBallPossession('away');
-          break;
       }
     };
 
@@ -633,7 +637,7 @@ export const useGameState = () => {
         document.removeEventListener('keydown', keyboardListenerRef.current);
       }
     };
-  }, [toggleTimer, resetTimer, switchBallPossession, setGameState]);
+  }, [toggleTimer, resetTimer, switchBallPossession, setGameState, settings.homeShortcut, settings.awayShortcut]);
 
   const handleRemoteMessage = useCallback(
     (data: unknown) => {
