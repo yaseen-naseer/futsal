@@ -56,6 +56,22 @@ describe('useGameState history', () => {
     result.current.undo();
     expect(result.current.gameState.homeTeam.score).toBe(10);
   });
+
+  it('clears history after a game reset', () => {
+    const { result } = renderHook(() => useGameState());
+
+    result.current.updateTeam('home', 'score', 1);
+    expect(result.current.gameState.homeTeam.score).toBe(1);
+
+    result.current.resetGame();
+    expect(result.current.gameState.homeTeam.score).toBe(0);
+
+    result.current.undo();
+    expect(result.current.gameState.homeTeam.score).toBe(0);
+
+    result.current.redo();
+    expect(result.current.gameState.homeTeam.score).toBe(0);
+  });
 });
 
 describe('useGameState initialization', () => {
