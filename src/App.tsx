@@ -41,6 +41,8 @@ function App() {
             updateTeamStats={gameState.updateTeamStats}
             updateTeamScore={(team, value) => gameState.updateTeam(team, 'score', value)}
             switchBallPossession={gameState.switchBallPossession}
+            undo={gameState.undo}
+            redo={gameState.redo}
           />
           {/* Floating control button */}
           <ControlPanelButton onClick={() => setViewMode('dashboard')} />
@@ -71,6 +73,8 @@ function App() {
           updatePeriod={gameState.updatePeriod}
           changeGamePreset={gameState.changeGamePreset}
           resetGame={gameState.resetGame}
+          undo={gameState.undo}
+          redo={gameState.redo}
           onViewChange={handleViewChange}
         />
       )}
