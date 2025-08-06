@@ -1,4 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  Navigate,
+  useNavigate,
+} from 'react-router-dom';
 import { useGameState } from './hooks/useGameState';
 import { useTheme } from './hooks/useTheme';
 import { Scoreboard } from './components/Scoreboard';
@@ -13,85 +20,103 @@ import { RemoteControl } from './components/RemoteControl';
 type ViewMode = 'scoreboard' | 'dashboard' | 'overlay' | 'stats' | 'possession';
 
 function App() {
-  const [route, setRoute] = useState(
-    typeof window !== 'undefined' ? window.location.hash : ''
-  );
-  const [viewMode, setViewMode] = useState<ViewMode>('dashboard');
   const gameState = useGameState();
   const { theme, toggleTheme } = useTheme();
 
-  useEffect(() => {
-    const handleHashChange = () => setRoute(window.location.hash);
-    window.addEventListener('hashchange', handleHashChange);
-    return () => window.removeEventListener('hashchange', handleHashChange);
-  }, []);
+  const MainLayout: React.FC = () => {
+    const navigate = useNavigate();
 
-  const handleViewChange = (view: ViewMode) => {
-    setViewMode(view);
-  };
+    const handleViewChange = (view: ViewMode) => {
+      navigate(`/${view}`);
+    };
 
-  if (route === '#/remote') {
-    return <RemoteControl />;
-  }
+    const ScoreboardView: React.FC = () => (
+      <div className="relative">
+        <Scoreboard gameState={gameState.gameState} />
+        <ControlPanelButton onClick={() => navigate('/dashboard')} />
+      </div>
+    );
 
-  return (
-    <div className="App">
-      <ThemeToggle theme={theme} onToggle={toggleTheme} />
-      {viewMode === 'overlay' ? (
-        <div className="relative min-h-screen bg-transparent">
-          <Overlay gameState={gameState.gameState} />
-          {/* Floating control button */}
-          <ControlPanelButton onClick={() => setViewMode('dashboard')} />
-        </div>
-      ) : viewMode === 'stats' ? (
-        <div className="relative">
-          <StatsTracker
-            gameState={gameState.gameState}
-            updateTeamStats={gameState.updateTeamStats}
-            updateTeamScore={(team, value) => gameState.updateTeam(team, 'score', value)}
-            updateTeamFouls={(team, value) => gameState.updateTeam(team, 'fouls', value)}
-            updatePlayerStats={gameState.updatePlayerStats}
-            switchBallPossession={gameState.switchBallPossession}
-            undo={gameState.undo}
-            redo={gameState.redo}
-          />
-          {/* Floating control button */}
-          <ControlPanelButton onClick={() => setViewMode('dashboard')} />
-        </div>
-      ) : viewMode === 'scoreboard' ? (
-        <div className="relative">
-          <Scoreboard gameState={gameState.gameState} />
-          {/* Floating control button */}
-          <ControlPanelButton onClick={() => setViewMode('dashboard')} />
-        </div>
-      ) : viewMode === 'possession' ? (
-        <div className="relative">
-          <PossessionTracker
-            gameState={gameState.gameState}
-            switchBallPossession={gameState.switchBallPossession}
-          />
-          {/* Floating control button */}
-          <ControlPanelButton onClick={() => setViewMode('dashboard')} />
-        </div>
-      ) : (
-        <Dashboard
+    const OverlayView: React.FC = () => (
+      <div className="relative min-h-screen bg-transparent">
+        <Overlay gameState={gameState.gameState} />
+        <ControlPanelButton onClick={() => navigate('/dashboard')} />
+      </div>
+    );
+
+    const StatsView: React.FC = () => (
+      <div className="relative">
+        <StatsTracker
           gameState={gameState.gameState}
-          updateTeam={gameState.updateTeam}
-          updateTournamentLogo={gameState.updateTournamentLogo}
-          updateTime={gameState.updateTime}
-          toggleTimer={gameState.toggleTimer}
-          resetTimer={gameState.resetTimer}
-          updatePeriod={gameState.updatePeriod}
-          changeGamePreset={gameState.changeGamePreset}
-          resetGame={gameState.resetGame}
+          updateTeamStats={gameState.updateTeamStats}
+          updateTeamScore={(team, value) =>
+            gameState.updateTeam(team, 'score', value)
+          }
+          updateTeamFouls={(team, value) =>
+            gameState.updateTeam(team, 'fouls', value)
+          }
+          updatePlayerStats={gameState.updatePlayerStats}
+          switchBallPossession={gameState.switchBallPossession}
           undo={gameState.undo}
           redo={gameState.redo}
-          addPlayer={gameState.addPlayer}
-          removePlayer={gameState.removePlayer}
-          onViewChange={handleViewChange}
         />
-      )}
-    </div>
+        <ControlPanelButton onClick={() => navigate('/dashboard')} />
+      </div>
+    );
+
+    const PossessionView: React.FC = () => (
+      <div className="relative">
+        <PossessionTracker
+          gameState={gameState.gameState}
+          switchBallPossession={gameState.switchBallPossession}
+        />
+        <ControlPanelButton onClick={() => navigate('/dashboard')} />
+      </div>
+    );
+
+    return (
+      <div className="App">
+        <ThemeToggle theme={theme} onToggle={toggleTheme} />
+        <Routes>
+          <Route
+            path="/dashboard"
+            element={
+              <Dashboard
+                gameState={gameState.gameState}
+                updateTeam={gameState.updateTeam}
+                updateTournamentLogo={gameState.updateTournamentLogo}
+                updateTime={gameState.updateTime}
+                toggleTimer={gameState.toggleTimer}
+                resetTimer={gameState.resetTimer}
+                updatePeriod={gameState.updatePeriod}
+                changeGamePreset={gameState.changeGamePreset}
+                resetGame={gameState.resetGame}
+                undo={gameState.undo}
+                redo={gameState.redo}
+                addPlayer={gameState.addPlayer}
+                removePlayer={gameState.removePlayer}
+                onViewChange={handleViewChange}
+              />
+            }
+          />
+          <Route path="/scoreboard" element={<ScoreboardView />} />
+          <Route path="/overlay" element={<OverlayView />} />
+          <Route path="/stats" element={<StatsView />} />
+          <Route path="/possession" element={<PossessionView />} />
+          <Route path="/" element={<Navigate to="/dashboard" replace />} />
+          <Route path="*" element={<Navigate to="/dashboard" replace />} />
+        </Routes>
+      </div>
+    );
+  };
+
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/remote" element={<RemoteControl />} />
+        <Route path="/*" element={<MainLayout />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 
