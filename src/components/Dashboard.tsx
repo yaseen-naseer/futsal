@@ -113,18 +113,6 @@ export const Dashboard: React.FC<DashboardProps> = ({
     setTournamentLogoError('');
   };
 
-  const adjustScore = (team: 'home' | 'away', delta: number) => {
-    const currentScore = gameState[team === 'home' ? 'homeTeam' : 'awayTeam'].score;
-    const newScore = Math.max(0, currentScore + delta);
-    updateTeam(team, 'score', newScore);
-  };
-
-  const adjustFouls = (team: 'home' | 'away', delta: number) => {
-    const currentFouls = gameState[team === 'home' ? 'homeTeam' : 'awayTeam'].fouls;
-    const newFouls = Math.max(0, currentFouls + delta);
-    updateTeam(team, 'fouls', newFouls);
-  };
-
   useEffect(() => {
     const homeUrl = homeLogoUrlRef.current;
     const awayUrl = awayLogoUrlRef.current;
@@ -376,47 +364,6 @@ export const Dashboard: React.FC<DashboardProps> = ({
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Score</label>
-                  <div className="flex items-center gap-3">
-                    <button
-                      onClick={() => adjustScore('home', -1)}
-                      className="w-10 h-10 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 flex items-center justify-center transition-colors dark:bg-red-900 dark:text-red-200 dark:hover:bg-red-800"
-                    >
-                      <Minus className="w-4 h-4" />
-                    </button>
-                    <span className="text-3xl font-bold text-blue-600 dark:text-blue-300 min-w-[4rem] text-center">
-                      {gameState.homeTeam.score}
-                    </span>
-                    <button
-                      onClick={() => adjustScore('home', 1)}
-                      className="w-10 h-10 bg-green-100 text-green-600 rounded-lg hover:bg-green-200 flex items-center justify-center transition-colors dark:bg-green-900 dark:text-green-200 dark:hover:bg-green-800"
-                    >
-                      <Plus className="w-4 h-4" />
-                    </button>
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Fouls</label>
-                  <div className="flex items-center gap-3">
-                    <button
-                      onClick={() => adjustFouls('home', -1)}
-                      className="w-10 h-10 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 flex items-center justify-center transition-colors dark:bg-red-900 dark:text-red-200 dark:hover:bg-red-800"
-                    >
-                      <Minus className="w-4 h-4" />
-                    </button>
-                    <span className="text-2xl font-bold text-red-600 dark:text-red-300 min-w-[3rem] text-center">
-                      {gameState.homeTeam.fouls}
-                    </span>
-                    <button
-                      onClick={() => adjustFouls('home', 1)}
-                      className="w-10 h-10 bg-green-100 text-green-600 rounded-lg hover:bg-green-200 flex items-center justify-center transition-colors dark:bg-green-900 dark:text-green-200 dark:hover:bg-green-800"
-                    >
-                      <Plus className="w-4 h-4" />
-                    </button>
-                  </div>
-                </div>
-                <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Players</label>
                   <div className="flex gap-2 mb-2">
                     <input
@@ -501,47 +448,6 @@ export const Dashboard: React.FC<DashboardProps> = ({
                   )}
                 </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Score</label>
-                  <div className="flex items-center gap-3">
-                    <button
-                      onClick={() => adjustScore('away', -1)}
-                      className="w-10 h-10 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 flex items-center justify-center transition-colors dark:bg-red-900 dark:text-red-200 dark:hover:bg-red-800"
-                    >
-                      <Minus className="w-4 h-4" />
-                    </button>
-                    <span className="text-3xl font-bold text-red-600 dark:text-red-300 min-w-[4rem] text-center">
-                      {gameState.awayTeam.score}
-                    </span>
-                    <button
-                      onClick={() => adjustScore('away', 1)}
-                      className="w-10 h-10 bg-green-100 text-green-600 rounded-lg hover:bg-green-200 flex items-center justify-center transition-colors dark:bg-green-900 dark:text-green-200 dark:hover:bg-green-800"
-                    >
-                      <Plus className="w-4 h-4" />
-                    </button>
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Fouls</label>
-                  <div className="flex items-center gap-3">
-                    <button
-                      onClick={() => adjustFouls('away', -1)}
-                      className="w-10 h-10 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 flex items-center justify-center transition-colors dark:bg-red-900 dark:text-red-200 dark:hover:bg-red-800"
-                    >
-                      <Minus className="w-4 h-4" />
-                    </button>
-                    <span className="text-2xl font-bold text-red-600 dark:text-red-300 min-w-[3rem] text-center">
-                      {gameState.awayTeam.fouls}
-                    </span>
-                    <button
-                      onClick={() => adjustFouls('away', 1)}
-                      className="w-10 h-10 bg-green-100 text-green-600 rounded-lg hover:bg-green-200 flex items-center justify-center transition-colors dark:bg-green-900 dark:text-green-200 dark:hover:bg-green-800"
-                    >
-                      <Plus className="w-4 h-4" />
-                    </button>
-                  </div>
-                </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Players</label>
                   <div className="flex gap-2 mb-2">
