@@ -21,6 +21,7 @@ interface DashboardProps {
   gameState: GameState;
   updateTeam: (team: 'home' | 'away', field: 'name' | 'score' | 'fouls' | 'logo', value: string | number) => void;
   updateTournamentLogo: (logo: string) => void;
+  updateTournamentName: (name: string) => void;
   updateTime: (minutes: number, seconds: number) => void;
   toggleTimer: () => void;
   resetTimer: () => void;
@@ -38,6 +39,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
   gameState,
   updateTeam,
   updateTournamentLogo,
+  updateTournamentName,
   updateTime,
   toggleTimer,
   resetTimer,
@@ -267,47 +269,6 @@ export const Dashboard: React.FC<DashboardProps> = ({
         {/* Teams Tab */}
         {activeTab === 'teams' && (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {/* Tournament Logo Section */}
-            <div className="lg:col-span-2 bg-purple-50 dark:bg-purple-900 rounded-xl border border-purple-200 dark:border-purple-700 p-6 mb-6">
-              <h3 className="text-lg font-semibold text-purple-900 dark:text-purple-100 mb-4">Tournament Logo</h3>
-              <div className="flex items-center gap-6">
-                <div className="w-20 h-20 bg-gray-100 dark:bg-gray-700 rounded-lg overflow-hidden flex items-center justify-center border-2 border-gray-300 dark:border-gray-600">
-                  {gameState.tournamentLogo ? (
-                    <img src={gameState.tournamentLogo} alt="Tournament" className="w-full h-full object-contain" />
-                  ) : (
-                    <span className="text-gray-400 text-xs text-center">No Logo</span>
-                  )}
-                </div>
-                <div className="flex gap-3">
-                  <label className="cursor-pointer inline-flex items-center gap-2 px-4 py-2 bg-purple-100 text-purple-700 rounded-lg hover:bg-purple-200 transition-colors dark:bg-purple-900 dark:text-purple-200 dark:hover:bg-purple-800">
-                    <Upload className="w-4 h-4" />
-                    Upload Tournament Logo
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={handleTournamentLogoUpload}
-                      className="hidden"
-                    />
-                  </label>
-                  {gameState.tournamentLogo && (
-                    <button
-                      onClick={() => updateTournamentLogo('')}
-                      className="px-4 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors dark:bg-red-900 dark:text-red-200 dark:hover:bg-red-800"
-                    >
-                      Remove Logo
-                    </button>
-                  )}
-                </div>
-                <div className="text-sm text-gray-600 dark:text-gray-300">
-                  <p>Upload a tournament logo to display at the top of the scoreboard.</p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Leave blank to show no header logo.</p>
-                </div>
-              </div>
-              {tournamentLogoError && (
-                <p className="text-sm text-red-600 dark:text-red-400 mt-2">{tournamentLogoError}</p>
-              )}
-            </div>
-
             {/* Timer Controls - Quick Access */}
             <div className="lg:col-span-2 bg-green-50 dark:bg-green-900 rounded-xl border border-green-200 dark:border-green-700 p-4 mb-4">
               <div className="flex items-center justify-between">
@@ -698,8 +659,60 @@ export const Dashboard: React.FC<DashboardProps> = ({
         {activeTab === 'settings' && (
           <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-8 max-w-2xl mx-auto">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-8 text-center">Game Settings</h3>
-            
+
             <div className="space-y-8">
+              {/* Tournament Settings */}
+              <div className="bg-purple-50 dark:bg-purple-900 rounded-xl border border-purple-200 dark:border-purple-700 p-6">
+                <h4 className="text-md font-semibold text-purple-900 dark:text-purple-100 mb-4">Tournament</h4>
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Tournament Name</label>
+                    <input
+                      type="text"
+                      value={gameState.tournamentName || ''}
+                      onChange={(e) => updateTournamentName(e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 dark:bg-gray-700 dark:text-gray-100"
+                    />
+                  </div>
+                  <div className="flex items-center gap-6">
+                    <div className="w-20 h-20 bg-gray-100 dark:bg-gray-700 rounded-lg overflow-hidden flex items-center justify-center border-2 border-gray-300 dark:border-gray-600">
+                      {gameState.tournamentLogo ? (
+                        <img src={gameState.tournamentLogo} alt="Tournament" className="w-full h-full object-contain" />
+                      ) : (
+                        <span className="text-gray-400 text-xs text-center">No Logo</span>
+                      )}
+                    </div>
+                    <div className="flex gap-3">
+                      <label className="cursor-pointer inline-flex items-center gap-2 px-4 py-2 bg-purple-100 text-purple-700 rounded-lg hover:bg-purple-200 transition-colors dark:bg-purple-900 dark:text-purple-200 dark:hover:bg-purple-800">
+                        <Upload className="w-4 h-4" />
+                        Upload Logo
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={handleTournamentLogoUpload}
+                          className="hidden"
+                        />
+                      </label>
+                      {gameState.tournamentLogo && (
+                        <button
+                          onClick={() => updateTournamentLogo('')}
+                          className="px-4 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors dark:bg-red-900 dark:text-red-200 dark:hover:bg-red-800"
+                        >
+                          Remove Logo
+                        </button>
+                      )}
+                    </div>
+                    <div className="text-sm text-gray-600 dark:text-gray-300">
+                      <p>Upload a tournament logo to display at the top of the scoreboard.</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Leave blank to show no header logo.</p>
+                    </div>
+                  </div>
+                  {tournamentLogoError && (
+                    <p className="text-sm text-red-600 dark:text-red-400 mt-2">{tournamentLogoError}</p>
+                  )}
+                </div>
+              </div>
+
               {/* External Control Info */}
               <ExternalControlInfo />
 

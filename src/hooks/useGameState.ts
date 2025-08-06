@@ -184,6 +184,13 @@ export const useGameState = () => {
     }));
   }, [setGameState]);
 
+  const updateTournamentName = useCallback((name: string) => {
+    setGameState(prev => ({
+      ...prev,
+      tournamentName: name,
+    }));
+  }, [setGameState]);
+
   const updateTeamStats = useCallback((team: 'home' | 'away', stat: keyof Team['stats'], value: number) => {
     setGameState(prev => {
       if (!prev.isRunning) return prev;
@@ -814,6 +821,7 @@ export const useGameState = () => {
     gameState,
     updateTeam,
     updateTournamentLogo,
+    updateTournamentName,
     updateTeamStats,
     addPlayer,
     removePlayer,
