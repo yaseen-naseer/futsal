@@ -483,28 +483,53 @@ export const useGameState = () => {
       };
     });
   }, [setGameState]);
-  const resetGame = useCallback(() => {
-    skipStorageRef.current = true;
-    if (typeof window !== 'undefined') {
-      window.localStorage.removeItem(STORAGE_KEY);
-    }
-    historyRef.current.past = [];
-    historyRef.current.future = [];
-    _setGameState(prev => {
-      const base = {
-        ...initialState,
-        gamePreset: prev.gamePreset, // Keep current preset
-        time: { minutes: prev.gamePreset.halfDuration, seconds: 0 },
-        possessionStartTime: Date.now(),
-      };
+  const resetGame = useCallback(
+    (options?: { force?: boolean }) => {
+      const { force = false } = options ?? {};
 
-      return {
-        ...base,
-        homeTeam: adjustTeamStatsForType(base.homeTeam, prev.gamePreset.type),
-        awayTeam: adjustTeamStatsForType(base.awayTeam, prev.gamePreset.type),
-      };
-    });
-  }, []);
+      const hasStarted =
+        gameState.isRunning ||
+        gameState.time.minutes !== gameState.gamePreset.halfDuration ||
+        gameState.time.seconds !== 0 ||
+        gameState.homeTeam.score !== 0 ||
+        gameState.awayTeam.score !== 0 ||
+        gameState.homeTeam.fouls !== 0 ||
+        gameState.awayTeam.fouls !== 0 ||
+        Object.values(gameState.homeTeam.stats).some(v => v !== 0) ||
+        Object.values(gameState.awayTeam.stats).some(v => v !== 0);
+
+      if (
+        !force &&
+        hasStarted &&
+        typeof window !== 'undefined' &&
+        !window.confirm('Are you sure you want to reset the entire game?')
+      ) {
+        return;
+      }
+
+      skipStorageRef.current = true;
+      if (typeof window !== 'undefined') {
+        window.localStorage.removeItem(STORAGE_KEY);
+      }
+      historyRef.current.past = [];
+      historyRef.current.future = [];
+      _setGameState(prev => {
+        const base = {
+          ...initialState,
+          gamePreset: prev.gamePreset, // Keep current preset
+          time: { minutes: prev.gamePreset.halfDuration, seconds: 0 },
+          possessionStartTime: Date.now(),
+        };
+
+        return {
+          ...base,
+          homeTeam: adjustTeamStatsForType(base.homeTeam, prev.gamePreset.type),
+          awayTeam: adjustTeamStatsForType(base.awayTeam, prev.gamePreset.type),
+        };
+      });
+    },
+    [gameState],
+  );
 
   const undo = useCallback(() => {
     _setGameState(prev => {

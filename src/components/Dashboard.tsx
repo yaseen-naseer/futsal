@@ -26,7 +26,7 @@ interface DashboardProps {
   resetTimer: () => void;
   updatePeriod: (period: number) => void;
   changeGamePreset: (presetIndex: number) => void;
-  resetGame: () => void;
+  resetGame: (options?: { force?: boolean }) => void;
   undo: () => void;
   redo: () => void;
   addPlayer: (team: 'home' | 'away', name: string) => void;
@@ -163,6 +163,23 @@ export const Dashboard: React.FC<DashboardProps> = ({
       }
       
       updateTime(newMinutes, newSeconds);
+    }
+  };
+
+  const handleResetGame = () => {
+    const hasStarted =
+      gameState.isRunning ||
+      gameState.time.minutes !== gameState.gamePreset.halfDuration ||
+      gameState.time.seconds !== 0 ||
+      gameState.homeTeam.score !== 0 ||
+      gameState.awayTeam.score !== 0 ||
+      gameState.homeTeam.fouls !== 0 ||
+      gameState.awayTeam.fouls !== 0 ||
+      Object.values(gameState.homeTeam.stats).some(v => v !== 0) ||
+      Object.values(gameState.awayTeam.stats).some(v => v !== 0);
+
+    if (!hasStarted || window.confirm('Are you sure you want to reset the entire game?')) {
+      resetGame({ force: true });
     }
   };
 
@@ -766,7 +783,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
 
               <div className="text-center">
                 <button
-                  onClick={resetGame}
+                  onClick={handleResetGame}
                   className="inline-flex items-center gap-2 px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-semibold"
                 >
                   <RotateCcw className="w-5 h-5" />

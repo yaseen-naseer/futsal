@@ -71,7 +71,7 @@ describe('useGameState history', () => {
     result.current.updateTeam('home', 'score', 1);
     expect(result.current.gameState.homeTeam.score).toBe(1);
 
-    result.current.resetGame();
+    result.current.resetGame({ force: true });
     expect(result.current.gameState.homeTeam.score).toBe(0);
 
     result.current.undo();
