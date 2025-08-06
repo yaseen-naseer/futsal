@@ -203,7 +203,7 @@ export const useGameState = () => {
   const addPlayer = useCallback(
     (team: 'home' | 'away', name: string, number?: number) => {
       const newPlayer: Player = {
-        id: Date.now().toString(),
+        id: crypto.randomUUID(),
         name,
         number,
         goals: 0,
