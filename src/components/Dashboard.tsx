@@ -344,13 +344,6 @@ export const Dashboard: React.FC<DashboardProps> = ({
                     {gameState.isRunning ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
                     {gameState.isRunning ? 'Pause' : 'Start'}
                   </button>
-                  <button
-                    onClick={resetTimer}
-                    className="inline-flex items-center gap-2 px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors dark:bg-gray-700 dark:hover:bg-gray-600"
-                  >
-                    <RotateCcw className="w-4 h-4" />
-                    Reset
-                  </button>
                 </div>
               </div>
             </div>
