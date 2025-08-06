@@ -10,7 +10,7 @@ import { PossessionTracker } from './components/PossessionTracker';
 import { ControlPanelButton } from './components/ControlPanelButton';
 import { ThemeToggle } from './components/ThemeToggle';
 import { RemoteControl } from './components/RemoteControl';
-import { SettingsProvider } from './hooks/useSettings';
+import { SettingsProvider } from './hooks/SettingsProvider';
 import { SettingsPage } from './components/SettingsPage';
 
 type ViewMode =
