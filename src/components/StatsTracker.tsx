@@ -40,6 +40,8 @@ export const StatsTracker: React.FC<StatsTrackerProps> = ({
   redo,
 }) => {
   const { homeTeam, awayTeam, ballPossession } = gameState;
+  const homePlayers = homeTeam.players ?? [];
+  const awayPlayers = awayTeam.players ?? [];
 
   const totalShotsHome =
     homeTeam.stats.shotsOffTarget + homeTeam.stats.shotsOnTarget;
@@ -125,7 +127,7 @@ export const StatsTracker: React.FC<StatsTrackerProps> = ({
   ) => {
     if (!gameState.isRunning) return;
     const teamObj = team === 'home' ? homeTeam : awayTeam;
-    const player = teamObj.players.find(p => p.id === playerId);
+    const player = (teamObj.players ?? []).find(p => p.id === playerId);
     if (!player) return;
     const newValue = Math.max(0, player[field] + delta);
     updatePlayerStats(team, playerId, field, newValue);
@@ -463,7 +465,7 @@ export const StatsTracker: React.FC<StatsTrackerProps> = ({
                   </tr>
                 </thead>
                 <tbody>
-                  {homeTeam.players.map(p => (
+                  {homePlayers.map(p => (
                     <tr key={p.id} className="text-gray-700 dark:text-gray-300">
                       <td className="py-1">{p.name}</td>
                       <td className="py-1">
@@ -540,7 +542,7 @@ export const StatsTracker: React.FC<StatsTrackerProps> = ({
                   </tr>
                 </thead>
                 <tbody>
-                  {awayTeam.players.map(p => (
+                  {awayPlayers.map(p => (
                     <tr key={p.id} className="text-gray-700 dark:text-gray-300">
                       <td className="py-1">{p.name}</td>
                       <td className="py-1">
