@@ -67,7 +67,7 @@ export const ExternalControlInfo: React.FC = () => {
             Access this URL on any mobile device connected to the same network:
           </p>
           <code className="bg-gray-100 px-2 py-1 rounded text-xs block dark:bg-gray-700 dark:text-gray-200">
-            {window.location.origin}/remote
+            {window.location.origin}/#/remote
           </code>
           <p className="text-gray-600 text-xs mt-1 dark:text-gray-400">
             (Feature can be implemented for referee mobile control)

@@ -10,7 +10,7 @@ A modern React + TypeScript scoreboard for tracking futsal matches with a polish
 - Progressive Web App (PWA) support so the app can be installed on devices
 - Detailed stats tracker with shot accuracy, cards, and corner tracking
 - Dedicated ball possession operator interface with keyboard shortcuts (A/1 for home, D/2 for away)
-- External timer control options: keyboard shortcuts, hardware integration, and potential mobile remote
+- External timer control options: keyboard shortcuts, hardware integration, and a mobile remote at `/#/remote`
 
 ## Screenshots
 
@@ -41,7 +41,8 @@ A modern React + TypeScript scoreboard for tracking futsal matches with a polish
    npm run build
    ```
 2. Deploy the contents of the `dist` folder to any static hosting service (e.g., Netlify, Vercel, GitHub Pages).
-3. The PWA manifest and service worker are included in the build, enabling offline support and install prompts.
+3. Ensure your hosting redirects all unknown paths to `index.html` (a `_redirects` file is provided for Netlify-style hosts).
+4. The PWA manifest and service worker are included in the build, enabling offline support and install prompts.
 
 ## Using the New Capabilities
 ### Dark Mode
@@ -49,6 +50,8 @@ The UI automatically follows your system theme. Switch your operating system or 
 
 ### Routes
 Navigate between the dashboard, scoreboard, stats tracker, and overlay views using the on-screen controls or by visiting the respective routes (`/dashboard`, `/scoreboard`, `/stats`, `/overlay`).
+
+To operate the timer from another device, open `/#/remote` on a device connected to the same network.
 
 ### Animations
 Key interface elements such as the live indicator and score updates use smooth animations to improve readability. These animations are powered by Tailwind CSS utility classes.

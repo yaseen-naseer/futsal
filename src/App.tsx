@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useGameState } from './hooks/useGameState';
 import { useTheme } from './hooks/useTheme';
 import { Scoreboard } from './components/Scoreboard';
@@ -13,15 +13,24 @@ import { RemoteControl } from './components/RemoteControl';
 type ViewMode = 'scoreboard' | 'dashboard' | 'overlay' | 'stats' | 'possession';
 
 function App() {
+  const [route, setRoute] = useState(
+    typeof window !== 'undefined' ? window.location.hash : ''
+  );
   const [viewMode, setViewMode] = useState<ViewMode>('dashboard');
   const gameState = useGameState();
   const { theme, toggleTheme } = useTheme();
+
+  useEffect(() => {
+    const handleHashChange = () => setRoute(window.location.hash);
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, []);
 
   const handleViewChange = (view: ViewMode) => {
     setViewMode(view);
   };
 
-  if (typeof window !== 'undefined' && window.location.pathname === '/remote') {
+  if (route === '#/remote') {
     return <RemoteControl />;
   }
 
