@@ -37,9 +37,9 @@ export const PossessionTracker: React.FC<PossessionTrackerProps> = ({
             <div className="flex items-center gap-4">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Match Status</h3>
               <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full ${
-                isRunning 
-                  ? 'bg-green-100 text-green-700' 
-                  : 'bg-red-100 text-red-700'
+                isRunning
+                  ? 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300'
+                  : 'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300'
               }`}>
                 {isRunning ? <Play className="w-4 h-4" /> : <Pause className="w-4 h-4" />}
                 <span className="font-semibold">
@@ -50,9 +50,9 @@ export const PossessionTracker: React.FC<PossessionTrackerProps> = ({
             <div className="text-right">
               <div className="text-sm text-gray-600 dark:text-gray-400">Current Score</div>
               <div className="text-xl font-bold">
-                <span className="text-blue-600">{homeTeam.name} {homeTeam.score}</span>
+                <span className="text-blue-600 dark:text-blue-400">{homeTeam.name} {homeTeam.score}</span>
                 <span className="text-gray-400 mx-2">-</span>
-                <span className="text-red-600">{awayTeam.score} {awayTeam.name}</span>
+                <span className="text-red-600 dark:text-red-400">{awayTeam.score} {awayTeam.name}</span>
               </div>
             </div>
           </div>
@@ -71,7 +71,7 @@ export const PossessionTracker: React.FC<PossessionTrackerProps> = ({
               onClick={() => switchBallPossession('home')}
               className={`p-8 rounded-xl border-4 transition-all transform hover:scale-105 ${
                 ballPossession === 'home'
-                  ? 'border-blue-500 bg-blue-50 text-blue-700 shadow-lg'
+                  ? 'border-blue-500 bg-blue-50 text-blue-700 shadow-lg dark:bg-blue-900 dark:text-blue-100'
                   : 'border-gray-200 bg-white text-gray-600 hover:border-blue-300 hover:shadow-md dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:border-blue-500'
               }`}
             >
@@ -93,7 +93,7 @@ export const PossessionTracker: React.FC<PossessionTrackerProps> = ({
                 <div className="text-sm">Click for Possession (A or 1)</div>
                 <div className="text-2xl font-bold">{homeTeam.stats.possession}%</div>
                 {ballPossession === 'home' && (
-                  <div className="mt-2 text-xs font-semibold text-blue-600">
+                  <div className="mt-2 text-xs font-semibold text-blue-600 dark:text-blue-400">
                     ● CURRENT POSSESSION
                   </div>
                 )}
@@ -104,9 +104,9 @@ export const PossessionTracker: React.FC<PossessionTrackerProps> = ({
             <div className="text-center">
               <div className="text-sm text-gray-600 dark:text-gray-400 mb-3">Current Ball Possession</div>
               <div className={`inline-flex items-center gap-3 px-6 py-4 rounded-full font-bold text-lg ${
-                ballPossession === 'home' 
-                  ? 'bg-blue-100 text-blue-700 border-2 border-blue-300' 
-                  : 'bg-red-100 text-red-700 border-2 border-red-300'
+                ballPossession === 'home'
+                  ? 'bg-blue-100 text-blue-700 border-2 border-blue-300 dark:bg-blue-900 dark:text-blue-300 dark:border-blue-700'
+                  : 'bg-red-100 text-red-700 border-2 border-red-300 dark:bg-red-900 dark:text-red-300 dark:border-red-700'
               }`}>
                 <div className={`w-3 h-3 rounded-full animate-pulse ${
                   ballPossession === 'home' ? 'bg-blue-500' : 'bg-red-500'
@@ -124,7 +124,7 @@ export const PossessionTracker: React.FC<PossessionTrackerProps> = ({
               onClick={() => switchBallPossession('away')}
               className={`p-8 rounded-xl border-4 transition-all transform hover:scale-105 ${
                 ballPossession === 'away'
-                  ? 'border-red-500 bg-red-50 text-red-700 shadow-lg'
+                  ? 'border-red-500 bg-red-50 text-red-700 shadow-lg dark:bg-red-900 dark:text-red-100'
                   : 'border-gray-200 bg-white text-gray-600 hover:border-red-300 hover:shadow-md dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:border-red-500'
               }`}
             >
@@ -146,7 +146,7 @@ export const PossessionTracker: React.FC<PossessionTrackerProps> = ({
                 <div className="text-sm mb-2">Click for Possession (D or 2)</div>
                 <div className="text-2xl font-bold">{awayTeam.stats.possession}%</div>
                 {ballPossession === 'away' && (
-                  <div className="mt-2 text-xs font-semibold text-red-600">
+                  <div className="mt-2 text-xs font-semibold text-red-600 dark:text-red-400">
                     ● CURRENT POSSESSION
                   </div>
                 )}
@@ -189,7 +189,17 @@ export const PossessionTracker: React.FC<PossessionTrackerProps> = ({
           <h4 className="font-semibold text-green-900 dark:text-green-100 mb-3">Operator Instructions</h4>
           <ul className="space-y-2 text-sm text-green-800 dark:text-green-200">
             <li>• <strong>Click team buttons</strong> to switch ball possession when play changes</li>
-            <li>• <strong>Keyboard shortcuts</strong>: Press <kbd className="bg-green-100 px-2 py-1 rounded text-xs">A</kbd> or <kbd className="bg-green-100 px-2 py-1 rounded text-xs">1</kbd> for Home team, <kbd className="bg-green-100 px-2 py-1 rounded text-xs">D</kbd> or <kbd className="bg-green-100 px-2 py-1 rounded text-xs">2</kbd> for Away team</li>
+            <li>
+              • <strong>Keyboard shortcuts</strong>: Press
+              <kbd className="bg-green-100 px-2 py-1 rounded text-xs dark:bg-green-800 dark:text-green-100">A</kbd>
+              or
+              <kbd className="bg-green-100 px-2 py-1 rounded text-xs dark:bg-green-800 dark:text-green-100">1</kbd>
+              for Home team,
+              <kbd className="bg-green-100 px-2 py-1 rounded text-xs dark:bg-green-800 dark:text-green-100">D</kbd>
+              or
+              <kbd className="bg-green-100 px-2 py-1 rounded text-xs dark:bg-green-800 dark:text-green-100">2</kbd>
+              for Away team
+            </li>
             <li>• <strong>Shortcuts only work when timer is running</strong> - prevents accidental possession changes during breaks</li>
             <li>• <strong>Possession percentages</strong> are calculated automatically based on time</li>
             <li>• <strong>Only track possession changes</strong> - other operators handle different stats</li>
