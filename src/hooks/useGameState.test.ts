@@ -129,3 +129,50 @@ describe('useGameState player management', () => {
   });
 });
 
+describe('useGameState time limits', () => {
+  it('clamps time to half duration in regular phase', () => {
+    const { result } = renderHook(() => useGameState());
+    result.current.updateTime(999, 30);
+    expect(result.current.gameState.time.minutes).toBe(
+      result.current.gameState.gamePreset.halfDuration
+    );
+    expect(result.current.gameState.time.seconds).toBe(0);
+  });
+
+  it('clamps time to extra-time duration in extra-time phase', () => {
+    const { result } = renderHook(() => useGameState());
+    result.current.changeGamePreset(1); // preset with extra time and penalties
+    result.current.updatePeriod(3); // switch to extra-time
+    result.current.updateTime(999, 30);
+    expect(result.current.gameState.matchPhase).toBe('extra-time');
+    expect(result.current.gameState.time.minutes).toBe(
+      result.current.gameState.gamePreset.extraTimeDuration
+    );
+    expect(result.current.gameState.time.seconds).toBe(0);
+  });
+
+  it('keeps timer at zero during penalties', () => {
+    const { result } = renderHook(() => useGameState());
+    result.current.changeGamePreset(1);
+    result.current.updatePeriod(5); // switch to penalties
+    result.current.updateTime(5, 30);
+    expect(result.current.gameState.matchPhase).toBe('penalties');
+    expect(result.current.gameState.time.minutes).toBe(0);
+    expect(result.current.gameState.time.seconds).toBe(0);
+  });
+
+  it('resetTimer respects current phase duration', () => {
+    const { result } = renderHook(() => useGameState());
+    result.current.changeGamePreset(1);
+    result.current.updatePeriod(3);
+    result.current.resetTimer();
+    expect(result.current.gameState.time.minutes).toBe(
+      result.current.gameState.gamePreset.extraTimeDuration
+    );
+    result.current.updatePeriod(5);
+    result.current.resetTimer();
+    expect(result.current.gameState.time.minutes).toBe(0);
+    expect(result.current.gameState.time.seconds).toBe(0);
+  });
+});
+

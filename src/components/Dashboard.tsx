@@ -132,24 +132,40 @@ export const Dashboard: React.FC<DashboardProps> = ({
 
   const adjustTime = (type: 'minutes' | 'seconds', delta: number) => {
     const { minutes, seconds } = gameState.time;
+    const maxMinutes =
+      gameState.matchPhase === 'regular'
+        ? gameState.gamePreset.halfDuration
+        : gameState.matchPhase === 'extra-time'
+        ? gameState.gamePreset.extraTimeDuration
+        : 0;
+    if (maxMinutes === 0) {
+      return;
+    }
     if (minutes === 0 && seconds === 0 && delta < 0) {
       return;
     }
     if (type === 'minutes') {
-      const newMinutes = Math.max(0, Math.min(60, minutes + delta));
+      const newMinutes = Math.max(0, Math.min(maxMinutes, minutes + delta));
       updateTime(newMinutes, seconds);
     } else {
       let newSeconds = seconds + delta;
       let newMinutes = minutes;
-      
+
       if (newSeconds >= 60) {
         newSeconds = 0;
-        newMinutes = Math.min(60, minutes + 1);
+        newMinutes = Math.min(maxMinutes, minutes + 1);
       } else if (newSeconds < 0) {
         newSeconds = 59;
         newMinutes = Math.max(0, minutes - 1);
       }
-      
+
+      if (newMinutes >= maxMinutes) {
+        newMinutes = maxMinutes;
+        if (newSeconds > 0) {
+          newSeconds = 0;
+        }
+      }
+
       updateTime(newMinutes, newSeconds);
     }
   };

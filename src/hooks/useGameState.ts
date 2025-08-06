@@ -318,12 +318,23 @@ export const useGameState = () => {
     });
   }, [setGameState]);
   const updateTime = useCallback((minutes: number, seconds: number) => {
-    const clampedMinutes = Math.max(0, Math.floor(minutes));
-    const clampedSeconds = Math.max(0, Math.min(59, Math.floor(seconds)));
-    setGameState(prev => ({
-      ...prev,
-      time: { minutes: clampedMinutes, seconds: clampedSeconds },
-    }));
+    setGameState(prev => {
+      const maxMinutes =
+        prev.matchPhase === 'regular'
+          ? prev.gamePreset.halfDuration
+          : prev.matchPhase === 'extra-time'
+          ? prev.gamePreset.extraTimeDuration
+          : 0;
+      const clampedMinutes = Math.max(0, Math.min(maxMinutes, Math.floor(minutes)));
+      let clampedSeconds = Math.max(0, Math.min(59, Math.floor(seconds)));
+      if (clampedMinutes === maxMinutes && clampedSeconds > 0) {
+        clampedSeconds = 0;
+      }
+      return {
+        ...prev,
+        time: { minutes: clampedMinutes, seconds: clampedSeconds },
+      };
+    });
   }, [setGameState]);
 
   const toggleTimer = useCallback(() => {
@@ -362,9 +373,15 @@ export const useGameState = () => {
               homePossession: prev.homeTeam.stats.possession,
               awayPossession: prev.awayTeam.stats.possession,
             };
+      const maxMinutes =
+        prev.matchPhase === 'regular'
+          ? prev.gamePreset.halfDuration
+          : prev.matchPhase === 'extra-time'
+          ? prev.gamePreset.extraTimeDuration
+          : 0;
       return {
         ...prev,
-        time: { minutes: prev.gamePreset.halfDuration, seconds: 0 },
+        time: { minutes: maxMinutes, seconds: 0 },
         isRunning: false,
         possessionStartTime: now,
         totalPossessionTime: updatedPossessionTime,
