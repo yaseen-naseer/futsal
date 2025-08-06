@@ -1,21 +1,13 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
-
-interface Settings {
-  showUndo: boolean;
-  showRedo: boolean;
-}
-
-interface SettingsContextType {
-  settings: Settings;
-  toggleUndo: () => void;
-  toggleRedo: () => void;
-}
+import { useState, useEffect, ReactNode } from 'react';
+import { SettingsContext, Settings } from './SettingsContext';
 
 const defaultSettings: Settings = { showUndo: true, showRedo: true };
 
-const SettingsContext = createContext<SettingsContextType | undefined>(undefined);
+interface SettingsProviderProps {
+  children: ReactNode;
+}
 
-export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const SettingsProvider = ({ children }: SettingsProviderProps) => {
   const [settings, setSettings] = useState<Settings>(() => {
     if (typeof window !== 'undefined') {
       const stored = localStorage.getItem('settings');
@@ -44,12 +36,3 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     </SettingsContext.Provider>
   );
 };
-
-export const useSettings = () => {
-  const context = useContext(SettingsContext);
-  if (!context) {
-    throw new Error('useSettings must be used within SettingsProvider');
-  }
-  return context;
-};
-

@@ -1,6 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { GameState } from '../types';
-import { ExternalControlInfo } from './ExternalControlInfo';
 import { GamePresetSelector } from './GamePresetSelector';
 import { getHalfName } from '../utils/gamePresets';
 import { ConfirmModal } from './ConfirmModal';
@@ -729,10 +728,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
                 </div>
               </div>
 
-              {/* External Control Info */}
-              <ExternalControlInfo />
-
-              <div className="text-center">
+                <div className="text-center">
                 <button
                   onClick={handleResetGame}
                   className="inline-flex items-center gap-2 px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-semibold"
