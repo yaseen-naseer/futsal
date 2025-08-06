@@ -83,6 +83,7 @@ const initialState: GameState = {
   },
   gamePreset: GAME_PRESETS[3], // Default to Futsal Regular
   matchPhase: 'regular',
+  showUndoRedo: true,
 };
 
 const STORAGE_KEY = 'gameState';
@@ -128,6 +129,8 @@ export const useGameState = () => {
               ...initialState.gamePreset,
               ...parsed.gamePreset,
             },
+            showUndoRedo:
+              parsed.showUndoRedo ?? initialState.showUndoRedo,
           } as GameState;
         } catch {
           // ignore malformed stored state
@@ -183,6 +186,10 @@ export const useGameState = () => {
       tournamentLogo: logo,
     }));
   }, [setGameState]);
+
+  const setShowUndoRedo = useCallback((value: boolean) => {
+    _setGameState(prev => ({ ...prev, showUndoRedo: value }));
+  }, []);
 
   const updateTeamStats = useCallback((team: 'home' | 'away', stat: keyof Team['stats'], value: number) => {
     setGameState(prev => {
@@ -818,6 +825,7 @@ export const useGameState = () => {
     addPlayer,
     removePlayer,
     updatePlayerStats,
+    setShowUndoRedo,
     switchBallPossession,
     updateTime,
     toggleTimer,

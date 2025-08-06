@@ -86,6 +86,7 @@ function App() {
           resetGame={gameState.resetGame}
           undo={gameState.undo}
           redo={gameState.redo}
+          setShowUndoRedo={gameState.setShowUndoRedo}
           addPlayer={gameState.addPlayer}
           removePlayer={gameState.removePlayer}
           onViewChange={handleViewChange}

@@ -242,24 +242,25 @@ export const StatsTracker: React.FC<StatsTrackerProps> = ({
           <div className="flex justify-between items-center py-4">
             <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Match Statistics Tracker</h1>
             <div className="flex items-center gap-4">
-              <div className="flex items-center gap-6 text-sm text-gray-600 dark:text-gray-400">
-                <div>
-                  {homeTeam.name} vs {awayTeam.name}
-                </div>
-                <div className="flex items-center gap-2">
-                  <Timer className="w-4 h-4" />
-                  <span>{formatTime(gameState.time.minutes, gameState.time.seconds)}</span>
-                </div>
-                <div
-                  className={`px-2 py-1 rounded-full font-medium ${
-                    gameState.isRunning
-                      ? 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300'
-                      : 'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300'
-                  }`}
-                >
-                  {gameState.isRunning ? 'Live' : 'Paused'}
-                </div>
+            <div className="flex items-center gap-6 text-sm text-gray-600 dark:text-gray-400">
+              <div>
+                {homeTeam.name} vs {awayTeam.name}
               </div>
+              <div className="flex items-center gap-2">
+                <Timer className="w-4 h-4" />
+                <span>{formatTime(gameState.time.minutes, gameState.time.seconds)}</span>
+              </div>
+              <div
+                className={`px-2 py-1 rounded-full font-medium ${
+                  gameState.isRunning
+                    ? 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300'
+                    : 'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300'
+                }`}
+              >
+                {gameState.isRunning ? 'Live' : 'Paused'}
+              </div>
+            </div>
+            {gameState.showUndoRedo && (
               <div className="flex gap-2">
                 <button
                   onClick={undo}
@@ -274,9 +275,10 @@ export const StatsTracker: React.FC<StatsTrackerProps> = ({
                   <Redo2 className="w-4 h-4" /> Redo
                 </button>
               </div>
-            </div>
+            )}
           </div>
         </div>
+      </div>
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">

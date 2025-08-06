@@ -58,4 +58,5 @@ export interface GameState {
   };
   gamePreset: GamePreset;
   matchPhase: 'regular' | 'extra-time' | 'penalties';
+  showUndoRedo: boolean;
 }
