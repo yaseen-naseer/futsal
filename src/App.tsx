@@ -21,7 +21,7 @@ function App() {
     setViewMode(view);
   };
 
-  if (window.location.pathname === '/remote') {
+  if (typeof window !== 'undefined' && window.location.pathname === '/remote') {
     return <RemoteControl />;
   }
 
