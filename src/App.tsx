@@ -85,6 +85,7 @@ function App() {
                 gameState={gameState.gameState}
                 updateTeam={gameState.updateTeam}
                 updateTournamentLogo={gameState.updateTournamentLogo}
+                updateTournamentName={gameState.updateTournamentName}
                 updateTime={gameState.updateTime}
                 toggleTimer={gameState.toggleTimer}
                 resetTimer={gameState.resetTimer}

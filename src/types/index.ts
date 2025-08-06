@@ -44,6 +44,7 @@ export interface GameState {
   homeTeam: Team;
   awayTeam: Team;
   tournamentLogo?: string;
+  tournamentName?: string;
   time: {
     minutes: number;
     seconds: number;

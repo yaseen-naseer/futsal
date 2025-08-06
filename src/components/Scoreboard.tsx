@@ -23,21 +23,26 @@ export const Scoreboard: React.FC<ScoreboardProps> = ({ gameState }) => {
       <div className="w-full h-full flex items-center justify-center px-8 py-6">
         {/* Main Scoreboard */}
         <div className="bg-white/60 dark:bg-black/40 backdrop-blur-lg rounded-3xl border border-gray-200 dark:border-gray-700/50 shadow-2xl w-full max-w-7xl h-full max-h-[900px] flex flex-col justify-center p-12">
-          {/* Header */}
-          {gameState.tournamentLogo && (
-            <div className="text-center mb-12">
-              <div className="inline-flex items-center justify-center bg-white/10 backdrop-blur-sm px-8 py-6 rounded-2xl border border-white/20">
-                <img 
-                  src={gameState.tournamentLogo} 
-                  alt="Tournament Logo"
-                  className="max-h-16 max-w-64 object-contain"
-                />
+            {/* Header */}
+            {(gameState.tournamentLogo || gameState.tournamentName) && (
+              <div className="text-center mb-12">
+                <div className="inline-flex items-center justify-center gap-4 bg-white/10 backdrop-blur-sm px-8 py-6 rounded-2xl border border-white/20">
+                  {gameState.tournamentLogo && (
+                    <img
+                      src={gameState.tournamentLogo}
+                      alt="Tournament Logo"
+                      className="max-h-16 max-w-64 object-contain"
+                    />
+                  )}
+                  {gameState.tournamentName && (
+                    <span className="text-3xl font-bold">{gameState.tournamentName}</span>
+                  )}
+                </div>
               </div>
-            </div>
-          )}
+            )}
 
           {/* Teams and Score */}
-          <div className={`grid grid-cols-3 gap-16 items-center flex-1 ${!gameState.tournamentLogo ? 'justify-center' : ''}`}>
+          <div className={`grid grid-cols-3 gap-16 items-center flex-1 ${!gameState.tournamentLogo && !gameState.tournamentName ? 'justify-center' : ''}`}>
             {/* Home Team */}
             <div className="text-center space-y-6">
               <div className="relative">

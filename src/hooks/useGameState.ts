@@ -69,6 +69,7 @@ const initialState: GameState = {
     },
     players: [],
   },
+  tournamentName: '',
   time: {
     minutes: 20, // Will be set by preset
     seconds: 0,
@@ -181,6 +182,13 @@ export const useGameState = () => {
     setGameState(prev => ({
       ...prev,
       tournamentLogo: logo,
+    }));
+  }, [setGameState]);
+
+  const updateTournamentName = useCallback((name: string) => {
+    setGameState(prev => ({
+      ...prev,
+      tournamentName: name,
     }));
   }, [setGameState]);
 
@@ -814,6 +822,7 @@ export const useGameState = () => {
     gameState,
     updateTeam,
     updateTournamentLogo,
+    updateTournamentName,
     updateTeamStats,
     addPlayer,
     removePlayer,
