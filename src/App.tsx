@@ -16,8 +16,16 @@ import { PossessionTracker } from './components/PossessionTracker';
 import { ControlPanelButton } from './components/ControlPanelButton';
 import { ThemeToggle } from './components/ThemeToggle';
 import { RemoteControl } from './components/RemoteControl';
+import { SettingsProvider } from './hooks/useSettings';
+import { SettingsPage } from './components/SettingsPage';
 
-type ViewMode = 'scoreboard' | 'dashboard' | 'overlay' | 'stats' | 'possession';
+type ViewMode =
+  | 'scoreboard'
+  | 'dashboard'
+  | 'overlay'
+  | 'stats'
+  | 'possession'
+  | 'settings';
 
 function App() {
   const gameState = useGameState();
@@ -74,6 +82,13 @@ function App() {
       </div>
     );
 
+    const SettingsView: React.FC = () => (
+      <div className="relative">
+        <SettingsPage />
+        <ControlPanelButton onClick={() => navigate('/dashboard')} />
+      </div>
+    );
+
     return (
       <div className="App">
         <ThemeToggle theme={theme} onToggle={toggleTheme} />
@@ -104,6 +119,7 @@ function App() {
           <Route path="/overlay" element={<OverlayView />} />
           <Route path="/stats" element={<StatsView />} />
           <Route path="/possession" element={<PossessionView />} />
+          <Route path="/settings" element={<SettingsView />} />
           <Route path="/" element={<Navigate to="/dashboard" replace />} />
           <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </Routes>
@@ -112,12 +128,14 @@ function App() {
   };
 
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/remote" element={<RemoteControl />} />
-        <Route path="/*" element={<MainLayout />} />
-      </Routes>
-    </BrowserRouter>
+    <SettingsProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/remote" element={<RemoteControl />} />
+          <Route path="/*" element={<MainLayout />} />
+        </Routes>
+      </BrowserRouter>
+    </SettingsProvider>
   );
 }
 

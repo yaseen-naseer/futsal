@@ -17,7 +17,9 @@ import {
   Timer,
   Undo2,
   Redo2,
+  Settings,
 } from 'lucide-react';
+import { useSettings } from '../hooks/useSettings';
 
 interface DashboardProps {
   gameState: GameState;
@@ -34,7 +36,9 @@ interface DashboardProps {
   redo: () => void;
   addPlayer: (team: 'home' | 'away', name: string) => void;
   removePlayer: (team: 'home' | 'away', playerId: string) => void;
-  onViewChange: (view: 'scoreboard' | 'dashboard' | 'overlay' | 'stats' | 'possession') => void;
+  onViewChange: (
+    view: 'scoreboard' | 'dashboard' | 'overlay' | 'stats' | 'possession' | 'settings'
+  ) => void;
 }
 
 export const Dashboard: React.FC<DashboardProps> = ({
@@ -56,6 +60,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
 }) => {
   const [activeTab, setActiveTab] = useState<'teams' | 'timer' | 'format' | 'settings'>('teams');
   const tabs = ['teams', 'timer', 'format', 'settings'] as const;
+  const { settings } = useSettings();
 
   const [homeLogoError, setHomeLogoError] = useState('');
   const [awayLogoError, setAwayLogoError] = useState('');
@@ -241,19 +246,30 @@ export const Dashboard: React.FC<DashboardProps> = ({
                 Possession Control
               </button>
               <button
-                onClick={undo}
+                onClick={() => onViewChange('settings')}
                 className="inline-flex items-center gap-2 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 transition-colors"
               >
-                <Undo2 className="w-4 h-4" />
-                Undo
+                <Settings className="w-4 h-4" />
+                Settings
               </button>
-              <button
-                onClick={redo}
-                className="inline-flex items-center gap-2 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 transition-colors"
-              >
-                <Redo2 className="w-4 h-4" />
-                Redo
-              </button>
+              {settings.showUndo && (
+                <button
+                  onClick={undo}
+                  className="inline-flex items-center gap-2 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 transition-colors"
+                >
+                  <Undo2 className="w-4 h-4" />
+                  Undo
+                </button>
+              )}
+              {settings.showRedo && (
+                <button
+                  onClick={redo}
+                  className="inline-flex items-center gap-2 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 transition-colors"
+                >
+                  <Redo2 className="w-4 h-4" />
+                  Redo
+                </button>
+              )}
             </div>
           </div>
         </div>
