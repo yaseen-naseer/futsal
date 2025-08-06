@@ -46,7 +46,7 @@ const initialState: GameState = {
     score: 0,
     fouls: 0,
     stats: {
-      shots: 0,
+      shotsOffTarget: 0,
       shotsOnTarget: 0,
       corners: 0,
       yellowCards: 0,
@@ -59,7 +59,7 @@ const initialState: GameState = {
     score: 0,
     fouls: 0,
     stats: {
-      shots: 0,
+      shotsOffTarget: 0,
       shotsOnTarget: 0,
       corners: 0,
       yellowCards: 0,

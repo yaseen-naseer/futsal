@@ -25,6 +25,69 @@ export const StatsTracker: React.FC<StatsTrackerProps> = ({
 }) => {
   const { homeTeam, awayTeam, ballPossession } = gameState;
 
+  const totalShotsHome =
+    homeTeam.stats.shotsOffTarget + homeTeam.stats.shotsOnTarget;
+  const totalShotsAway =
+    awayTeam.stats.shotsOffTarget + awayTeam.stats.shotsOnTarget;
+
+  const summaryStats = [
+    {
+      label: 'Shots on Target',
+      home: homeTeam.stats.shotsOnTarget,
+      away: awayTeam.stats.shotsOnTarget,
+    },
+    {
+      label: 'Shots Off Target',
+      home: homeTeam.stats.shotsOffTarget,
+      away: awayTeam.stats.shotsOffTarget,
+    },
+    {
+      label: 'Total Shots',
+      home: totalShotsHome,
+      away: totalShotsAway,
+    },
+    {
+      label: 'Shot Accuracy',
+      home:
+        totalShotsHome > 0
+          ? `${Math.round((homeTeam.stats.shotsOnTarget / totalShotsHome) * 100)}%`
+          : '0%',
+      away:
+        totalShotsAway > 0
+          ? `${Math.round((awayTeam.stats.shotsOnTarget / totalShotsAway) * 100)}%`
+          : '0%',
+    },
+    {
+      label: 'Corners',
+      home: homeTeam.stats.corners,
+      away: awayTeam.stats.corners,
+    },
+    ...(gameState.gamePreset.type === 'football'
+      ? [
+          {
+            label: 'Offsides',
+            home: homeTeam.stats.offsides ?? 0,
+            away: awayTeam.stats.offsides ?? 0,
+          },
+        ]
+      : []),
+    {
+      label: 'Yellow Cards',
+      home: homeTeam.stats.yellowCards,
+      away: awayTeam.stats.yellowCards,
+    },
+    {
+      label: 'Red Cards',
+      home: homeTeam.stats.redCards,
+      away: awayTeam.stats.redCards,
+    },
+    {
+      label: 'Possession',
+      home: `${homeTeam.stats.possession}%`,
+      away: `${awayTeam.stats.possession}%`,
+    },
+  ];
+
   const adjustStat = (team: 'home' | 'away', stat: keyof Team['stats'], delta: number) => {
     const currentValue = gameState[team === 'home' ? 'homeTeam' : 'awayTeam'].stats[stat];
     updateTeamStats(team, stat, currentValue + delta);
@@ -187,11 +250,11 @@ export const StatsTracker: React.FC<StatsTrackerProps> = ({
         {/* Statistics Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <StatControl
-            label="Shots"
+            label="Shots Off Target"
             icon={Target}
-            stat="shots"
-            homeValue={homeTeam.stats.shots}
-            awayValue={awayTeam.stats.shots}
+            stat="shotsOffTarget"
+            homeValue={homeTeam.stats.shotsOffTarget}
+            awayValue={awayTeam.stats.shotsOffTarget}
           />
 
           <StatControl
@@ -240,36 +303,18 @@ export const StatsTracker: React.FC<StatsTrackerProps> = ({
         {/* Quick Stats Summary */}
         <div className="mt-8 bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
           <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Match Summary</h3>
-          
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
-            <div>
-              <div className="text-sm text-gray-600 dark:text-gray-400">Total Shots</div>
-              <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-                {homeTeam.stats.shots + awayTeam.stats.shots}
-              </div>
-            </div>
-            <div>
-              <div className="text-sm text-gray-600 dark:text-gray-400">Total Corners</div>
-              <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-                {homeTeam.stats.corners + awayTeam.stats.corners}
-              </div>
-            </div>
-            <div>
-              <div className="text-sm text-gray-600 dark:text-gray-400">Total Cards</div>
-              <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-                {homeTeam.stats.yellowCards + awayTeam.stats.yellowCards + 
-                 homeTeam.stats.redCards + awayTeam.stats.redCards}
-              </div>
-            </div>
-            <div>
-              <div className="text-sm text-gray-600 dark:text-gray-400">Shot Accuracy</div>
-              <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-                {homeTeam.stats.shots + awayTeam.stats.shots > 0 
-                  ? Math.round(((homeTeam.stats.shotsOnTarget + awayTeam.stats.shotsOnTarget) / 
-                      (homeTeam.stats.shots + awayTeam.stats.shots)) * 100)
-                  : 0}%
-              </div>
-            </div>
+
+          <div className="grid grid-cols-3 gap-4 text-center">
+            <div className="font-semibold text-gray-600 dark:text-gray-400">Stat</div>
+            <div className="font-semibold text-blue-600 dark:text-blue-400">{homeTeam.name}</div>
+            <div className="font-semibold text-red-600 dark:text-red-400">{awayTeam.name}</div>
+            {summaryStats.map((row) => (
+              <React.Fragment key={row.label}>
+                <div className="text-gray-600 dark:text-gray-400">{row.label}</div>
+                <div className="font-medium text-gray-900 dark:text-gray-100">{row.home}</div>
+                <div className="font-medium text-gray-900 dark:text-gray-100">{row.away}</div>
+              </React.Fragment>
+            ))}
           </div>
         </div>
       </div>
