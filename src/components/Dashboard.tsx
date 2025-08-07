@@ -37,10 +37,10 @@ interface DashboardProps {
     view: 'scoreboard' | 'dashboard' | 'overlay' | 'stats' | 'settings'
   ) => void;
   /**
-   * Reference to the overlay container element. Provided when the overlay
-   * view is mounted so streaming can capture the element.
+   * Reference to the overlay container element. Always present so
+   * streaming can capture the element regardless of the current view.
    */
-  overlayRef?: HTMLElement | null;
+  overlayRef: HTMLElement | null;
 }
 
 export const Dashboard: React.FC<DashboardProps> = ({
@@ -65,7 +65,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
 
   const [rtmpUrl, setRtmpUrl] = useState('');
   const [streamKey, setStreamKey] = useState('');
-  const { start, stop, isStreaming } = useRtmpStream(overlayRef ?? null, rtmpUrl, streamKey);
+  const { start, stop, isStreaming } = useRtmpStream(overlayRef, rtmpUrl, streamKey);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
