@@ -141,6 +141,35 @@ describe('useGameState player management', () => {
   });
 });
 
+describe('foul tracking', () => {
+  it('increments fouls when team stats receive cards', () => {
+    const { result } = renderHook(() => useGameState());
+    result.current.toggleTimer();
+    result.current.updateTeamStats('home', 'yellowCards', 1);
+    result.current.updateTeamStats('home', 'redCards', 1);
+    expect(result.current.gameState.homeTeam.fouls).toBe(2);
+  });
+
+  it('increments fouls when player receives cards', () => {
+    const { result } = renderHook(() => useGameState());
+    result.current.addPlayer('home', 'Player');
+    const playerId = result.current.gameState.homeTeam.players[0].id;
+    result.current.updatePlayerStats('home', playerId, 'yellowCards', 1);
+    result.current.updatePlayerStats('home', playerId, 'redCards', 1);
+    expect(result.current.gameState.homeTeam.fouls).toBe(2);
+  });
+
+  it('reduces fouls when carded player is removed', () => {
+    const { result } = renderHook(() => useGameState());
+    result.current.addPlayer('home', 'Player');
+    const playerId = result.current.gameState.homeTeam.players[0].id;
+    result.current.updatePlayerStats('home', playerId, 'yellowCards', 1);
+    expect(result.current.gameState.homeTeam.fouls).toBe(1);
+    result.current.removePlayer('home', playerId);
+    expect(result.current.gameState.homeTeam.fouls).toBe(0);
+  });
+});
+
 describe('useGameState time limits', () => {
   it('clamps time to half duration in regular phase', () => {
     const { result } = renderHook(() => useGameState());

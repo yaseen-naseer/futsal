@@ -4,9 +4,9 @@ import {
   Plus,
   Minus,
   Target,
+  XCircle,
   CornerDownLeft,
   Flag,
-  AlertTriangle,
   Square,
   Timer,
   Goal,
@@ -149,22 +149,24 @@ export const StatsTracker: React.FC<StatsTrackerProps> = ({
     updatePlayerStats(team, playerId, field, newValue);
   };
 
-  const StatControl = ({ 
-    label, 
-    icon: Icon, 
-    stat, 
-    homeValue, 
-    awayValue 
+  const StatControl = ({
+    label,
+    icon: Icon,
+    iconColor,
+    stat,
+    homeValue,
+    awayValue,
   }: {
     label: string;
     icon: React.ComponentType<{ className?: string }>;
+    iconColor: string;
     stat: keyof Team['stats'];
     homeValue: number;
     awayValue: number;
   }) => (
     <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
       <div className="flex items-center gap-2 mb-3">
-        <Icon className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+        <Icon className={`w-5 h-5 ${iconColor}`} />
         <h4 className="font-medium text-gray-900 dark:text-gray-100">{label}</h4>
       </div>
 
@@ -347,7 +349,7 @@ export const StatsTracker: React.FC<StatsTrackerProps> = ({
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
             <div className="flex items-center gap-2 mb-3">
-              <Goal className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+              <Goal className="w-5 h-5 text-blue-500" />
               <h4 className="font-medium text-gray-900 dark:text-gray-100">Goals</h4>
             </div>
 
@@ -420,7 +422,7 @@ export const StatsTracker: React.FC<StatsTrackerProps> = ({
 
           <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
             <div className="flex items-center gap-2 mb-3">
-              <Hand className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+              <Hand className="w-5 h-5 text-orange-500" />
               <h4 className="font-medium text-gray-900 dark:text-gray-100">Fouls</h4>
             </div>
 
@@ -493,7 +495,8 @@ export const StatsTracker: React.FC<StatsTrackerProps> = ({
 
           <StatControl
             label="Shots Off Target"
-            icon={Target}
+            icon={XCircle}
+            iconColor="text-red-500"
             stat="shotsOffTarget"
             homeValue={homeTeam.stats.shotsOffTarget}
             awayValue={awayTeam.stats.shotsOffTarget}
@@ -502,6 +505,7 @@ export const StatsTracker: React.FC<StatsTrackerProps> = ({
           <StatControl
             label="Shots on Target"
             icon={Target}
+            iconColor="text-green-500"
             stat="shotsOnTarget"
             homeValue={homeTeam.stats.shotsOnTarget}
             awayValue={awayTeam.stats.shotsOnTarget}
@@ -510,6 +514,7 @@ export const StatsTracker: React.FC<StatsTrackerProps> = ({
           <StatControl
             label="Corners"
             icon={CornerDownLeft}
+            iconColor="text-purple-500"
             stat="corners"
             homeValue={homeTeam.stats.corners}
             awayValue={awayTeam.stats.corners}
@@ -519,6 +524,7 @@ export const StatsTracker: React.FC<StatsTrackerProps> = ({
             <StatControl
               label="Offsides"
               icon={Flag}
+              iconColor="text-yellow-500"
               stat="offsides"
               homeValue={homeTeam.stats.offsides ?? 0}
               awayValue={awayTeam.stats.offsides ?? 0}
@@ -528,6 +534,7 @@ export const StatsTracker: React.FC<StatsTrackerProps> = ({
           <StatControl
             label="Yellow Cards"
             icon={Square}
+            iconColor="text-yellow-400"
             stat="yellowCards"
             homeValue={homeTeam.stats.yellowCards}
             awayValue={awayTeam.stats.yellowCards}
@@ -535,7 +542,8 @@ export const StatsTracker: React.FC<StatsTrackerProps> = ({
 
           <StatControl
             label="Red Cards"
-            icon={AlertTriangle}
+            icon={Square}
+            iconColor="text-red-600"
             stat="redCards"
             homeValue={homeTeam.stats.redCards}
             awayValue={awayTeam.stats.redCards}

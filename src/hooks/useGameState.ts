@@ -195,21 +195,31 @@ export const useGameState = () => {
     }));
   }, [setGameState]);
 
-  const updateTeamStats = useCallback((team: 'home' | 'away', stat: keyof Team['stats'], value: number) => {
-    setGameState(prev => {
-      if (!prev.isRunning) return prev;
-      return {
-        ...prev,
-        [team === 'home' ? 'homeTeam' : 'awayTeam']: {
-          ...prev[team === 'home' ? 'homeTeam' : 'awayTeam'],
-          stats: {
-            ...prev[team === 'home' ? 'homeTeam' : 'awayTeam'].stats,
-            [stat]: Math.max(0, value),
+  const updateTeamStats = useCallback(
+    (team: 'home' | 'away', stat: keyof Team['stats'], value: number) => {
+      setGameState(prev => {
+        if (!prev.isRunning) return prev;
+        const teamKey = team === 'home' ? 'homeTeam' : 'awayTeam';
+        const current = prev[teamKey].stats[stat];
+        const newValue = Math.max(0, value);
+        const diff = newValue - current;
+        const foulAdjustment =
+          stat === 'yellowCards' || stat === 'redCards' ? diff : 0;
+        return {
+          ...prev,
+          [teamKey]: {
+            ...prev[teamKey],
+            fouls: Math.max(0, prev[teamKey].fouls + foulAdjustment),
+            stats: {
+              ...prev[teamKey].stats,
+              [stat]: newValue,
+            },
           },
-        },
-      };
-    });
-  }, [setGameState]);
+        };
+      });
+    },
+    [setGameState],
+  );
 
   const addPlayer = useCallback(
     (team: 'home' | 'away', name: string, number?: number) => {
@@ -246,6 +256,10 @@ export const useGameState = () => {
         const updatedTeam: Team = {
           ...teamObj,
           score: Math.max(0, teamObj.score - playerToRemove.goals),
+          fouls: Math.max(
+            0,
+            teamObj.fouls - playerToRemove.yellowCards - playerToRemove.redCards,
+          ),
           stats: {
             ...teamObj.stats,
             yellowCards: Math.max(
@@ -278,10 +292,22 @@ export const useGameState = () => {
     ) => {
       setGameState(prev => {
         const teamKey = team === 'home' ? 'homeTeam' : 'awayTeam';
-        const players = prev[teamKey].players.map(p =>
-          p.id === playerId ? { ...p, [field]: Math.max(0, value) } : p,
-        );
-        let newTeam = { ...prev[teamKey], players };
+        let foulAdjustment = 0;
+        const players = prev[teamKey].players.map(p => {
+          if (p.id === playerId) {
+            const newValue = Math.max(0, value);
+            if (field === 'yellowCards' || field === 'redCards') {
+              foulAdjustment = newValue - p[field];
+            }
+            return { ...p, [field]: newValue };
+          }
+          return p;
+        });
+        let newTeam = {
+          ...prev[teamKey],
+          players,
+          fouls: Math.max(0, prev[teamKey].fouls + foulAdjustment),
+        };
         if (field === 'goals') {
           const teamScore = players.reduce((sum, p) => sum + p.goals, 0);
           newTeam = { ...newTeam, score: teamScore };
