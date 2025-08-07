@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { useGameState } from './hooks/useGameState';
 import { useTheme } from './hooks/useTheme';
@@ -27,6 +27,7 @@ interface MainLayoutProps {
 
 const MainLayout: React.FC<MainLayoutProps> = ({ gameState, theme, toggleTheme }) => {
   const navigate = useNavigate();
+  const [overlayRef, setOverlayRef] = useState<HTMLElement | null>(null);
 
   const handleViewChange = (view: ViewMode) => {
     navigate(`/${view}`);
@@ -41,7 +42,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ gameState, theme, toggleTheme }
 
   const OverlayView: React.FC = () => (
     <div className="relative min-h-screen bg-transparent">
-      <Overlay gameState={gameState.gameState} />
+      <Overlay gameState={gameState.gameState} onReady={setOverlayRef} />
       <ControlPanelButton onClick={() => navigate('/dashboard')} />
     </div>
   );
@@ -95,6 +96,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ gameState, theme, toggleTheme }
               addPlayer={gameState.addPlayer}
               removePlayer={gameState.removePlayer}
               onViewChange={handleViewChange}
+              overlayRef={overlayRef}
             />
           }
         />
