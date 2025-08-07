@@ -5,7 +5,7 @@ interface StreamingControlPanelProps {
   streamKey: string;
   onUrlChange: (url: string) => void;
   onKeyChange: (key: string) => void;
-  onStart: () => void;
+  onStart: () => Promise<void> | void;
   onStop: () => void;
   isStreaming: boolean;
 }
@@ -24,6 +24,7 @@ const StreamingControlPanel: React.FC<StreamingControlPanelProps> = ({
   isStreaming,
 }) => {
   const [isValidUrl, setIsValidUrl] = useState(true);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     setIsValidUrl(validateUrl(rtmpUrl));
@@ -59,6 +60,20 @@ const StreamingControlPanel: React.FC<StreamingControlPanelProps> = ({
       return;
     }
     await clipboard.writeText(link);
+  };
+
+  const handleStart = async () => {
+    if (!isValidUrl) {
+      setError('Please enter a valid URL.');
+      return;
+    }
+    setError('');
+    try {
+      await onStart();
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to start stream';
+      setError(`Failed to connect: ${message}`);
+    }
   };
 
   return (
@@ -103,7 +118,7 @@ const StreamingControlPanel: React.FC<StreamingControlPanelProps> = ({
         </button>
         <button
           type="button"
-          onClick={onStart}
+          onClick={handleStart}
           disabled={!isValidUrl || isStreaming}
           className="px-4 py-2 bg-green-600 text-white rounded disabled:opacity-50"
         >
@@ -117,6 +132,26 @@ const StreamingControlPanel: React.FC<StreamingControlPanelProps> = ({
         >
           Stop
         </button>
+      </div>
+
+      <p className="text-sm mt-2">
+        Status{' '}
+        <span className={isStreaming ? 'text-green-600' : 'text-gray-600'}>
+          {isStreaming ? 'Streaming…' : 'Disconnected'}
+        </span>
+      </p>
+      {error && <p className="text-sm text-red-600">{error}</p>}
+
+      <div className="mt-4 space-y-1 text-sm text-gray-700">
+        <p>
+          Use the following in OBS or similar software under <strong>Settings &gt; Stream</strong>:
+        </p>
+        <p>
+          <strong>Server:</strong> {rtmpUrl || '—'}
+        </p>
+        <p>
+          <strong>Stream Key:</strong> {streamKey || '—'}
+        </p>
       </div>
     </form>
   );
