@@ -1,33 +1,33 @@
 import React, { useEffect, useState } from 'react';
 
+interface StreamingControlPanelProps {
+  rtmpUrl: string;
+  streamKey: string;
+  onUrlChange: (url: string) => void;
+  onKeyChange: (key: string) => void;
+  onStart: () => void;
+  onStop: () => void;
+  isStreaming: boolean;
+}
+
 /**
- * Simple panel to configure RTMP streaming credentials.
- *
- * Values are persisted to localStorage so the form remembers
- * previous input on reload. A helper button concatenates the
- * configured URL and stream key for easy sharing.
+ * Panel to configure RTMP streaming credentials and control the stream.
+ * Values are provided by the parent component and persisted there.
  */
-const StreamingControlPanel: React.FC = () => {
-  const [rtmpUrl, setRtmpUrl] = useState('');
-  const [streamKey, setStreamKey] = useState('');
+const StreamingControlPanel: React.FC<StreamingControlPanelProps> = ({
+  rtmpUrl,
+  streamKey,
+  onUrlChange,
+  onKeyChange,
+  onStart,
+  onStop,
+  isStreaming,
+}) => {
   const [isValidUrl, setIsValidUrl] = useState(true);
 
-  // Load any stored values on mount
   useEffect(() => {
-    if (typeof window === 'undefined') return;
-    const storedUrl = window.localStorage.getItem('rtmp.url') ?? '';
-    const storedKey = window.localStorage.getItem('rtmp.key') ?? '';
-    setRtmpUrl(storedUrl);
-    setStreamKey(storedKey);
-    setIsValidUrl(validateUrl(storedUrl));
-  }, []);
-
-  // Persist changes to localStorage
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-    window.localStorage.setItem('rtmp.url', rtmpUrl);
-    window.localStorage.setItem('rtmp.key', streamKey);
-  }, [rtmpUrl, streamKey]);
+    setIsValidUrl(validateUrl(rtmpUrl));
+  }, [rtmpUrl]);
 
   const validateUrl = (url: string) => {
     if (!url.trim()) return false;
@@ -41,7 +41,7 @@ const StreamingControlPanel: React.FC = () => {
 
   const handleUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    setRtmpUrl(value);
+    onUrlChange(value);
     setIsValidUrl(validateUrl(value));
   };
 
@@ -77,19 +77,37 @@ const StreamingControlPanel: React.FC = () => {
           id="streamKey"
           type="text"
           value={streamKey}
-          onChange={e => setStreamKey(e.target.value)}
+          onChange={e => onKeyChange(e.target.value)}
           className="w-full border rounded px-2 py-1"
         />
       </div>
 
-      <button
-        type="button"
-        onClick={handleCopy}
-        disabled={!isValidUrl}
-        className="px-4 py-2 bg-indigo-600 text-white rounded disabled:opacity-50"
-      >
-        Copy link
-      </button>
+      <div className="flex gap-2">
+        <button
+          type="button"
+          onClick={handleCopy}
+          disabled={!isValidUrl}
+          className="px-4 py-2 bg-indigo-600 text-white rounded disabled:opacity-50"
+        >
+          Copy link
+        </button>
+        <button
+          type="button"
+          onClick={onStart}
+          disabled={!isValidUrl || isStreaming}
+          className="px-4 py-2 bg-green-600 text-white rounded disabled:opacity-50"
+        >
+          Start
+        </button>
+        <button
+          type="button"
+          onClick={onStop}
+          disabled={!isStreaming}
+          className="px-4 py-2 bg-red-600 text-white rounded disabled:opacity-50"
+        >
+          Stop
+        </button>
+      </div>
     </form>
   );
 };

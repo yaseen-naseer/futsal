@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { useRtmpStream } from '../hooks/useRtmpStream';
 import { GameState } from '../types';
 import { GamePresetSelector } from './GamePresetSelector';
 import { getHalfName } from '../utils/gamePresets';
@@ -35,6 +36,11 @@ interface DashboardProps {
   onViewChange: (
     view: 'scoreboard' | 'dashboard' | 'overlay' | 'stats' | 'settings'
   ) => void;
+  /**
+   * Reference to the overlay container element. Provided when the overlay
+   * view is mounted so streaming can capture the element.
+   */
+  overlayRef?: HTMLElement | null;
 }
 
 export const Dashboard: React.FC<DashboardProps> = ({
@@ -50,11 +56,30 @@ export const Dashboard: React.FC<DashboardProps> = ({
   addPlayer,
   removePlayer,
   onViewChange,
+  overlayRef,
 }) => {
   const [activeTab, setActiveTab] = useState<'teams' | 'timer' | 'format'>('teams');
   const tabs = ['teams', 'timer', 'format'] as const;
   const { settings } = useSettings();
   const [currentView, setCurrentView] = useState<'dashboard' | 'stream'>('dashboard');
+
+  const [rtmpUrl, setRtmpUrl] = useState('');
+  const [streamKey, setStreamKey] = useState('');
+  const { start, stop, isStreaming } = useRtmpStream(overlayRef ?? null, rtmpUrl, streamKey);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const storedUrl = window.localStorage.getItem('rtmp.url') ?? '';
+    const storedKey = window.localStorage.getItem('rtmp.key') ?? '';
+    setRtmpUrl(storedUrl);
+    setStreamKey(storedKey);
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    window.localStorage.setItem('rtmp.url', rtmpUrl);
+    window.localStorage.setItem('rtmp.key', streamKey);
+  }, [rtmpUrl, streamKey]);
 
   const [homeLogoError, setHomeLogoError] = useState('');
   const [awayLogoError, setAwayLogoError] = useState('');
@@ -218,7 +243,15 @@ export const Dashboard: React.FC<DashboardProps> = ({
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {currentView === 'stream' ? (
-          <StreamingControlPanel />
+          <StreamingControlPanel
+            rtmpUrl={rtmpUrl}
+            streamKey={streamKey}
+            onUrlChange={setRtmpUrl}
+            onKeyChange={setStreamKey}
+            onStart={start}
+            onStop={stop}
+            isStreaming={isStreaming}
+          />
         ) : (
           <>
             <MatchSummary gameState={gameState} />
