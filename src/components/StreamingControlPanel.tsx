@@ -48,7 +48,17 @@ const StreamingControlPanel: React.FC = () => {
   const handleCopy = async () => {
     const base = rtmpUrl.replace(/\/$/, '');
     const link = streamKey ? `${base}/${streamKey}` : base;
-    await navigator.clipboard.writeText(link);
+    const clipboard =
+      typeof navigator !== 'undefined' && navigator.clipboard
+        ? navigator.clipboard
+        : null;
+    if (!clipboard) {
+      if (typeof window !== 'undefined') {
+        window.alert('Clipboard API is not available in this environment');
+      }
+      return;
+    }
+    await clipboard.writeText(link);
   };
 
   return (
