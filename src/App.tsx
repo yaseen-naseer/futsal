@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { BrowserRouter, Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';
 import { useGameState } from './hooks/useGameState';
 import { useTheme } from './hooks/useTheme';
 import { Scoreboard } from './components/Scoreboard';
@@ -27,7 +27,16 @@ interface MainLayoutProps {
 
 const MainLayout: React.FC<MainLayoutProps> = ({ gameState, theme, toggleTheme }) => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [overlayRef, setOverlayRef] = useState<HTMLElement | null>(null);
+
+  const isOverlayRoute = location.pathname === '/overlay';
+
+  useEffect(() => {
+    if (!overlayRef) return;
+    // Keep overlay mounted but hide it behind other views when not active
+    overlayRef.style.zIndex = isOverlayRoute ? '50' : '-1';
+  }, [overlayRef, isOverlayRoute]);
 
   const handleViewChange = (view: ViewMode) => {
     navigate(`/${view}`);
@@ -36,13 +45,6 @@ const MainLayout: React.FC<MainLayoutProps> = ({ gameState, theme, toggleTheme }
   const ScoreboardView: React.FC = () => (
     <div className="relative">
       <Scoreboard gameState={gameState.gameState} />
-      <ControlPanelButton onClick={() => navigate('/dashboard')} />
-    </div>
-  );
-
-  const OverlayView: React.FC = () => (
-    <div className="relative min-h-screen bg-transparent">
-      <Overlay gameState={gameState.gameState} onReady={setOverlayRef} />
       <ControlPanelButton onClick={() => navigate('/dashboard')} />
     </div>
   );
@@ -79,6 +81,11 @@ const MainLayout: React.FC<MainLayoutProps> = ({ gameState, theme, toggleTheme }
   return (
     <div className="App">
       <ThemeToggle theme={theme} onToggle={toggleTheme} />
+      {/* Persistent overlay used for streaming */}
+      <Overlay gameState={gameState.gameState} onReady={setOverlayRef} />
+      {isOverlayRoute && (
+        <ControlPanelButton onClick={() => navigate('/dashboard')} />
+      )}
       <Routes>
         <Route
           path="/dashboard"
@@ -101,7 +108,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ gameState, theme, toggleTheme }
           }
         />
         <Route path="/scoreboard" element={<ScoreboardView />} />
-        <Route path="/overlay" element={<OverlayView />} />
+        <Route path="/overlay" element={<div />} />
         <Route path="/stats" element={<StatsView />} />
         <Route path="/settings" element={<SettingsView />} />
         <Route path="/" element={<Navigate to="/dashboard" replace />} />
