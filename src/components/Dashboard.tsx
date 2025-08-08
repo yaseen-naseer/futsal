@@ -34,13 +34,8 @@ interface DashboardProps {
   addPlayer: (team: 'home' | 'away', name: string) => void;
   removePlayer: (team: 'home' | 'away', playerId: string) => void;
   onViewChange: (
-    view: 'scoreboard' | 'dashboard' | 'overlay' | 'stats' | 'settings'
+    view: 'scoreboard' | 'dashboard' | 'stats' | 'settings'
   ) => void;
-  /**
-   * Reference to the overlay container element. Always present so
-   * streaming can capture the element regardless of the current view.
-   */
-  overlayRef: HTMLElement | null;
 }
 
 export const Dashboard: React.FC<DashboardProps> = ({
@@ -56,7 +51,6 @@ export const Dashboard: React.FC<DashboardProps> = ({
   addPlayer,
   removePlayer,
   onViewChange,
-  overlayRef,
 }) => {
   const [activeTab, setActiveTab] = useState<'teams' | 'timer' | 'format'>('teams');
   const tabs = ['teams', 'timer', 'format'] as const;
@@ -71,7 +65,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
     isStreaming,
     connectionState,
     error: streamError,
-  } = useRtmpStream(overlayRef, rtmpUrl, streamKey);
+  } = useRtmpStream(null, rtmpUrl, streamKey);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -197,7 +191,10 @@ export const Dashboard: React.FC<DashboardProps> = ({
                 View Scoreboard
               </button>
               <button
-                onClick={() => onViewChange('overlay')}
+                onClick={() =>
+                  typeof window !== 'undefined' &&
+                  window.open('/overlay', '_blank')
+                }
                 className="inline-flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
               >
                 <Monitor className="w-4 h-4" />
