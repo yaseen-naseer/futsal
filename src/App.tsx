@@ -17,27 +17,25 @@ type ViewMode =
   | 'stats'
   | 'settings';
 
-interface MainLayoutProps {
-  gameState: ReturnType<typeof useGameState>;
-  theme: string;
-  toggleTheme: () => void;
+type GameStateType = ReturnType<typeof useGameState>;
+
+interface ViewProps {
+  gameState: GameStateType;
 }
 
-const MainLayout: React.FC<MainLayoutProps> = ({ gameState, theme, toggleTheme }) => {
+const ScoreboardView: React.FC<ViewProps> = ({ gameState }) => {
   const navigate = useNavigate();
-
-  const handleViewChange = (view: ViewMode) => {
-    navigate(`/${view}`);
-  };
-
-  const ScoreboardView: React.FC = () => (
+  return (
     <div className="relative">
       <Scoreboard gameState={gameState.gameState} />
       <ControlPanelButton onClick={() => navigate('/dashboard')} />
     </div>
   );
+};
 
-  const StatsView: React.FC = () => (
+const StatsView: React.FC<ViewProps> = ({ gameState }) => {
+  const navigate = useNavigate();
+  return (
     <div className="relative">
       <StatsTracker
         gameState={gameState.gameState}
@@ -52,8 +50,11 @@ const MainLayout: React.FC<MainLayoutProps> = ({ gameState, theme, toggleTheme }
       <ControlPanelButton onClick={() => navigate('/dashboard')} />
     </div>
   );
+};
 
-  const SettingsView: React.FC = () => (
+const SettingsView: React.FC<ViewProps> = ({ gameState }) => {
+  const navigate = useNavigate();
+  return (
     <div className="relative">
       <SettingsPage
         gameState={gameState.gameState}
@@ -65,6 +66,20 @@ const MainLayout: React.FC<MainLayoutProps> = ({ gameState, theme, toggleTheme }
       <ControlPanelButton onClick={() => navigate('/dashboard')} />
     </div>
   );
+};
+
+interface MainLayoutProps {
+  gameState: GameStateType;
+  theme: string;
+  toggleTheme: () => void;
+}
+
+const MainLayout: React.FC<MainLayoutProps> = ({ gameState, theme, toggleTheme }) => {
+  const navigate = useNavigate();
+
+  const handleViewChange = (view: ViewMode) => {
+    navigate(`/${view}`);
+  };
 
   return (
     <div className="App">
@@ -89,9 +104,9 @@ const MainLayout: React.FC<MainLayoutProps> = ({ gameState, theme, toggleTheme }
             />
           }
         />
-        <Route path="/scoreboard" element={<ScoreboardView />} />
-        <Route path="/stats" element={<StatsView />} />
-        <Route path="/settings" element={<SettingsView />} />
+        <Route path="/scoreboard" element={<ScoreboardView gameState={gameState} />} />
+        <Route path="/stats" element={<StatsView gameState={gameState} />} />
+        <Route path="/settings" element={<SettingsView gameState={gameState} />} />
         <Route path="/" element={<Navigate to="/dashboard" replace />} />
         <Route path="*" element={<Navigate to="/dashboard" replace />} />
       </Routes>
