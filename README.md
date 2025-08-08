@@ -53,7 +53,7 @@ Navigate between the dashboard, scoreboard, stats tracker, and overlay views usi
 To operate the timer from another device, open `/#/remote` on a device connected to the same network.
 
 ### Browser Source Overlay
-Load `/#/overlay` in OBS, Yololiv, or any browser source to display a transparent scoreboard or `/#/overlay/stats` to include team statistics, both without any control UI.
+
 
 ### Animations
 Key interface elements such as the live indicator and score updates use smooth animations to improve readability. These animations are powered by Tailwind CSS utility classes.
