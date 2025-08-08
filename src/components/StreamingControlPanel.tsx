@@ -8,6 +8,8 @@ interface StreamingControlPanelProps {
   onStart: () => Promise<void> | void;
   onStop: () => void;
   isStreaming: boolean;
+  connectionState: 'disconnected' | 'connecting' | 'connected' | 'error';
+  streamError?: string | null;
 }
 
 /**
@@ -22,9 +24,11 @@ const StreamingControlPanel: React.FC<StreamingControlPanelProps> = ({
   onStart,
   onStop,
   isStreaming,
+  connectionState,
+  streamError,
 }) => {
   const [isValidUrl, setIsValidUrl] = useState(true);
-  const [error, setError] = useState('');
+  const [localError, setLocalError] = useState('');
 
   useEffect(() => {
     setIsValidUrl(validateUrl(rtmpUrl));
@@ -64,15 +68,15 @@ const StreamingControlPanel: React.FC<StreamingControlPanelProps> = ({
 
   const handleStart = async () => {
     if (!isValidUrl) {
-      setError('Please enter a valid URL.');
+      setLocalError('Please enter a valid URL.');
       return;
     }
-    setError('');
+    setLocalError('');
     try {
       await onStart();
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Failed to start stream';
-      setError(`Failed to connect: ${message}`);
+      setLocalError(`Failed to connect: ${message}`);
     }
   };
 
@@ -136,11 +140,23 @@ const StreamingControlPanel: React.FC<StreamingControlPanelProps> = ({
 
       <p className="text-sm mt-2">
         Status{' '}
-        <span className={isStreaming ? 'text-green-600' : 'text-gray-600'}>
-          {isStreaming ? 'Streaming…' : 'Disconnected'}
+        <span
+          className={
+            connectionState === 'connected'
+              ? 'text-green-600'
+              : connectionState === 'connecting'
+              ? 'text-yellow-600'
+              : connectionState === 'error'
+              ? 'text-red-600'
+              : 'text-gray-600'
+          }
+        >
+          {connectionState}
         </span>
       </p>
-      {error && <p className="text-sm text-red-600">{error}</p>}
+      {(localError || streamError) && (
+        <p className="text-sm text-red-600">{streamError || localError}</p>
+      )}
 
       <div className="mt-4 space-y-1 text-sm text-gray-700">
         <p>
