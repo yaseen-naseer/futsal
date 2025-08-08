@@ -160,7 +160,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
               <button
                 onClick={() =>
                   typeof window !== 'undefined' &&
-                  window.open('/overlay', '_blank')
+                  window.open('/overlay/stats', '_blank')
                 }
                 className="inline-flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
               >
