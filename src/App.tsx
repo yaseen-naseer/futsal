@@ -110,6 +110,10 @@ const AppContent: React.FC = () => {
         <Route path="/remote" element={<RemoteControl />} />
         <Route path="/overlay" element={<Overlay gameState={gameState.gameState} />} />
         <Route
+          path="/overlay"
+          element={<Overlay gameState={gameState.gameState} showStats />}
+        />
+        <Route
           path="/*"
           element={<MainLayout gameState={gameState} theme={theme} toggleTheme={toggleTheme} />}
         />
