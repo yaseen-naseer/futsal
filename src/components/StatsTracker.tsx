@@ -324,7 +324,7 @@ export const StatsTracker: React.FC<StatsTrackerProps> = ({
                 {ballPossession === 'home' ? homeTeam.name : awayTeam.name}
               </div>
               <div className="mt-2 text-xs text-gray-500 dark:text-gray-400">
-                Press A/1 for Home, D/2 for Away (only when timer running)
+                Press A/1 for Home, D/2 for Away
               </div>
             </div>
 
