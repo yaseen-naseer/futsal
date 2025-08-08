@@ -52,14 +52,12 @@ Navigate between the dashboard, scoreboard, stats tracker, and overlay views usi
 
 To operate the timer from another device, open `/#/remote` on a device connected to the same network.
 
+### Browser Source Overlay
+Load `/#/overlay` in OBS, Yololiv, or any browser source to display a transparent scoreboard and optional stats without any control UI.
+
 ### Animations
 Key interface elements such as the live indicator and score updates use smooth animations to improve readability. These animations are powered by Tailwind CSS utility classes.
 
 ## Progressive Web App
 On supported browsers, use the "Install" or "Add to Home Screen" option to install the app. Once installed, it can run offline and launch in a standalone window.
-
-## Manual QA
-- Disable clipboard access in your browser or run the app in an environment without the Clipboard API.
-- Open the streaming control panel and click **Copy link**.
-- An alert should appear indicating the clipboard feature is unavailable instead of copying text.
 

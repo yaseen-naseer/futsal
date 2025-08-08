@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React from 'react';
 import { GameState } from '../types';
 import { Crown } from 'lucide-react';
 import { formatTime, isWinning } from '../utils/format';
@@ -7,29 +7,17 @@ import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 interface OverlayProps {
   gameState?: GameState | null;
   showStats?: boolean;
-  /**
-   * Optional callback fired once the overlay container is rendered.
-   * Provides a ref to the root element so it can be captured for
-   * streaming or other external manipulations.
-   */
-  onReady?: (element: HTMLDivElement | null) => void;
 }
 
-export const Overlay: React.FC<OverlayProps> = ({ gameState, showStats = false, onReady }) => {
+export const Overlay: React.FC<OverlayProps> = ({ gameState, showStats = false }) => {
   const shouldReduceMotion = useReducedMotion();
-  const containerRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    onReady?.(containerRef.current);
-    return () => onReady?.(null);
-  }, [onReady]);
 
   if (!gameState) return null;
 
   const { homeTeam, awayTeam, time } = gameState;
 
   return (
-    <div ref={containerRef} className="fixed inset-0 pointer-events-none">
+    <div className="fixed inset-0 pointer-events-none">
       {/* Top Bar Overlay */}
       <motion.div
         className="absolute top-0 left-0 right-0 flex justify-center items-center h-16 z-50"
