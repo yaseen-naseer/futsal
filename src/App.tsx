@@ -4,7 +4,6 @@ import { useGameState } from './hooks/useGameState';
 import { useTheme } from './hooks/useTheme';
 import { Scoreboard } from './components/Scoreboard';
 import { Dashboard } from './components/Dashboard';
-import { Overlay } from './components/Overlay';
 import { StatsTracker } from './components/StatsTracker';
 import { ControlPanelButton } from './components/ControlPanelButton';
 import { ThemeToggle } from './components/ThemeToggle';
@@ -108,14 +107,6 @@ const AppContent: React.FC = () => {
     <BrowserRouter>
       <Routes>
         <Route path="/remote" element={<RemoteControl />} />
-        <Route
-          path="/overlay"
-          element={<Overlay gameState={gameState.gameState} />}
-        />
-        <Route
-          path="/overlay/stats"
-          element={<Overlay gameState={gameState.gameState} showStats />}
-        />
         <Route
           path="/*"
           element={<MainLayout gameState={gameState} theme={theme} toggleTheme={toggleTheme} />}

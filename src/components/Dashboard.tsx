@@ -140,10 +140,6 @@ export const Dashboard: React.FC<DashboardProps> = ({
       updateTime(newMinutes, newSeconds);
     }
   };
-  const overlayUrl =
-    typeof window !== 'undefined'
-      ? `${window.location.origin}${import.meta.env.BASE_URL}overlay`
-      : '/overlay';
 
   return (
     <div className="min-h-screen bg-gray-50 text-gray-900 dark:bg-gray-900 dark:text-gray-100">
@@ -159,15 +155,6 @@ export const Dashboard: React.FC<DashboardProps> = ({
               >
                 <Monitor className="w-4 h-4" />
                 View Scoreboard
-              </button>
-              <button
-                onClick={() =>
-                  typeof window !== 'undefined' &&
-                }
-                className="inline-flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
-              >
-                <Monitor className="w-4 h-4" />
-                Streaming Overlay
               </button>
               <button
                 onClick={() => onViewChange('stats')}
