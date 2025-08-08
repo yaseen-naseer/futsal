@@ -37,8 +37,8 @@ const StreamingControlPanel: React.FC<StreamingControlPanelProps> = ({
   const validateUrl = (url: string) => {
     if (!url.trim()) return false;
     try {
-      new URL(url);
-      return true;
+      const parsed = new URL(url);
+      return /^rtmps?:$/.test(parsed.protocol);
     } catch {
       return false;
     }
@@ -68,7 +68,7 @@ const StreamingControlPanel: React.FC<StreamingControlPanelProps> = ({
 
   const handleStart = async () => {
     if (!isValidUrl) {
-      setLocalError('Please enter a valid URL.');
+      setLocalError('Please enter a valid RTMP URL.');
       return;
     }
     setLocalError('');
@@ -88,13 +88,17 @@ const StreamingControlPanel: React.FC<StreamingControlPanelProps> = ({
         </label>
         <input
           id="rtmpUrl"
-          type="url"
+          type="text"
           value={rtmpUrl}
           onChange={handleUrlChange}
           className="w-full border rounded px-2 py-1"
+          pattern="^rtmps?://.+"
+          placeholder="rtmp://example.com/live"
         />
         {!isValidUrl && (
-          <p className="mt-1 text-sm text-red-600">Please enter a valid URL.</p>
+          <p className="mt-1 text-sm text-red-600">
+            Please enter a valid RTMP URL.
+          </p>
         )}
       </div>
 
