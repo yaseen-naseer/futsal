@@ -10,22 +10,34 @@ type Theme = 'light' | 'dark';
 export function useTheme() {
   const [theme, setTheme] = useState<Theme>(() => {
     if (typeof window !== 'undefined') {
-      const stored = localStorage.getItem('theme') as Theme | null;
-      if (stored === 'dark' || stored === 'light') {
-        return stored;
+      try {
+        const stored = window.localStorage.getItem('theme') as Theme | null;
+        if (stored === 'dark' || stored === 'light') {
+          return stored;
+        }
+      } catch {
+        /* ignore */
       }
     }
     return 'light';
   });
 
   useEffect(() => {
-    const root = document.documentElement;
-    if (theme === 'dark') {
-      root.classList.add('dark');
-    } else {
-      root.classList.remove('dark');
+    if (typeof document !== 'undefined') {
+      const root = document.documentElement;
+      if (theme === 'dark') {
+        root.classList.add('dark');
+      } else {
+        root.classList.remove('dark');
+      }
     }
-    localStorage.setItem('theme', theme);
+    if (typeof window !== 'undefined') {
+      try {
+        window.localStorage.setItem('theme', theme);
+      } catch {
+        /* ignore */
+      }
+    }
   }, [theme]);
 
   const toggleTheme = () => setTheme((prev) => (prev === 'light' ? 'dark' : 'light'));
