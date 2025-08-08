@@ -1,8 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { GameState } from '../types';
-import { GamePresetSelector } from './GamePresetSelector';
 import { getHalfName } from '../utils/gamePresets';
-import { MatchSummary } from './MatchSummary';
 import {
   Play,
   Pause,
@@ -25,7 +23,6 @@ interface DashboardProps {
   toggleTimer: () => void;
   resetTimer: () => void;
   updatePeriod: (period: number) => void;
-  changeGamePreset: (presetIndex: number) => void;
   undo: () => void;
   redo: () => void;
   addPlayer: (team: 'home' | 'away', name: string) => void;
@@ -42,15 +39,13 @@ export const Dashboard: React.FC<DashboardProps> = ({
   toggleTimer,
   resetTimer,
   updatePeriod,
-  changeGamePreset,
   undo,
   redo,
   addPlayer,
   removePlayer,
   onViewChange,
 }) => {
-  const [activeTab, setActiveTab] = useState<'teams' | 'timer' | 'format'>('teams');
-  const tabs = ['teams', 'timer', 'format'] as const;
+  const [activeTab] = useState<'teams' | 'timer' | 'format'>('teams');
   const { settings } = useSettings();
 
   const [homeLogoError, setHomeLogoError] = useState('');
@@ -584,6 +579,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
               </div>
             </div>
           </div>
+        )}
       </div>
     </div>
   );
