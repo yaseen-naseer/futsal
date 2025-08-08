@@ -6,7 +6,7 @@ A modern React + TypeScript scoreboard for tracking futsal matches with a polish
 - Real-time game dashboard with configurable teams, timer, and match presets
 - Dark mode styling that adapts to system preferences
 - Animated transitions for scores, timer, and live indicators
-- Route-based views for dashboard, scoreboard, statistics, and overlays
+- Route-based views for dashboard, scoreboard, and statistics
 - Progressive Web App (PWA) support so the app can be installed on devices
 - Detailed stats tracker with shot accuracy, cards, and corner tracking
 - Customizable keyboard shortcuts for switching ball possession
@@ -48,12 +48,9 @@ A modern React + TypeScript scoreboard for tracking futsal matches with a polish
 The UI automatically follows your system theme. Switch your operating system or browser to dark mode to experience the darker palette.
 
 ### Routes
-Navigate between the dashboard, scoreboard, stats tracker, and overlay views using the on-screen controls or by visiting the respective routes (`/dashboard`, `/scoreboard`, `/stats`, `/overlay`, `/overlay/stats`).
+Navigate between the dashboard, scoreboard, and stats tracker views using the on-screen controls or by visiting the respective routes (`/dashboard`, `/scoreboard`, `/stats`).
 
 To operate the timer from another device, open `/#/remote` on a device connected to the same network.
-
-### Browser Source Overlay
-
 
 ### Animations
 Key interface elements such as the live indicator and score updates use smooth animations to improve readability. These animations are powered by Tailwind CSS utility classes.
