@@ -53,7 +53,6 @@ export const Dashboard: React.FC<DashboardProps> = ({
   const tabs = ['teams', 'timer', 'format'] as const;
   const { settings } = useSettings();
 
-
   const [homeLogoError, setHomeLogoError] = useState('');
   const [awayLogoError, setAwayLogoError] = useState('');
   const [homePlayerName, setHomePlayerName] = useState('');
@@ -605,15 +604,6 @@ export const Dashboard: React.FC<DashboardProps> = ({
               </div>
             </div>
           </div>
-        )}
-
-        {/* Format Tab */}
-        {activeTab === 'format' && (
-          <GamePresetSelector
-            currentPreset={gameState.gamePreset}
-            onPresetChange={changeGamePreset}
-          />
-        )}
       </div>
     </div>
   );
