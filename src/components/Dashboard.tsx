@@ -1,5 +1,4 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { useRtmpStream } from '../hooks/useRtmpStream';
 import { GameState } from '../types';
 import { GamePresetSelector } from './GamePresetSelector';
 import { getHalfName } from '../utils/gamePresets';
@@ -16,10 +15,8 @@ import {
   Undo2,
   Redo2,
   Settings,
-  Cast,
 } from 'lucide-react';
 import { useSettings } from '../hooks/useSettings';
-import StreamingControlPanel from './StreamingControlPanel';
 
 interface DashboardProps {
   gameState: GameState;
@@ -36,11 +33,6 @@ interface DashboardProps {
   onViewChange: (
     view: 'scoreboard' | 'dashboard' | 'overlay' | 'stats' | 'settings'
   ) => void;
-  /**
-   * Reference to the overlay container element. Always present so
-   * streaming can capture the element regardless of the current view.
-   */
-  overlayRef: HTMLElement | null;
 }
 
 export const Dashboard: React.FC<DashboardProps> = ({
@@ -56,37 +48,10 @@ export const Dashboard: React.FC<DashboardProps> = ({
   addPlayer,
   removePlayer,
   onViewChange,
-  overlayRef,
 }) => {
   const [activeTab, setActiveTab] = useState<'teams' | 'timer' | 'format'>('teams');
   const tabs = ['teams', 'timer', 'format'] as const;
   const { settings } = useSettings();
-  const [currentView, setCurrentView] = useState<'dashboard' | 'stream'>('dashboard');
-
-  const [rtmpUrl, setRtmpUrl] = useState('');
-  const [streamKey, setStreamKey] = useState('');
-  const {
-    start,
-    stop,
-    isStreaming,
-    connectionState,
-    error: streamError,
-  } = useRtmpStream(overlayRef, rtmpUrl, streamKey);
-
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-    const storedUrl = window.localStorage.getItem('rtmp.url') ?? '';
-    const storedKey = window.localStorage.getItem('rtmp.key') ?? '';
-    setRtmpUrl(storedUrl);
-    setStreamKey(storedKey);
-  }, []);
-
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-    window.localStorage.setItem('rtmp.url', rtmpUrl);
-    window.localStorage.setItem('rtmp.key', streamKey);
-  }, [rtmpUrl, streamKey]);
-
   const [homeLogoError, setHomeLogoError] = useState('');
   const [awayLogoError, setAwayLogoError] = useState('');
   const [homePlayerName, setHomePlayerName] = useState('');
@@ -204,13 +169,6 @@ export const Dashboard: React.FC<DashboardProps> = ({
                 Streaming Overlay
               </button>
               <button
-                onClick={() => setCurrentView(currentView === 'stream' ? 'dashboard' : 'stream')}
-                className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
-              >
-                <Cast className="w-4 h-4" />
-                Streaming Control
-              </button>
-              <button
                 onClick={() => onViewChange('stats')}
                 className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
               >
@@ -248,41 +206,27 @@ export const Dashboard: React.FC<DashboardProps> = ({
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {currentView === 'stream' ? (
-          <StreamingControlPanel
-            rtmpUrl={rtmpUrl}
-            streamKey={streamKey}
-            onUrlChange={setRtmpUrl}
-            onKeyChange={setStreamKey}
-            onStart={start}
-            onStop={stop}
-            isStreaming={isStreaming}
-            connectionState={connectionState}
-            streamError={streamError}
-          />
-        ) : (
-          <>
-            <MatchSummary gameState={gameState} />
-            {/* Navigation Tabs */}
-            <div className="mb-8">
-              <div className="border-b border-gray-200">
-                <nav className="-mb-px flex space-x-8">
-                  {tabs.map((tab) => (
-                    <button
-                      key={tab}
-                      onClick={() => setActiveTab(tab)}
-                      className={`py-2 px-1 border-b-2 font-medium text-sm capitalize transition-colors ${
-                        activeTab === tab
-                          ? 'border-green-500 text-green-600'
-                          : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                      }`}
-                    >
-                      {tab === 'format' ? 'Game Format' : tab}
-                    </button>
-                  ))}
-                </nav>
-              </div>
-            </div>
+        <MatchSummary gameState={gameState} />
+        {/* Navigation Tabs */}
+        <div className="mb-8">
+          <div className="border-b border-gray-200">
+            <nav className="-mb-px flex space-x-8">
+              {tabs.map((tab) => (
+                <button
+                  key={tab}
+                  onClick={() => setActiveTab(tab)}
+                  className={`py-2 px-1 border-b-2 font-medium text-sm capitalize transition-colors ${
+                    activeTab === tab
+                      ? 'border-green-500 text-green-600'
+                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  }`}
+                >
+                  {tab === 'format' ? 'Game Format' : tab}
+                </button>
+              ))}
+            </nav>
+          </div>
+        </div>
 
         {/* Teams Tab */}
         {activeTab === 'teams' && (
@@ -656,17 +600,15 @@ export const Dashboard: React.FC<DashboardProps> = ({
               </div>
             </div>
           </div>
-        )}
+          )}
 
-        {/* Format Tab */}
-        {activeTab === 'format' && (
-          <GamePresetSelector
-            currentPreset={gameState.gamePreset}
-            onPresetChange={changeGamePreset}
-          />
-        )}
-          </>
-        )}
+          {/* Format Tab */}
+          {activeTab === 'format' && (
+            <GamePresetSelector
+              currentPreset={gameState.gamePreset}
+              onPresetChange={changeGamePreset}
+            />
+          )}
       </div>
     </div>
   );

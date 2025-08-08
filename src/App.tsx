@@ -103,7 +103,6 @@ const MainLayout: React.FC<MainLayoutProps> = ({ gameState, theme, toggleTheme }
               addPlayer={gameState.addPlayer}
               removePlayer={gameState.removePlayer}
               onViewChange={handleViewChange}
-              overlayRef={overlayRef}
             />
           }
         />
