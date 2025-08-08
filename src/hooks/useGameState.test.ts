@@ -1,10 +1,24 @@
-import { renderHook } from '@testing-library/react';
-import { describe, it, expect } from 'vitest';
+import { renderHook, act } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { useGameState } from './useGameState';
+
+vi.mock('./useSettings', () => ({
+  useSettings: () => ({
+    settings: { showUndo: true, showRedo: true, homeShortcut: 'KeyA', awayShortcut: 'KeyD' },
+    toggleUndo: () => {},
+    toggleRedo: () => {},
+    setHomeShortcut: () => {},
+    setAwayShortcut: () => {},
+  }),
+}));
+
+beforeEach(() => {
+  window.localStorage.removeItem('gameState');
+});
 
 describe('useGameState message handling', () => {
   it('ignores invalid messages without throwing', () => {
-    const { result, unmount } = renderHook(() => useGameState());
+    const { result, unmount } = renderHook(() => useGameState(), { legacyRoot: true });
 
     const invalidMessages = [
       'string',
@@ -28,56 +42,77 @@ describe('useGameState message handling', () => {
 
 describe('useGameState history', () => {
   it('supports undo and redo of state changes', () => {
-    const { result } = renderHook(() => useGameState());
-
-    result.current.updateTeam('home', 'score', 1);
+    const { result } = renderHook(() => useGameState(), { legacyRoot: true });
+    act(() => {
+      result.current.updateTeam('home', 'score', 1);
+    });
     expect(result.current.gameState.homeTeam.score).toBe(1);
 
-    result.current.undo();
+    act(() => {
+      result.current.undo();
+    });
     expect(result.current.gameState.homeTeam.score).toBe(0);
 
-    result.current.redo();
+    act(() => {
+      result.current.redo();
+    });
     expect(result.current.gameState.homeTeam.score).toBe(1);
   });
 
   it('maintains a maximum of 100 history entries', () => {
-    const { result } = renderHook(() => useGameState());
+    const { result } = renderHook(() => useGameState(), { legacyRoot: true });
+    act(() => {
+      for (let i = 1; i <= 110; i++) {
+        result.current.updateTeam('home', 'score', i);
+      }
+    });
 
-    for (let i = 1; i <= 110; i++) {
-      result.current.updateTeam('home', 'score', i);
-    }
+    act(() => {
+      for (let i = 0; i < 50; i++) {
+        result.current.undo();
+      }
+    });
 
-    for (let i = 0; i < 50; i++) {
-      result.current.undo();
-    }
+    act(() => {
+      for (let i = 0; i < 60; i++) {
+        result.current.redo();
+      }
+    });
 
-    for (let i = 0; i < 60; i++) {
-      result.current.redo();
-    }
-
-    for (let i = 0; i < 100; i++) {
-      result.current.undo();
-    }
+    act(() => {
+      for (let i = 0; i < 100; i++) {
+        result.current.undo();
+      }
+    });
 
     expect(result.current.gameState.homeTeam.score).toBe(10);
 
-    result.current.undo();
+    act(() => {
+      result.current.undo();
+    });
     expect(result.current.gameState.homeTeam.score).toBe(10);
   });
 
   it('clears history after a game reset', () => {
-    const { result } = renderHook(() => useGameState());
-
-    result.current.updateTeam('home', 'score', 1);
+    const { result } = renderHook(() => useGameState(), { legacyRoot: true });
+    act(() => {
+      result.current.updateTeam('home', 'score', 1);
+    });
     expect(result.current.gameState.homeTeam.score).toBe(1);
 
-    result.current.resetGame({ force: true });
+    act(() => {
+      result.current.resetGame({ force: true });
+    });
     expect(result.current.gameState.homeTeam.score).toBe(0);
 
-    result.current.undo();
+    act(() => {
+      result.current.undo();
+    });
     expect(result.current.gameState.homeTeam.score).toBe(0);
 
-    result.current.redo();
+    act(() => {
+      result.current.redo();
+    });
     expect(result.current.gameState.homeTeam.score).toBe(0);
   });
 });
@@ -91,7 +126,7 @@ describe('useGameState initialization', () => {
     };
     window.localStorage.setItem('gameState', JSON.stringify(partial));
 
-    const { result } = renderHook(() => useGameState());
+    const { result } = renderHook(() => useGameState(), { legacyRoot: true });
 
     expect(result.current.gameState.homeTeam.name).toBe('Saved Home');
     expect(result.current.gameState.awayTeam.name).toBe('Saved Away');
@@ -106,10 +141,11 @@ describe('useGameState initialization', () => {
 
 describe('tournament settings', () => {
   it('updates tournament name and logo', () => {
-    const { result } = renderHook(() => useGameState());
-
-    result.current.updateTournamentName('Championship');
-    result.current.updateTournamentLogo('logo-url');
+    const { result } = renderHook(() => useGameState(), { legacyRoot: true });
+    act(() => {
+      result.current.updateTournamentName('Championship');
+      result.current.updateTournamentLogo('logo-url');
+    });
 
     expect(result.current.gameState.tournamentName).toBe('Championship');
     expect(result.current.gameState.tournamentLogo).toBe('logo-url');
@@ -118,21 +154,24 @@ describe('tournament settings', () => {
 
 describe('useGameState player management', () => {
   it('removes player and adjusts team totals', () => {
-    const { result } = renderHook(() => useGameState());
-
-    result.current.addPlayer('home', 'Test Player');
+    const { result } = renderHook(() => useGameState(), { legacyRoot: true });
+    act(() => {
+      result.current.addPlayer('home', 'Test Player');
+    });
     const playerId = result.current.gameState.homeTeam.players[0].id;
 
-    result.current.updatePlayerStats('home', playerId, 'goals', 2);
-    result.current.updatePlayerStats('home', playerId, 'yellowCards', 1);
-    result.current.updatePlayerStats('home', playerId, 'redCards', 1);
+    act(() => {
+      result.current.updatePlayerStats('home', playerId, 'goals', 2);
+      result.current.updatePlayerStats('home', playerId, 'yellowCards', 1);
+      result.current.updatePlayerStats('home', playerId, 'redCards', 1);
 
-    result.current.toggleTimer();
-    result.current.updateTeamStats('home', 'yellowCards', 1);
-    result.current.updateTeamStats('home', 'redCards', 1);
-    result.current.toggleTimer();
+      result.current.toggleTimer();
+      result.current.updateTeamStats('home', 'yellowCards', 1);
+      result.current.updateTeamStats('home', 'redCards', 1);
+      result.current.toggleTimer();
 
-    result.current.removePlayer('home', playerId);
+      result.current.removePlayer('home', playerId);
+    });
 
     expect(result.current.gameState.homeTeam.score).toBe(0);
     expect(result.current.gameState.homeTeam.stats.yellowCards).toBe(0);
@@ -143,37 +182,82 @@ describe('useGameState player management', () => {
 
 describe('foul tracking', () => {
   it('increments fouls when team stats receive cards', () => {
-    const { result } = renderHook(() => useGameState());
-    result.current.toggleTimer();
-    result.current.updateTeamStats('home', 'yellowCards', 1);
-    result.current.updateTeamStats('home', 'redCards', 1);
+    const { result } = renderHook(() => useGameState(), { legacyRoot: true });
+    act(() => {
+      result.current.toggleTimer();
+    });
+    act(() => {
+      result.current.updateTeamStats('home', 'yellowCards', 1);
+    });
+    act(() => {
+      result.current.updateTeamStats('home', 'redCards', 1);
+    });
     expect(result.current.gameState.homeTeam.fouls).toBe(2);
   });
 
   it('increments fouls when player receives cards', () => {
-    const { result } = renderHook(() => useGameState());
-    result.current.addPlayer('home', 'Player');
+    const { result } = renderHook(() => useGameState(), { legacyRoot: true });
+    act(() => {
+      result.current.addPlayer('home', 'Player');
+    });
     const playerId = result.current.gameState.homeTeam.players[0].id;
-    result.current.updatePlayerStats('home', playerId, 'yellowCards', 1);
-    result.current.updatePlayerStats('home', playerId, 'redCards', 1);
+    act(() => {
+      result.current.updatePlayerStats('home', playerId, 'yellowCards', 1);
+    });
+    act(() => {
+      result.current.updatePlayerStats('home', playerId, 'redCards', 1);
+    });
     expect(result.current.gameState.homeTeam.fouls).toBe(2);
   });
 
   it('reduces fouls when carded player is removed', () => {
-    const { result } = renderHook(() => useGameState());
-    result.current.addPlayer('home', 'Player');
+    const { result } = renderHook(() => useGameState(), { legacyRoot: true });
+    act(() => {
+      result.current.addPlayer('home', 'Player');
+    });
     const playerId = result.current.gameState.homeTeam.players[0].id;
-    result.current.updatePlayerStats('home', playerId, 'yellowCards', 1);
+    act(() => {
+      result.current.updatePlayerStats('home', playerId, 'yellowCards', 1);
+    });
     expect(result.current.gameState.homeTeam.fouls).toBe(1);
-    result.current.removePlayer('home', playerId);
+    act(() => {
+      result.current.removePlayer('home', playerId);
+    });
     expect(result.current.gameState.homeTeam.fouls).toBe(0);
+  });
+});
+
+describe('foul reset behavior', () => {
+  it('resets fouls between halves in futsal', () => {
+    const { result } = renderHook(() => useGameState(), { legacyRoot: true });
+    act(() => {
+      result.current.updateTeam('home', 'fouls', 3);
+      result.current.updateTeam('away', 'fouls', 2);
+      result.current.updatePeriod(2);
+    });
+    expect(result.current.gameState.homeTeam.fouls).toBe(0);
+    expect(result.current.gameState.awayTeam.fouls).toBe(0);
+  });
+
+  it('carries fouls between halves in football', () => {
+    const { result } = renderHook(() => useGameState(), { legacyRoot: true });
+    act(() => {
+      result.current.changeGamePreset(0);
+      result.current.updateTeam('home', 'fouls', 3);
+      result.current.updateTeam('away', 'fouls', 2);
+      result.current.updatePeriod(2);
+    });
+    expect(result.current.gameState.homeTeam.fouls).toBe(3);
+    expect(result.current.gameState.awayTeam.fouls).toBe(2);
   });
 });
 
 describe('useGameState time limits', () => {
   it('clamps time to half duration in regular phase', () => {
-    const { result } = renderHook(() => useGameState());
-    result.current.updateTime(999, 30);
+    const { result } = renderHook(() => useGameState(), { legacyRoot: true });
+    act(() => {
+      result.current.updateTime(999, 30);
+    });
     expect(result.current.gameState.time.minutes).toBe(
       result.current.gameState.gamePreset.halfDuration
     );
@@ -181,10 +265,12 @@ describe('useGameState time limits', () => {
   });
 
   it('clamps time to extra-time duration in extra-time phase', () => {
-    const { result } = renderHook(() => useGameState());
-    result.current.changeGamePreset(1); // preset with extra time and penalties
-    result.current.updatePeriod(3); // switch to extra-time
-    result.current.updateTime(999, 30);
+    const { result } = renderHook(() => useGameState(), { legacyRoot: true });
+    act(() => {
+      result.current.changeGamePreset(1); // preset with extra time and penalties
+      result.current.updatePeriod(3); // switch to extra-time
+      result.current.updateTime(999, 30);
+    });
     expect(result.current.gameState.matchPhase).toBe('extra-time');
     expect(result.current.gameState.time.minutes).toBe(
       result.current.gameState.gamePreset.extraTimeDuration
@@ -193,25 +279,33 @@ describe('useGameState time limits', () => {
   });
 
   it('keeps timer at zero during penalties', () => {
-    const { result } = renderHook(() => useGameState());
-    result.current.changeGamePreset(1);
-    result.current.updatePeriod(5); // switch to penalties
-    result.current.updateTime(5, 30);
+    const { result } = renderHook(() => useGameState(), { legacyRoot: true });
+    act(() => {
+      result.current.changeGamePreset(1);
+      result.current.updatePeriod(5); // switch to penalties
+      result.current.updateTime(5, 30);
+    });
     expect(result.current.gameState.matchPhase).toBe('penalties');
     expect(result.current.gameState.time.minutes).toBe(0);
     expect(result.current.gameState.time.seconds).toBe(0);
   });
 
   it('resetTimer respects current phase duration', () => {
-    const { result } = renderHook(() => useGameState());
-    result.current.changeGamePreset(1);
-    result.current.updatePeriod(3);
-    result.current.resetTimer();
+    const { result } = renderHook(() => useGameState(), { legacyRoot: true });
+    act(() => {
+      result.current.changeGamePreset(1);
+      result.current.updatePeriod(3);
+    });
+    act(() => {
+      result.current.resetTimer();
+    });
     expect(result.current.gameState.time.minutes).toBe(
       result.current.gameState.gamePreset.extraTimeDuration
     );
-    result.current.updatePeriod(5);
-    result.current.resetTimer();
+    act(() => {
+      result.current.updatePeriod(5);
+      result.current.resetTimer();
+    });
     expect(result.current.gameState.time.minutes).toBe(0);
     expect(result.current.gameState.time.seconds).toBe(0);
   });
