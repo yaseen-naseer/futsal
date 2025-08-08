@@ -65,7 +65,13 @@ export const Dashboard: React.FC<DashboardProps> = ({
 
   const [rtmpUrl, setRtmpUrl] = useState('');
   const [streamKey, setStreamKey] = useState('');
-  const { start, stop, isStreaming } = useRtmpStream(overlayRef, rtmpUrl, streamKey);
+  const {
+    start,
+    stop,
+    isStreaming,
+    connectionState,
+    error: streamError,
+  } = useRtmpStream(overlayRef, rtmpUrl, streamKey);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -251,6 +257,8 @@ export const Dashboard: React.FC<DashboardProps> = ({
             onStart={start}
             onStop={stop}
             isStreaming={isStreaming}
+            connectionState={connectionState}
+            streamError={streamError}
           />
         ) : (
           <>

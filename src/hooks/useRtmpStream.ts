@@ -1,4 +1,5 @@
 import { useCallback, useRef, useState } from 'react';
+import type { FFmpeg } from '@ffmpeg/ffmpeg';
 
 /**
  * Hook for capturing an overlay element and pushing it to an RTMP endpoint.
@@ -16,8 +17,18 @@ export const useRtmpStream = (
   streamKey: string,
 ) => {
   const recorderRef = useRef<MediaRecorder | null>(null);
-  const chunksRef = useRef<Blob[]>([]);
+  const wsRef = useRef<WebSocket | null>(null);
+  const ffmpegRef = useRef<{
+    ffmpeg: FFmpeg;
+    fetchFile: (file: Blob | string) => Promise<Uint8Array>;
+  } | null>(null);
+  const processingRef = useRef<Promise<void>>(Promise.resolve());
+
   const [isStreaming, setIsStreaming] = useState(false);
+  const [connectionState, setConnectionState] = useState<
+    'disconnected' | 'connecting' | 'connected' | 'error'
+  >('disconnected');
+  const [error, setError] = useState<string | null>(null);
 
   const start = useCallback(async () => {
     if (isStreaming || !overlay) {
@@ -35,42 +46,71 @@ export const useRtmpStream = (
       throw new Error('Provided overlay element cannot be captured.');
     }
 
-    const recorder = new MediaRecorder(stream, { mimeType: 'video/webm' });
+    try {
+      setConnectionState('connecting');
 
-    recorder.ondataavailable = event => {
-      if (event.data.size > 0) {
-        chunksRef.current.push(event.data);
-      }
-    };
+      // Dynamic import of ffmpeg.wasm to avoid bundling when not needed
+      const { createFFmpeg, fetchFile } = await import('@ffmpeg/ffmpeg');
+      const ffmpeg = createFFmpeg({ log: false });
+      await ffmpeg.load();
+      ffmpegRef.current = { ffmpeg, fetchFile };
 
-    recorder.onstop = async () => {
-      try {
-        // Dynamic import of ffmpeg.wasm to avoid bundling when not needed
-        const { createFFmpeg, fetchFile } = await import('@ffmpeg/ffmpeg');
-        const ffmpeg = createFFmpeg({ log: false });
-        await ffmpeg.load();
+      const target = rtmpUrl.endsWith('/')
+        ? rtmpUrl + streamKey
+        : `${rtmpUrl}/${streamKey}`;
+      const wsUrl = target.replace(/^rtmp(s)?:\/\//, 'ws$1://');
+      const ws = new WebSocket(wsUrl);
+      ws.binaryType = 'arraybuffer';
+      ws.onopen = () => setConnectionState('connected');
+      ws.onerror = e => {
+        console.error('WebSocket error', e);
+        setConnectionState('error');
+        setError('WebSocket connection failed');
+      };
+      ws.onclose = () => {
+        setConnectionState(prev => (prev === 'error' ? 'error' : 'disconnected'));
+        setIsStreaming(false);
+      };
+      wsRef.current = ws;
 
-        const blob = new Blob(chunksRef.current, { type: 'video/webm' });
-        chunksRef.current = [];
+      const recorder = new MediaRecorder(stream, { mimeType: 'video/webm' });
 
-        ffmpeg.FS('writeFile', 'input.webm', await fetchFile(blob));
-        await ffmpeg.run('-i', 'input.webm', '-c:v', 'libx264', '-f', 'flv', 'output.flv');
-        const data = ffmpeg.FS('readFile', 'output.flv');
-
-        const target = rtmpUrl.endsWith('/') ? rtmpUrl + streamKey : `${rtmpUrl}/${streamKey}`;
-        await fetch(target, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/octet-stream' },
-          body: data.buffer,
-        });
-        } catch (error) {
-          console.error('Failed to push stream', error);
+      const processChunk = async (blob: Blob) => {
+        if (!ffmpegRef.current || !wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) {
+          return;
+        }
+        const { ffmpeg, fetchFile } = ffmpegRef.current;
+        try {
+          ffmpeg.FS('writeFile', 'input.webm', await fetchFile(blob));
+          await ffmpeg.run('-i', 'input.webm', '-c:v', 'libx264', '-f', 'flv', 'output.flv');
+          const data = ffmpeg.FS('readFile', 'output.flv');
+          wsRef.current.send(data.buffer);
+          ffmpeg.FS('unlink', 'input.webm');
+          ffmpeg.FS('unlink', 'output.flv');
+        } catch (err) {
+          console.error('Failed to push chunk', err);
+          setError('Encoding error');
+          setConnectionState('error');
+          wsRef.current.close();
         }
       };
 
-    recorder.start(1000);
-    recorderRef.current = recorder;
-    setIsStreaming(true);
+      processingRef.current = Promise.resolve();
+
+      recorder.ondataavailable = event => {
+        if (event.data.size > 0) {
+          processingRef.current = processingRef.current.then(() => processChunk(event.data));
+        }
+      };
+
+      recorder.start(1000);
+      recorderRef.current = recorder;
+      setIsStreaming(true);
+    } catch (err) {
+      console.error('Failed to start streaming', err);
+      setConnectionState('error');
+      setError(err instanceof Error ? err.message : 'Unknown error');
+    }
   }, [overlay, rtmpUrl, streamKey, isStreaming]);
 
   const stop = useCallback(() => {
@@ -79,10 +119,14 @@ export const useRtmpStream = (
     }
     recorderRef.current?.stop();
     recorderRef.current = null;
+    wsRef.current?.close();
+    wsRef.current = null;
+    ffmpegRef.current = null;
     setIsStreaming(false);
+    setConnectionState('disconnected');
   }, [isStreaming]);
 
-  return { start, stop, isStreaming };
+  return { start, stop, isStreaming, connectionState, error };
 };
 
 export default useRtmpStream;
