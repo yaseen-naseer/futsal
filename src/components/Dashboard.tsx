@@ -31,7 +31,7 @@ interface DashboardProps {
   addPlayer: (team: 'home' | 'away', name: string) => void;
   removePlayer: (team: 'home' | 'away', playerId: string) => void;
   onViewChange: (
-    view: 'scoreboard' | 'dashboard' | 'overlay' | 'stats' | 'settings'
+    view: 'scoreboard' | 'dashboard' | 'stats' | 'settings'
   ) => void;
 }
 
@@ -52,6 +52,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
   const [activeTab, setActiveTab] = useState<'teams' | 'timer' | 'format'>('teams');
   const tabs = ['teams', 'timer', 'format'] as const;
   const { settings } = useSettings();
+
   const [homeLogoError, setHomeLogoError] = useState('');
   const [awayLogoError, setAwayLogoError] = useState('');
   const [homePlayerName, setHomePlayerName] = useState('');
@@ -162,7 +163,10 @@ export const Dashboard: React.FC<DashboardProps> = ({
                 View Scoreboard
               </button>
               <button
-                onClick={() => onViewChange('overlay')}
+                onClick={() =>
+                  typeof window !== 'undefined' &&
+                  window.open('/overlay', '_blank')
+                }
                 className="inline-flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
               >
                 <Monitor className="w-4 h-4" />
@@ -600,15 +604,6 @@ export const Dashboard: React.FC<DashboardProps> = ({
               </div>
             </div>
           </div>
-          )}
-
-          {/* Format Tab */}
-          {activeTab === 'format' && (
-            <GamePresetSelector
-              currentPreset={gameState.gamePreset}
-              onPresetChange={changeGamePreset}
-            />
-          )}
       </div>
     </div>
   );
