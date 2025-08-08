@@ -323,12 +323,17 @@ export const useGameState = () => {
 
   const switchBallPossession = useCallback((newTeam: 'home' | 'away') => {
     setGameState(prev => {
-      // Only allow possession switching when timer is running
+      const now = Date.now();
+
+      // If the timer isn't running yet, just update possession
       if (!prev.isRunning) {
-        return prev;
+        return {
+          ...prev,
+          ballPossession: newTeam,
+          possessionStartTime: now,
+        };
       }
 
-      const now = Date.now();
       const { updatedPossessionTime, homePossession, awayPossession } =
         calculatePossession(prev, now);
 
