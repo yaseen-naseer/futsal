@@ -48,22 +48,12 @@ A modern React + TypeScript scoreboard for tracking futsal matches with a polish
 The UI automatically follows your system theme. Switch your operating system or browser to dark mode to experience the darker palette.
 
 ### Routes
-Navigate between the dashboard, scoreboard, stats tracker, and overlay views using the on-screen controls or by visiting the respective routes (`/dashboard`, `/scoreboard`, `/stats`, `/overlay`).
+Navigate between the dashboard, scoreboard, stats tracker, and overlay views using the on-screen controls or by visiting the respective routes (`/dashboard`, `/scoreboard`, `/stats`, `/overlay`, `/overlay/stats`).
 
 To operate the timer from another device, open `/#/remote` on a device connected to the same network.
 
 ### Browser Source Overlay
-Load `/overlay` in OBS, Yololiv, or any browser source to display a transparent scoreboard and optional stats without any control UI.
 
-If the application uses a hash-based router, the overlay path will appear as `/#/overlay` instead.
-
-### Common Overlay Issues
-
-- **Browser compatibility for `BroadcastChannel`**: The overlay relies on the `BroadcastChannel` API to sync state between windows. Some browsers (such as older Safari versions) do not support this API. In those cases, include a polyfill like [`broadcast-channel`](https://github.com/pubkey/broadcast-channel) or fall back to `localStorage` events for communication.
-- **Ensure multiple windows share the same origin**: Both the control dashboard and the overlay must be served from the same protocol, domain, and port. Opening one in a different origin (including `file://` URLs) prevents updates.
-- **Verify updates via console logs**: Open the developer console in each window. The overlay logs messages when it receives updates, which helps confirm that communication is working.
-
-If `BroadcastChannel` isn't available, import a polyfill or adapt the overlay to use `localStorage` events as a lightweight fallback.
 
 ### Animations
 Key interface elements such as the live indicator and score updates use smooth animations to improve readability. These animations are powered by Tailwind CSS utility classes.
