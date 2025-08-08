@@ -7,14 +7,25 @@ import type { FFmpeg } from '@ffmpeg/ffmpeg';
  * HTMLElement that implements `captureStream`. Recorded data is transcoded
  * with `ffmpeg.wasm` and sent to the concatenated RTMP url.
  *
- * Note: A proper fallback for generic HTMLElements that do not support
- * `captureStream` would require an additional rasterisation step (e.g. via
- * html2canvas). This is left as a TODO.
+ * Elements without native `captureStream` support are rasterised using
+ * `html2canvas` and fed into a `MediaRecorder`. This behaviour can be
+ * toggled via the `enableHtmlCaptureFallback` option.
  */
+export interface UseRtmpStreamOptions {
+  /** Enable html2canvas fallback for elements without captureStream */
+  enableHtmlCaptureFallback?: boolean;
+  /** Frame rate used when rasterising elements with html2canvas */
+  fallbackFps?: number;
+}
+
 export const useRtmpStream = (
   overlay: HTMLElement | HTMLCanvasElement | null,
   rtmpUrl: string,
   streamKey: string,
+  {
+    enableHtmlCaptureFallback = true,
+    fallbackFps = 30,
+  }: UseRtmpStreamOptions = {},
 ) => {
   const recorderRef = useRef<MediaRecorder | null>(null);
   const wsRef = useRef<WebSocket | null>(null);
@@ -23,6 +34,7 @@ export const useRtmpStream = (
     fetchFile: (file: Blob | string) => Promise<Uint8Array>;
   } | null>(null);
   const processingRef = useRef<Promise<void>>(Promise.resolve());
+  const rasterizeIntervalRef = useRef<number | null>(null);
 
   const [isStreaming, setIsStreaming] = useState(false);
   const [connectionState, setConnectionState] = useState<
@@ -35,18 +47,47 @@ export const useRtmpStream = (
       return;
     }
 
-    let stream: MediaStream;
-
-    type Captureable = HTMLElement & { captureStream?: () => MediaStream };
-    if ((overlay as Captureable).captureStream) {
-      // Canvas or other element with captureStream support
-      stream = (overlay as Captureable).captureStream!();
-    } else {
-      // TODO: Implement HTMLElement capture using html2canvas + MediaRecorder
-      throw new Error('Provided overlay element cannot be captured.');
-    }
-
     try {
+      let stream: MediaStream;
+
+      type Captureable = HTMLElement & { captureStream?: () => MediaStream };
+      if ((overlay as Captureable).captureStream) {
+        // Canvas or other element with captureStream support
+        stream = (overlay as Captureable).captureStream!();
+      } else if (enableHtmlCaptureFallback) {
+        const { default: html2canvas } = await import('html2canvas');
+        const canvas = document.createElement('canvas');
+        canvas.width = overlay.clientWidth;
+        canvas.height = overlay.clientHeight;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) {
+          throw new Error('Failed to get 2D context for fallback canvas');
+        }
+        stream = canvas.captureStream(fallbackFps);
+
+        let rendering = false;
+        const render = async () => {
+          if (rendering) return;
+          rendering = true;
+          try {
+            const output = await html2canvas(overlay);
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(output, 0, 0);
+          } catch (e) {
+            console.error('html2canvas render failed', e);
+          }
+          rendering = false;
+        };
+
+        await render();
+        rasterizeIntervalRef.current = window.setInterval(
+          render,
+          1000 / fallbackFps,
+        );
+      } else {
+        throw new Error('Provided overlay element cannot be captured.');
+      }
+
       setConnectionState('connecting');
 
       // Dynamic import of ffmpeg.wasm to avoid bundling when not needed
@@ -111,7 +152,14 @@ export const useRtmpStream = (
       setConnectionState('error');
       setError(err instanceof Error ? err.message : 'Unknown error');
     }
-  }, [overlay, rtmpUrl, streamKey, isStreaming]);
+  }, [
+    overlay,
+    rtmpUrl,
+    streamKey,
+    isStreaming,
+    enableHtmlCaptureFallback,
+    fallbackFps,
+  ]);
 
   const stop = useCallback(() => {
     if (!isStreaming) {
@@ -122,6 +170,10 @@ export const useRtmpStream = (
     wsRef.current?.close();
     wsRef.current = null;
     ffmpegRef.current = null;
+    if (rasterizeIntervalRef.current !== null) {
+      window.clearInterval(rasterizeIntervalRef.current);
+      rasterizeIntervalRef.current = null;
+    }
     setIsStreaming(false);
     setConnectionState('disconnected');
   }, [isStreaming]);
