@@ -15,7 +15,6 @@ import { SettingsPage } from './components/SettingsPage';
 type ViewMode =
   | 'scoreboard'
   | 'dashboard'
-  | 'overlay'
   | 'stats'
   | 'settings';
 
@@ -109,6 +108,7 @@ const AppContent: React.FC = () => {
     <BrowserRouter>
       <Routes>
         <Route path="/remote" element={<RemoteControl />} />
+        <Route path="/overlay" element={<Overlay gameState={gameState.gameState} />} />
         <Route
           path="/overlay"
           element={<Overlay gameState={gameState.gameState} showStats />}
