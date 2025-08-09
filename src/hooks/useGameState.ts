@@ -170,13 +170,51 @@ export const useGameState = () => {
       field: K,
       value: Team[K],
     ) => {
-      setGameState(prev => ({
-        ...prev,
-        [team === 'home' ? 'homeTeam' : 'awayTeam']: {
-          ...prev[team === 'home' ? 'homeTeam' : 'awayTeam'],
-          [field]: value,
-        },
-      }));
+      setGameState(prev => {
+        const teamKey = team === 'home' ? 'homeTeam' : 'awayTeam';
+        const prevTeam = prev[teamKey];
+        const newTeam = { ...prevTeam, [field]: value };
+        let newState: GameState = { ...prev, [teamKey]: newTeam } as GameState;
+        const now = Date.now();
+
+        const isGoal = field === 'score' && typeof value === 'number' && value > prevTeam.score;
+        const isFoul = field === 'fouls' && typeof value === 'number' && value > prevTeam.fouls;
+        if (isGoal || isFoul) {
+          const newBall = team === 'home' ? 'away' : 'home';
+          if (!prev.isRunning) {
+            return {
+              ...newState,
+              ballPossession: newBall,
+              possessionStartTime: now,
+              isRunning: false,
+            };
+          }
+          const { updatedPossessionTime, homePossession, awayPossession } =
+            calculatePossession(prev, now);
+          newState = {
+            ...newState,
+            isRunning: false,
+            ballPossession: newBall,
+            possessionStartTime: now,
+            totalPossessionTime: updatedPossessionTime,
+            homeTeam: {
+              ...((teamKey === 'home' ? newTeam : prev.homeTeam) as Team),
+              stats: {
+                ...((teamKey === 'home' ? newTeam : prev.homeTeam).stats),
+                possession: homePossession,
+              },
+            },
+            awayTeam: {
+              ...((teamKey === 'away' ? newTeam : prev.awayTeam) as Team),
+              stats: {
+                ...((teamKey === 'away' ? newTeam : prev.awayTeam).stats),
+                possession: awayPossession,
+              },
+            },
+          };
+        }
+        return newState;
+      });
     },
     [setGameState],
   );
@@ -198,24 +236,57 @@ export const useGameState = () => {
   const updateTeamStats = useCallback(
     (team: 'home' | 'away', stat: keyof Team['stats'], value: number) => {
       setGameState(prev => {
-        if (!prev.isRunning) return prev;
         const teamKey = team === 'home' ? 'homeTeam' : 'awayTeam';
         const current = prev[teamKey].stats[stat];
         const newValue = Math.max(0, value);
         const diff = newValue - current;
         const foulAdjustment =
           stat === 'yellowCards' || stat === 'redCards' ? diff : 0;
-        return {
-          ...prev,
-          [teamKey]: {
-            ...prev[teamKey],
-            fouls: Math.max(0, prev[teamKey].fouls + foulAdjustment),
-            stats: {
-              ...prev[teamKey].stats,
-              [stat]: newValue,
-            },
+        const newTeam = {
+          ...prev[teamKey],
+          fouls: Math.max(0, prev[teamKey].fouls + foulAdjustment),
+          stats: {
+            ...prev[teamKey].stats,
+            [stat]: newValue,
           },
         };
+        const newStateBase: GameState = { ...prev, [teamKey]: newTeam };
+        if (foulAdjustment > 0) {
+          const now = Date.now();
+          const newBall = team === 'home' ? 'away' : 'home';
+          if (!prev.isRunning) {
+            return {
+              ...newStateBase,
+              ballPossession: newBall,
+              possessionStartTime: now,
+              isRunning: false,
+            };
+          }
+          const { updatedPossessionTime, homePossession, awayPossession } =
+            calculatePossession(prev, now);
+          return {
+            ...newStateBase,
+            isRunning: false,
+            ballPossession: newBall,
+            possessionStartTime: now,
+            totalPossessionTime: updatedPossessionTime,
+            homeTeam: {
+              ...newStateBase.homeTeam,
+              stats: {
+                ...newStateBase.homeTeam.stats,
+                possession: homePossession,
+              },
+            },
+            awayTeam: {
+              ...newStateBase.awayTeam,
+              stats: {
+                ...newStateBase.awayTeam.stats,
+                possession: awayPossession,
+              },
+            },
+          };
+        }
+        return newStateBase;
       });
     },
     [setGameState],
@@ -293,11 +364,15 @@ export const useGameState = () => {
       setGameState(prev => {
         const teamKey = team === 'home' ? 'homeTeam' : 'awayTeam';
         let foulAdjustment = 0;
+        let goalAdjustment = 0;
         const players = prev[teamKey].players.map(p => {
           if (p.id === playerId) {
             const newValue = Math.max(0, value);
             if (field === 'yellowCards' || field === 'redCards') {
               foulAdjustment = newValue - p[field];
+            }
+            if (field === 'goals') {
+              goalAdjustment = newValue - p.goals;
             }
             return { ...p, [field]: newValue };
           }
@@ -312,10 +387,43 @@ export const useGameState = () => {
           const teamScore = players.reduce((sum, p) => sum + p.goals, 0);
           newTeam = { ...newTeam, score: teamScore };
         }
-        return {
-          ...prev,
-          [teamKey]: newTeam,
-        };
+        const newStateBase: GameState = { ...prev, [teamKey]: newTeam };
+        if (goalAdjustment > 0 || foulAdjustment > 0) {
+          const now = Date.now();
+          const newBall = team === 'home' ? 'away' : 'home';
+          if (!prev.isRunning) {
+            return {
+              ...newStateBase,
+              ballPossession: newBall,
+              possessionStartTime: now,
+              isRunning: false,
+            };
+          }
+          const { updatedPossessionTime, homePossession, awayPossession } =
+            calculatePossession(prev, now);
+          return {
+            ...newStateBase,
+            isRunning: false,
+            ballPossession: newBall,
+            possessionStartTime: now,
+            totalPossessionTime: updatedPossessionTime,
+            homeTeam: {
+              ...newStateBase.homeTeam,
+              stats: {
+                ...newStateBase.homeTeam.stats,
+                possession: homePossession,
+              },
+            },
+            awayTeam: {
+              ...newStateBase.awayTeam,
+              stats: {
+                ...newStateBase.awayTeam.stats,
+                possession: awayPossession,
+              },
+            },
+          };
+        }
+        return newStateBase;
       });
     },
     [setGameState],
