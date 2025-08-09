@@ -293,25 +293,45 @@ export const useGameState = () => {
   );
 
   const addPlayer = useCallback(
-    (team: 'home' | 'away', name: string, number?: number) => {
-      const newPlayer: Player = {
-        id: crypto.randomUUID(),
-        name,
-        number,
-        goals: 0,
-        yellowCards: 0,
-        redCards: 0,
-      };
-      setGameState(prev => ({
-        ...prev,
-        [team === 'home' ? 'homeTeam' : 'awayTeam']: {
-          ...prev[team === 'home' ? 'homeTeam' : 'awayTeam'],
-          players: [
-            ...prev[team === 'home' ? 'homeTeam' : 'awayTeam'].players,
-            newPlayer,
-          ],
-        },
-      }));
+    (
+      team: 'home' | 'away',
+      name: string,
+      role: 'starter' | 'substitute',
+      number?: number,
+    ) => {
+      setGameState(prev => {
+        const teamKey = team === 'home' ? 'homeTeam' : 'awayTeam';
+        const players = prev[teamKey].players;
+        const limits =
+          prev.gamePreset.type === 'football'
+            ? { starters: 11, substitutes: 12, total: 23 }
+            : { starters: 5, substitutes: 9, total: 14 };
+
+        const starterCount = players.filter(p => p.role === 'starter').length;
+        const subCount = players.filter(p => p.role === 'substitute').length;
+
+        if (players.length >= limits.total) return prev;
+        if (role === 'starter' && starterCount >= limits.starters) return prev;
+        if (role === 'substitute' && subCount >= limits.substitutes) return prev;
+
+        const newPlayer: Player = {
+          id: crypto.randomUUID(),
+          name,
+          number,
+          role,
+          goals: 0,
+          yellowCards: 0,
+          redCards: 0,
+        };
+
+        return {
+          ...prev,
+          [teamKey]: {
+            ...prev[teamKey],
+            players: [...players, newPlayer],
+          },
+        };
+      });
     },
     [setGameState],
   );

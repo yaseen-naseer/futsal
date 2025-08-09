@@ -4,6 +4,7 @@ A modern React + TypeScript scoreboard for tracking futsal matches with a polish
 
 ## Feature Overview
 - Real-time game dashboard with configurable teams, timer, and match presets
+- Team sheet management with automatic player limits (5 starters + 9 subs for futsal, 11 starters + 12 subs for football)
 - Dark mode styling that adapts to system preferences
 - Animated transitions for scores, timer, and live indicators
 - Route-based views for dashboard, scoreboard, and statistics
