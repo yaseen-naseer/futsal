@@ -90,9 +90,6 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
   const cancelResetGame = () => setShowResetConfirm(false);
 
   const { origin, pathname } = window.location;
-  const trimmedPath = pathname.endsWith('/') ? pathname.slice(0, -1) : pathname;
-  const lastSlashIndex = trimmedPath.lastIndexOf('/');
-  const basePath = lastSlashIndex === -1 ? '' : trimmedPath.slice(0, lastSlashIndex);
   const scoreboardUrl = `${origin}${basePath}/scoreboard?embed=true&theme=${theme}`;
 
   return (
