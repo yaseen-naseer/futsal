@@ -490,6 +490,8 @@ export const useGameState = () => {
         }
       }
 
+      const resetFouls = prev.gamePreset.type === 'futsal' && newHalf > prev.half;
+
       return {
         ...prev,
         half: newHalf,
@@ -500,10 +502,12 @@ export const useGameState = () => {
         totalPossessionTime: updatedPossessionTime,
         homeTeam: {
           ...prev.homeTeam,
+          fouls: resetFouls ? 0 : prev.homeTeam.fouls,
           stats: { ...prev.homeTeam.stats, possession: homePossession },
         },
         awayTeam: {
           ...prev.awayTeam,
+          fouls: resetFouls ? 0 : prev.awayTeam.fouls,
           stats: { ...prev.awayTeam.stats, possession: awayPossession },
         },
       };
@@ -769,6 +773,7 @@ export const useGameState = () => {
                 : autoAdvance.newPhase === 'penalties'
                 ? 0 // Penalties don't have a timer
                 : prev.gamePreset.halfDuration;
+              const resetFouls = prev.gamePreset.type === 'futsal' && autoAdvance.newHalf > prev.half;
 
               return {
                 ...prev,
@@ -780,10 +785,12 @@ export const useGameState = () => {
                 totalPossessionTime: updatedPossessionTime,
                 homeTeam: {
                   ...prev.homeTeam,
+                  fouls: resetFouls ? 0 : prev.homeTeam.fouls,
                   stats: { ...prev.homeTeam.stats, possession: homePossession },
                 },
                 awayTeam: {
                   ...prev.awayTeam,
+                  fouls: resetFouls ? 0 : prev.awayTeam.fouls,
                   stats: { ...prev.awayTeam.stats, possession: awayPossession },
                 },
               };
