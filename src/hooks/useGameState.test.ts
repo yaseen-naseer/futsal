@@ -352,6 +352,7 @@ describe('possession switching', () => {
     });
     expect(result.current.gameState.ballPossession).toBe('home');
     expect(result.current.gameState.isRunning).toBe(false);
+    expect(result.current.gameState.awayTeam.score).toBe(1);
   });
 
   it('switches to opponent and pauses after a foul', () => {

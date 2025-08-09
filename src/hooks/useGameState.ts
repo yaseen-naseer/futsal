@@ -209,16 +209,16 @@ export const useGameState = () => {
             possessionStartTime: now,
             totalPossessionTime: updatedPossessionTime,
             homeTeam: {
-              ...((teamKey === 'home' ? newTeam : prev.homeTeam) as Team),
+              ...(team === 'home' ? newTeam : prev.homeTeam),
               stats: {
-                ...((teamKey === 'home' ? newTeam : prev.homeTeam).stats),
+                ...((team === 'home' ? newTeam : prev.homeTeam).stats),
                 possession: homePossession,
               },
             },
             awayTeam: {
-              ...((teamKey === 'away' ? newTeam : prev.awayTeam) as Team),
+              ...(team === 'away' ? newTeam : prev.awayTeam),
               stats: {
-                ...((teamKey === 'away' ? newTeam : prev.awayTeam).stats),
+                ...((team === 'away' ? newTeam : prev.awayTeam).stats),
                 possession: awayPossession,
               },
             },
