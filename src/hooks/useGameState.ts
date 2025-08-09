@@ -173,12 +173,23 @@ export const useGameState = () => {
       setGameState(prev => {
         const teamKey = team === 'home' ? 'homeTeam' : 'awayTeam';
         const prevTeam = prev[teamKey];
-        const newTeam = { ...prevTeam, [field]: value };
+
+        let newValue = value;
+        if (!prev.isRunning && field === 'score' && typeof newValue === 'number') {
+          const diff = newValue - prevTeam.score;
+          if (diff > 1) newValue = prevTeam.score + 1;
+          else if (diff < -1) newValue = Math.max(0, prevTeam.score - 1);
+        }
+        if (field === 'score' && typeof newValue === 'number') {
+          newValue = Math.max(0, newValue);
+        }
+
+        const newTeam = { ...prevTeam, [field]: newValue };
         let newState: GameState = { ...prev, [teamKey]: newTeam } as GameState;
         const now = Date.now();
 
-        const isGoal = field === 'score' && typeof value === 'number' && value > prevTeam.score;
-        const isFoul = field === 'fouls' && typeof value === 'number' && value > prevTeam.fouls;
+        const isGoal = field === 'score' && typeof newValue === 'number' && newValue > prevTeam.score;
+        const isFoul = field === 'fouls' && typeof newValue === 'number' && newValue > prevTeam.fouls;
         if (isGoal || isFoul) {
           const newBall = team === 'home' ? 'away' : 'home';
           if (!prev.isRunning) {
@@ -238,7 +249,12 @@ export const useGameState = () => {
       setGameState(prev => {
         const teamKey = team === 'home' ? 'homeTeam' : 'awayTeam';
         const current = prev[teamKey].stats[stat];
-        const newValue = Math.max(0, value);
+        let newValue = Math.max(0, value);
+        if (!prev.isRunning && stat === 'corners') {
+          const cornerDiff = newValue - current;
+          if (cornerDiff > 1) newValue = current + 1;
+          else if (cornerDiff < -1) newValue = Math.max(0, current - 1);
+        }
         const diff = newValue - current;
         const foulAdjustment =
           stat === 'yellowCards' || stat === 'redCards' ? diff : 0;
@@ -387,7 +403,12 @@ export const useGameState = () => {
         let goalAdjustment = 0;
         const players = prev[teamKey].players.map(p => {
           if (p.id === playerId) {
-            const newValue = Math.max(0, value);
+            let newValue = Math.max(0, value);
+            if (!prev.isRunning && field === 'goals') {
+              const diff = newValue - p.goals;
+              if (diff > 1) newValue = p.goals + 1;
+              else if (diff < -1) newValue = Math.max(0, p.goals - 1);
+            }
             if (field === 'yellowCards' || field === 'redCards') {
               foulAdjustment = newValue - p[field];
             }
