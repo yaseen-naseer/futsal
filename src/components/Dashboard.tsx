@@ -15,6 +15,7 @@ import {
   Settings,
 } from 'lucide-react';
 import { useSettings } from '../hooks/useSettings';
+import { GamePresetSelector } from './GamePresetSelector';
 
 interface DashboardProps {
   gameState: GameState;
@@ -23,6 +24,7 @@ interface DashboardProps {
   toggleTimer: () => void;
   resetTimer: () => void;
   updatePeriod: (period: number) => void;
+  changeGamePreset: (presetIndex: number) => void;
   undo: () => void;
   redo: () => void;
   addPlayer: (team: 'home' | 'away', name: string) => void;
@@ -39,13 +41,14 @@ export const Dashboard: React.FC<DashboardProps> = ({
   toggleTimer,
   resetTimer,
   updatePeriod,
+  changeGamePreset,
   undo,
   redo,
   addPlayer,
   removePlayer,
   onViewChange,
 }) => {
-  const [activeTab] = useState<'teams' | 'timer' | 'format'>('teams');
+  const [activeTab, setActiveTab] = useState<'teams' | 'timer' | 'format'>('teams');
   const { settings } = useSettings();
 
   const [homeLogoError, setHomeLogoError] = useState('');
@@ -194,7 +197,40 @@ export const Dashboard: React.FC<DashboardProps> = ({
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-
+        <div className="flex justify-center mb-8">
+          <div className="flex gap-2 bg-gray-100 dark:bg-gray-800 p-1 rounded-lg">
+            <button
+              onClick={() => setActiveTab('teams')}
+              className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                activeTab === 'teams'
+                  ? 'bg-white dark:bg-gray-700 shadow'
+                  : 'text-gray-600 dark:text-gray-400'
+              }`}
+            >
+              Teams
+            </button>
+            <button
+              onClick={() => setActiveTab('timer')}
+              className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                activeTab === 'timer'
+                  ? 'bg-white dark:bg-gray-700 shadow'
+                  : 'text-gray-600 dark:text-gray-400'
+              }`}
+            >
+              Timer
+            </button>
+            <button
+              onClick={() => setActiveTab('format')}
+              className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                activeTab === 'format'
+                  ? 'bg-white dark:bg-gray-700 shadow'
+                  : 'text-gray-600 dark:text-gray-400'
+              }`}
+            >
+              Game Format
+            </button>
+          </div>
+        </div>
 
         {/* Teams Tab */}
         {activeTab === 'teams' && (
@@ -567,6 +603,16 @@ export const Dashboard: React.FC<DashboardProps> = ({
                 </div>
               </div>
             </div>
+          </div>
+        )}
+
+        {/* Format Tab */}
+        {activeTab === 'format' && (
+          <div className="max-w-4xl mx-auto">
+            <GamePresetSelector
+              currentPreset={gameState.gamePreset}
+              onPresetChange={changeGamePreset}
+            />
           </div>
         )}
       </div>
