@@ -27,7 +27,7 @@ interface DashboardProps {
   changeGamePreset: (presetIndex: number) => void;
   undo: () => void;
   redo: () => void;
-  addPlayer: (team: 'home' | 'away', name: string) => void;
+  addPlayer: (team: 'home' | 'away', name: string, role: 'starter' | 'substitute') => void;
   removePlayer: (team: 'home' | 'away', playerId: string) => void;
   onViewChange: (
     view: 'scoreboard' | 'dashboard' | 'stats' | 'settings'
@@ -55,12 +55,24 @@ export const Dashboard: React.FC<DashboardProps> = ({
   const [awayLogoError, setAwayLogoError] = useState('');
   const [homePlayerName, setHomePlayerName] = useState('');
   const [awayPlayerName, setAwayPlayerName] = useState('');
+  const [homePlayerRole, setHomePlayerRole] = useState<'starter' | 'substitute'>('starter');
+  const [awayPlayerRole, setAwayPlayerRole] = useState<'starter' | 'substitute'>('starter');
 
   const homeLogoUrlRef = useRef<string | null>(null);
   const awayLogoUrlRef = useRef<string | null>(null);
 
   const homePlayers = gameState.homeTeam.players ?? [];
   const awayPlayers = gameState.awayTeam.players ?? [];
+
+  const playerLimits =
+    gameState.gamePreset.type === 'football'
+      ? { starters: 11, substitutes: 12, total: 23 }
+      : { starters: 5, substitutes: 9, total: 14 };
+
+  const homeStarters = homePlayers.filter(p => p.role === 'starter');
+  const homeSubs = homePlayers.filter(p => p.role === 'substitute');
+  const awayStarters = awayPlayers.filter(p => p.role === 'starter');
+  const awaySubs = awayPlayers.filter(p => p.role === 'substitute');
 
   const handleImageUpload = (team: 'home' | 'away', event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -326,11 +338,20 @@ export const Dashboard: React.FC<DashboardProps> = ({
                       placeholder="Player name"
                       className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-gray-100"
                     />
+                    <select
+                      value={homePlayerRole}
+                      onChange={e => setHomePlayerRole(e.target.value as 'starter' | 'substitute')}
+                      className="px-2 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-gray-100"
+                    >
+                      <option value="starter">Starter</option>
+                      <option value="substitute">Substitute</option>
+                    </select>
                     <button
                       onClick={() => {
                         if (homePlayerName.trim()) {
-                          addPlayer('home', homePlayerName.trim());
+                          addPlayer('home', homePlayerName.trim(), homePlayerRole);
                           setHomePlayerName('');
+                          setHomePlayerRole('starter');
                         }
                       }}
                       className="px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
@@ -338,24 +359,54 @@ export const Dashboard: React.FC<DashboardProps> = ({
                       Add
                     </button>
                   </div>
-                  <ul className="space-y-1 max-h-40 overflow-y-auto">
-                    {homePlayers.map((p) => (
-                      <li
-                        key={p.id}
-                        className="flex items-center justify-between text-sm text-gray-700 dark:text-gray-300"
-                      >
-                        <span>
-                          {p.name} - G:{p.goals} YC:{p.yellowCards} RC:{p.redCards}
-                        </span>
-                        <button
-                          onClick={() => removePlayer('home', p.id)}
-                          className="text-red-500 hover:text-red-700"
-                        >
-                          Remove
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <h4 className="text-sm font-semibold mb-1">
+                        Starters ({homeStarters.length}/{playerLimits.starters})
+                      </h4>
+                      <ul className="space-y-1 max-h-40 overflow-y-auto">
+                        {homeStarters.map(p => (
+                          <li
+                            key={p.id}
+                            className="flex items-center justify-between text-sm text-gray-700 dark:text-gray-300"
+                          >
+                            <span>
+                              {p.name} - G:{p.goals} YC:{p.yellowCards} RC:{p.redCards}
+                            </span>
+                            <button
+                              onClick={() => removePlayer('home', p.id)}
+                              className="text-red-500 hover:text-red-700"
+                            >
+                              Remove
+                            </button>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                    <div>
+                      <h4 className="text-sm font-semibold mb-1">
+                        Substitutes ({homeSubs.length}/{playerLimits.substitutes})
+                      </h4>
+                      <ul className="space-y-1 max-h-40 overflow-y-auto">
+                        {homeSubs.map(p => (
+                          <li
+                            key={p.id}
+                            className="flex items-center justify-between text-sm text-gray-700 dark:text-gray-300"
+                          >
+                            <span>
+                              {p.name} - G:{p.goals} YC:{p.yellowCards} RC:{p.redCards}
+                            </span>
+                            <button
+                              onClick={() => removePlayer('home', p.id)}
+                              className="text-red-500 hover:text-red-700"
+                            >
+                              Remove
+                            </button>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -411,11 +462,20 @@ export const Dashboard: React.FC<DashboardProps> = ({
                       placeholder="Player name"
                       className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 dark:bg-gray-700 dark:text-gray-100"
                     />
+                    <select
+                      value={awayPlayerRole}
+                      onChange={e => setAwayPlayerRole(e.target.value as 'starter' | 'substitute')}
+                      className="px-2 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 dark:bg-gray-700 dark:text-gray-100"
+                    >
+                      <option value="starter">Starter</option>
+                      <option value="substitute">Substitute</option>
+                    </select>
                     <button
                       onClick={() => {
                         if (awayPlayerName.trim()) {
-                          addPlayer('away', awayPlayerName.trim());
+                          addPlayer('away', awayPlayerName.trim(), awayPlayerRole);
                           setAwayPlayerName('');
+                          setAwayPlayerRole('starter');
                         }
                       }}
                       className="px-3 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
@@ -423,24 +483,54 @@ export const Dashboard: React.FC<DashboardProps> = ({
                       Add
                     </button>
                   </div>
-                  <ul className="space-y-1 max-h-40 overflow-y-auto">
-                    {awayPlayers.map((p) => (
-                      <li
-                        key={p.id}
-                        className="flex items-center justify-between text-sm text-gray-700 dark:text-gray-300"
-                      >
-                        <span>
-                          {p.name} - G:{p.goals} YC:{p.yellowCards} RC:{p.redCards}
-                        </span>
-                        <button
-                          onClick={() => removePlayer('away', p.id)}
-                          className="text-red-500 hover:text-red-700"
-                        >
-                          Remove
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <h4 className="text-sm font-semibold mb-1">
+                        Starters ({awayStarters.length}/{playerLimits.starters})
+                      </h4>
+                      <ul className="space-y-1 max-h-40 overflow-y-auto">
+                        {awayStarters.map(p => (
+                          <li
+                            key={p.id}
+                            className="flex items-center justify-between text-sm text-gray-700 dark:text-gray-300"
+                          >
+                            <span>
+                              {p.name} - G:{p.goals} YC:{p.yellowCards} RC:{p.redCards}
+                            </span>
+                            <button
+                              onClick={() => removePlayer('away', p.id)}
+                              className="text-red-500 hover:text-red-700"
+                            >
+                              Remove
+                            </button>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                    <div>
+                      <h4 className="text-sm font-semibold mb-1">
+                        Substitutes ({awaySubs.length}/{playerLimits.substitutes})
+                      </h4>
+                      <ul className="space-y-1 max-h-40 overflow-y-auto">
+                        {awaySubs.map(p => (
+                          <li
+                            key={p.id}
+                            className="flex items-center justify-between text-sm text-gray-700 dark:text-gray-300"
+                          >
+                            <span>
+                              {p.name} - G:{p.goals} YC:{p.yellowCards} RC:{p.redCards}
+                            </span>
+                            <button
+                              onClick={() => removePlayer('away', p.id)}
+                              className="text-red-500 hover:text-red-700"
+                            >
+                              Remove
+                            </button>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>

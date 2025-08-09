@@ -2,6 +2,7 @@ export interface Player {
   id: string;
   name: string;
   number?: number;
+  role: 'starter' | 'substitute';
   goals: number;
   yellowCards: number;
   redCards: number;

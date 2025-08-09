@@ -156,7 +156,7 @@ describe('useGameState player management', () => {
   it('removes player and adjusts team totals', () => {
     const { result } = renderHook(() => useGameState(), { legacyRoot: true });
     act(() => {
-      result.current.addPlayer('home', 'Test Player');
+      result.current.addPlayer('home', 'Test Player', 'starter');
     });
     const playerId = result.current.gameState.homeTeam.players[0].id;
 
@@ -180,6 +180,42 @@ describe('useGameState player management', () => {
   });
 });
 
+describe('team sheet limits', () => {
+  it('enforces futsal player limits', () => {
+    const { result } = renderHook(() => useGameState(), { legacyRoot: true });
+    act(() => {
+      for (let i = 0; i < 6; i++) {
+        result.current.addPlayer('home', `Starter${i}`, 'starter');
+      }
+      for (let i = 0; i < 10; i++) {
+        result.current.addPlayer('home', `Sub${i}`, 'substitute');
+      }
+    });
+    const starters = result.current.gameState.homeTeam.players.filter(p => p.role === 'starter');
+    const subs = result.current.gameState.homeTeam.players.filter(p => p.role === 'substitute');
+    expect(starters).toHaveLength(5);
+    expect(subs).toHaveLength(9);
+  });
+
+  it('enforces football player limits', () => {
+    const { result } = renderHook(() => useGameState(), { legacyRoot: true });
+    act(() => {
+      result.current.changeGamePreset(0);
+      for (let i = 0; i < 12; i++) {
+        result.current.addPlayer('home', `Starter${i}`, 'starter');
+      }
+      for (let i = 0; i < 13; i++) {
+        result.current.addPlayer('home', `Sub${i}`, 'substitute');
+      }
+    });
+    const starters = result.current.gameState.homeTeam.players.filter(p => p.role === 'starter');
+    const subs = result.current.gameState.homeTeam.players.filter(p => p.role === 'substitute');
+    expect(starters).toHaveLength(11);
+    expect(subs).toHaveLength(12);
+    expect(result.current.gameState.homeTeam.players).toHaveLength(23);
+  });
+});
+
 describe('foul tracking', () => {
   it('increments fouls when team stats receive cards', () => {
     const { result } = renderHook(() => useGameState(), { legacyRoot: true });
@@ -198,7 +234,7 @@ describe('foul tracking', () => {
   it('increments fouls when player receives cards', () => {
     const { result } = renderHook(() => useGameState(), { legacyRoot: true });
     act(() => {
-      result.current.addPlayer('home', 'Player');
+      result.current.addPlayer('home', 'Player', 'starter');
     });
     const playerId = result.current.gameState.homeTeam.players[0].id;
     act(() => {
@@ -213,7 +249,7 @@ describe('foul tracking', () => {
   it('reduces fouls when carded player is removed', () => {
     const { result } = renderHook(() => useGameState(), { legacyRoot: true });
     act(() => {
-      result.current.addPlayer('home', 'Player');
+      result.current.addPlayer('home', 'Player', 'starter');
     });
     const playerId = result.current.gameState.homeTeam.players[0].id;
     act(() => {
