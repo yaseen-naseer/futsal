@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';
 import { useGameState } from './hooks/useGameState';
 import { useTheme } from './hooks/useTheme';
 import { Scoreboard } from './components/Scoreboard';
@@ -23,12 +23,16 @@ interface ViewProps {
   gameState: GameStateType;
 }
 
-const ScoreboardView: React.FC<ViewProps> = ({ gameState }) => {
+interface ScoreboardViewProps extends ViewProps {
+  embed?: boolean;
+}
+
+const ScoreboardView: React.FC<ScoreboardViewProps> = ({ gameState, embed }) => {
   const navigate = useNavigate();
   return (
     <div className="relative">
       <Scoreboard gameState={gameState.gameState} />
-      <ControlPanelButton onClick={() => navigate('/dashboard')} />
+      {!embed && <ControlPanelButton onClick={() => navigate('/dashboard')} />}
     </div>
   );
 };
@@ -52,7 +56,12 @@ const StatsView: React.FC<ViewProps> = ({ gameState }) => {
   );
 };
 
-const SettingsView: React.FC<ViewProps> = ({ gameState }) => {
+interface SettingsViewProps extends ViewProps {
+  theme: 'light' | 'dark';
+  toggleTheme: () => void;
+}
+
+const SettingsView: React.FC<SettingsViewProps> = ({ gameState, theme, toggleTheme }) => {
   const navigate = useNavigate();
   return (
     <div className="relative">
@@ -62,6 +71,8 @@ const SettingsView: React.FC<ViewProps> = ({ gameState }) => {
         updateTournamentName={gameState.updateTournamentName}
         resetGame={gameState.resetGame}
         updateTeam={gameState.updateTeam}
+        theme={theme}
+        toggleTheme={toggleTheme}
       />
       <ControlPanelButton onClick={() => navigate('/dashboard')} />
     </div>
@@ -70,12 +81,15 @@ const SettingsView: React.FC<ViewProps> = ({ gameState }) => {
 
 interface MainLayoutProps {
   gameState: GameStateType;
-  theme: string;
+  theme: 'light' | 'dark';
   toggleTheme: () => void;
 }
 
 const MainLayout: React.FC<MainLayoutProps> = ({ gameState, theme, toggleTheme }) => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const params = new URLSearchParams(location.search);
+  const embed = params.get('embed') === 'true';
 
   const handleViewChange = (view: ViewMode) => {
     navigate(`/${view}`);
@@ -83,7 +97,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ gameState, theme, toggleTheme }
 
   return (
     <div className="App">
-      <ThemeToggle theme={theme} onToggle={toggleTheme} />
+      {!embed && <ThemeToggle theme={theme} onToggle={toggleTheme} />}
       <Routes>
         <Route
           path="/dashboard"
@@ -104,9 +118,9 @@ const MainLayout: React.FC<MainLayoutProps> = ({ gameState, theme, toggleTheme }
             />
           }
         />
-        <Route path="/scoreboard" element={<ScoreboardView gameState={gameState} />} />
+        <Route path="/scoreboard" element={<ScoreboardView gameState={gameState} embed={embed} />} />
         <Route path="/stats" element={<StatsView gameState={gameState} />} />
-        <Route path="/settings" element={<SettingsView gameState={gameState} />} />
+        <Route path="/settings" element={<SettingsView gameState={gameState} theme={theme} toggleTheme={toggleTheme} />} />
         <Route path="/" element={<Navigate to="/dashboard" replace />} />
         <Route path="*" element={<Navigate to="/dashboard" replace />} />
       </Routes>
