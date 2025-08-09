@@ -263,6 +263,85 @@ describe('foul tracking', () => {
   });
 });
 
+describe('paused stat adjustment limits', () => {
+  it('clamps goal changes to one when paused', () => {
+    const { result } = renderHook(() => useGameState(), { legacyRoot: true });
+    act(() => {
+      result.current.updateTeam('home', 'score', 5);
+    });
+    expect(result.current.gameState.homeTeam.score).toBe(1);
+
+    act(() => {
+      result.current.updateTeam('home', 'score', 2);
+      result.current.updateTeam('home', 'score', 3);
+      result.current.updateTeam('home', 'score', 4);
+      result.current.updateTeam('home', 'score', 5);
+    });
+    expect(result.current.gameState.homeTeam.score).toBe(5);
+    act(() => {
+      result.current.updateTeam('home', 'score', 0);
+    });
+    expect(result.current.gameState.homeTeam.score).toBe(4);
+  });
+
+  it('clamps corner changes to one when paused', () => {
+    const { result } = renderHook(() => useGameState(), { legacyRoot: true });
+    act(() => {
+      result.current.updateTeamStats('home', 'corners', 5);
+    });
+    expect(result.current.gameState.homeTeam.stats.corners).toBe(1);
+
+    act(() => {
+      result.current.updateTeamStats('home', 'corners', 2);
+      result.current.updateTeamStats('home', 'corners', 3);
+      result.current.updateTeamStats('home', 'corners', 4);
+      result.current.updateTeamStats('home', 'corners', 5);
+    });
+    expect(result.current.gameState.homeTeam.stats.corners).toBe(5);
+    act(() => {
+      result.current.updateTeamStats('home', 'corners', 0);
+    });
+    expect(result.current.gameState.homeTeam.stats.corners).toBe(4);
+  });
+
+  it('allows cards and fouls to change freely when paused', () => {
+    const { result } = renderHook(() => useGameState(), { legacyRoot: true });
+    act(() => {
+      result.current.updateTeamStats('home', 'yellowCards', 5);
+      result.current.updateTeam('home', 'fouls', 5);
+    });
+    expect(result.current.gameState.homeTeam.stats.yellowCards).toBe(5);
+    expect(result.current.gameState.homeTeam.fouls).toBe(5);
+  });
+
+  it('clamps player goal changes to one when paused', () => {
+    const { result } = renderHook(() => useGameState(), { legacyRoot: true });
+    act(() => {
+      result.current.addPlayer('home', 'Player', 'starter');
+    });
+    const playerId = result.current.gameState.homeTeam.players[0].id;
+    act(() => {
+      result.current.updatePlayerStats('home', playerId, 'goals', 5);
+    });
+    expect(result.current.gameState.homeTeam.players[0].goals).toBe(1);
+    expect(result.current.gameState.homeTeam.score).toBe(1);
+
+    act(() => {
+      result.current.updatePlayerStats('home', playerId, 'goals', 2);
+      result.current.updatePlayerStats('home', playerId, 'goals', 3);
+      result.current.updatePlayerStats('home', playerId, 'goals', 4);
+      result.current.updatePlayerStats('home', playerId, 'goals', 5);
+    });
+    expect(result.current.gameState.homeTeam.players[0].goals).toBe(5);
+    expect(result.current.gameState.homeTeam.score).toBe(5);
+    act(() => {
+      result.current.updatePlayerStats('home', playerId, 'goals', 0);
+    });
+    expect(result.current.gameState.homeTeam.players[0].goals).toBe(4);
+    expect(result.current.gameState.homeTeam.score).toBe(4);
+  });
+});
+
 describe('possession switching', () => {
   it('switches to opponent and pauses after a goal', () => {
     const { result } = renderHook(() => useGameState(), { legacyRoot: true });
