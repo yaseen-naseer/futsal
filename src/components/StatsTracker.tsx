@@ -117,17 +117,20 @@ export const StatsTracker: React.FC<StatsTrackerProps> = ({
   ];
 
   const adjustStat = (team: 'home' | 'away', stat: keyof Team['stats'], delta: number) => {
+    if (!gameState.isRunning) return;
     const currentValue =
       gameState[team === 'home' ? 'homeTeam' : 'awayTeam'].stats[stat];
     updateTeamStats(team, stat, currentValue + delta);
   };
 
   const adjustScore = (team: 'home' | 'away', delta: number) => {
+    if (!gameState.isRunning) return;
     const currentScore = gameState[team === 'home' ? 'homeTeam' : 'awayTeam'].score;
     updateTeamScore(team, Math.max(0, currentScore + delta));
   };
 
   const adjustFouls = (team: 'home' | 'away', delta: number) => {
+    if (!gameState.isRunning) return;
     const currentFouls = gameState[team === 'home' ? 'homeTeam' : 'awayTeam'].fouls;
     updateTeamFouls(team, Math.max(0, currentFouls + delta));
   };
@@ -138,6 +141,7 @@ export const StatsTracker: React.FC<StatsTrackerProps> = ({
     field: 'goals' | 'yellowCards' | 'redCards',
     delta: number,
   ) => {
+    if (!gameState.isRunning) return;
     const teamObj = team === 'home' ? homeTeam : awayTeam;
     const player = (teamObj.players ?? []).find(p => p.id === playerId);
     if (!player) return;
@@ -159,60 +163,67 @@ export const StatsTracker: React.FC<StatsTrackerProps> = ({
     stat: keyof Team['stats'];
     homeValue: number;
     awayValue: number;
-  }) => (
-    <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
-      <div className="flex items-center gap-2 mb-3">
-        <Icon className={`w-5 h-5 ${iconColor}`} />
-        <h4 className="font-medium text-gray-900 dark:text-gray-100">{label}</h4>
-      </div>
-
-      <div className="grid grid-cols-2 gap-4">
-        {/* Home Team */}
-        <div className="text-center">
-          <div className="text-sm text-blue-600 font-medium mb-2 dark:text-blue-400">{homeTeam.name}</div>
-          <div className="flex items-center justify-center gap-2">
-            <button
-              onClick={() => adjustStat('home', stat, -1)}
-              className="w-8 h-8 bg-red-100 text-red-600 rounded-lg flex items-center justify-center transition-colors dark:bg-red-900 dark:text-red-400 hover:bg-red-200 dark:hover:bg-red-800"
-            >
-              <Minus className="w-4 h-4" />
-            </button>
-            <span className="text-xl font-bold text-blue-600 min-w-[2rem] dark:text-blue-400">
-              {stat === 'possession' ? `${homeValue}%` : homeValue}
-            </span>
-            <button
-              onClick={() => adjustStat('home', stat, 1)}
-              className="w-8 h-8 bg-green-100 text-green-600 rounded-lg flex items-center justify-center transition-colors dark:bg-green-900 dark:text-green-400 hover:bg-green-200 dark:hover:bg-green-800"
-            >
-              <Plus className="w-4 h-4" />
-            </button>
-          </div>
+  }) => {
+    const disabled = !gameState.isRunning;
+    return (
+      <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
+        <div className="flex items-center gap-2 mb-3">
+          <Icon className={`w-5 h-5 ${iconColor}`} />
+          <h4 className="font-medium text-gray-900 dark:text-gray-100">{label}</h4>
         </div>
 
-        {/* Away Team */}
-        <div className="text-center">
-          <div className="text-sm text-red-600 font-medium mb-2 dark:text-red-400">{awayTeam.name}</div>
-          <div className="flex items-center justify-center gap-2">
-            <button
-              onClick={() => adjustStat('away', stat, -1)}
-              className="w-8 h-8 bg-red-100 text-red-600 rounded-lg flex items-center justify-center transition-colors dark:bg-red-900 dark:text-red-400 hover:bg-red-200 dark:hover:bg-red-800"
-            >
-              <Minus className="w-4 h-4" />
-            </button>
-            <span className="text-xl font-bold text-red-600 min-w-[2rem] dark:text-red-400">
-              {stat === 'possession' ? `${awayValue}%` : awayValue}
-            </span>
-            <button
-              onClick={() => adjustStat('away', stat, 1)}
-              className="w-8 h-8 bg-green-100 text-green-600 rounded-lg flex items-center justify-center transition-colors dark:bg-green-900 dark:text-green-400 hover:bg-green-200 dark:hover:bg-green-800"
-            >
-              <Plus className="w-4 h-4" />
-            </button>
+        <div className="grid grid-cols-2 gap-4">
+          {/* Home Team */}
+          <div className="text-center">
+            <div className="text-sm text-blue-600 font-medium mb-2 dark:text-blue-400">{homeTeam.name}</div>
+            <div className="flex items-center justify-center gap-2">
+              <button
+                onClick={() => adjustStat('home', stat, -1)}
+                disabled={disabled}
+                className={`w-8 h-8 bg-red-100 text-red-600 rounded-lg flex items-center justify-center transition-colors dark:bg-red-900 dark:text-red-400 ${disabled ? 'opacity-50 cursor-not-allowed' : 'hover:bg-red-200 dark:hover:bg-red-800'}`}
+              >
+                <Minus className="w-4 h-4" />
+              </button>
+              <span className="text-xl font-bold text-blue-600 min-w-[2rem] dark:text-blue-400">
+                {stat === 'possession' ? `${homeValue}%` : homeValue}
+              </span>
+              <button
+                onClick={() => adjustStat('home', stat, 1)}
+                disabled={disabled}
+                className={`w-8 h-8 bg-green-100 text-green-600 rounded-lg flex items-center justify-center transition-colors dark:bg-green-900 dark:text-green-400 ${disabled ? 'opacity-50 cursor-not-allowed' : 'hover:bg-green-200 dark:hover:bg-green-800'}`}
+              >
+                <Plus className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+
+          {/* Away Team */}
+          <div className="text-center">
+            <div className="text-sm text-red-600 font-medium mb-2 dark:text-red-400">{awayTeam.name}</div>
+            <div className="flex items-center justify-center gap-2">
+              <button
+                onClick={() => adjustStat('away', stat, -1)}
+                disabled={disabled}
+                className={`w-8 h-8 bg-red-100 text-red-600 rounded-lg flex items-center justify-center transition-colors dark:bg-red-900 dark:text-red-400 ${disabled ? 'opacity-50 cursor-not-allowed' : 'hover:bg-red-200 dark:hover:bg-red-800'}`}
+              >
+                <Minus className="w-4 h-4" />
+              </button>
+              <span className="text-xl font-bold text-red-600 min-w-[2rem] dark:text-red-400">
+                {stat === 'possession' ? `${awayValue}%` : awayValue}
+              </span>
+              <button
+                onClick={() => adjustStat('away', stat, 1)}
+                disabled={disabled}
+                className={`w-8 h-8 bg-green-100 text-green-600 rounded-lg flex items-center justify-center transition-colors dark:bg-green-900 dark:text-green-400 ${disabled ? 'opacity-50 cursor-not-allowed' : 'hover:bg-green-200 dark:hover:bg-green-800'}`}
+              >
+                <Plus className="w-4 h-4" />
+              </button>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-  );
+    );
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 text-gray-900 dark:bg-gray-900 dark:text-gray-100">
@@ -336,7 +347,8 @@ export const StatsTracker: React.FC<StatsTrackerProps> = ({
                 <div className="flex items-center justify-center gap-2">
                   <button
                     onClick={() => adjustScore('home', -1)}
-                    className="w-8 h-8 bg-red-100 text-red-600 rounded-lg flex items-center justify-center transition-colors dark:bg-red-900 dark:text-red-400 hover:bg-red-200 dark:hover:bg-red-800"
+                    disabled={!gameState.isRunning}
+                    className={`w-8 h-8 bg-red-100 text-red-600 rounded-lg flex items-center justify-center transition-colors dark:bg-red-900 dark:text-red-400 ${!gameState.isRunning ? 'opacity-50 cursor-not-allowed' : 'hover:bg-red-200 dark:hover:bg-red-800'}`}
                   >
                     <Minus className="w-4 h-4" />
                   </button>
@@ -345,7 +357,8 @@ export const StatsTracker: React.FC<StatsTrackerProps> = ({
                   </span>
                   <button
                     onClick={() => adjustScore('home', 1)}
-                    className="w-8 h-8 bg-green-100 text-green-600 rounded-lg flex items-center justify-center transition-colors dark:bg-green-900 dark:text-green-400 hover:bg-green-200 dark:hover:bg-green-800"
+                    disabled={!gameState.isRunning}
+                    className={`w-8 h-8 bg-green-100 text-green-600 rounded-lg flex items-center justify-center transition-colors dark:bg-green-900 dark:text-green-400 ${!gameState.isRunning ? 'opacity-50 cursor-not-allowed' : 'hover:bg-green-200 dark:hover:bg-green-800'}`}
                   >
                     <Plus className="w-4 h-4" />
                   </button>
@@ -358,7 +371,8 @@ export const StatsTracker: React.FC<StatsTrackerProps> = ({
                 <div className="flex items-center justify-center gap-2">
                   <button
                     onClick={() => adjustScore('away', -1)}
-                    className="w-8 h-8 bg-red-100 text-red-600 rounded-lg flex items-center justify-center transition-colors dark:bg-red-900 dark:text-red-400 hover:bg-red-200 dark:hover:bg-red-800"
+                    disabled={!gameState.isRunning}
+                    className={`w-8 h-8 bg-red-100 text-red-600 rounded-lg flex items-center justify-center transition-colors dark:bg-red-900 dark:text-red-400 ${!gameState.isRunning ? 'opacity-50 cursor-not-allowed' : 'hover:bg-red-200 dark:hover:bg-red-800'}`}
                   >
                     <Minus className="w-4 h-4" />
                   </button>
@@ -367,7 +381,8 @@ export const StatsTracker: React.FC<StatsTrackerProps> = ({
                   </span>
                   <button
                     onClick={() => adjustScore('away', 1)}
-                    className="w-8 h-8 bg-green-100 text-green-600 rounded-lg flex items-center justify-center transition-colors dark:bg-green-900 dark:text-green-400 hover:bg-green-200 dark:hover:bg-green-800"
+                    disabled={!gameState.isRunning}
+                    className={`w-8 h-8 bg-green-100 text-green-600 rounded-lg flex items-center justify-center transition-colors dark:bg-green-900 dark:text-green-400 ${!gameState.isRunning ? 'opacity-50 cursor-not-allowed' : 'hover:bg-green-200 dark:hover:bg-green-800'}`}
                   >
                     <Plus className="w-4 h-4" />
                   </button>
@@ -389,7 +404,8 @@ export const StatsTracker: React.FC<StatsTrackerProps> = ({
                 <div className="flex items-center justify-center gap-2">
                   <button
                     onClick={() => adjustFouls('home', -1)}
-                    className="w-8 h-8 bg-red-100 text-red-600 rounded-lg flex items-center justify-center transition-colors dark:bg-red-900 dark:text-red-400 hover:bg-red-200 dark:hover:bg-red-800"
+                    disabled={!gameState.isRunning}
+                    className={`w-8 h-8 bg-red-100 text-red-600 rounded-lg flex items-center justify-center transition-colors dark:bg-red-900 dark:text-red-400 ${!gameState.isRunning ? 'opacity-50 cursor-not-allowed' : 'hover:bg-red-200 dark:hover:bg-red-800'}`}
                   >
                     <Minus className="w-4 h-4" />
                   </button>
@@ -398,7 +414,8 @@ export const StatsTracker: React.FC<StatsTrackerProps> = ({
                   </span>
                   <button
                     onClick={() => adjustFouls('home', 1)}
-                    className="w-8 h-8 bg-green-100 text-green-600 rounded-lg flex items-center justify-center transition-colors dark:bg-green-900 dark:text-green-400 hover:bg-green-200 dark:hover:bg-green-800"
+                    disabled={!gameState.isRunning}
+                    className={`w-8 h-8 bg-green-100 text-green-600 rounded-lg flex items-center justify-center transition-colors dark:bg-green-900 dark:text-green-400 ${!gameState.isRunning ? 'opacity-50 cursor-not-allowed' : 'hover:bg-green-200 dark:hover:bg-green-800'}`}
                   >
                     <Plus className="w-4 h-4" />
                   </button>
@@ -411,7 +428,8 @@ export const StatsTracker: React.FC<StatsTrackerProps> = ({
                 <div className="flex items-center justify-center gap-2">
                   <button
                     onClick={() => adjustFouls('away', -1)}
-                    className="w-8 h-8 bg-red-100 text-red-600 rounded-lg flex items-center justify-center transition-colors dark:bg-red-900 dark:text-red-400 hover:bg-red-200 dark:hover:bg-red-800"
+                    disabled={!gameState.isRunning}
+                    className={`w-8 h-8 bg-red-100 text-red-600 rounded-lg flex items-center justify-center transition-colors dark:bg-red-900 dark:text-red-400 ${!gameState.isRunning ? 'opacity-50 cursor-not-allowed' : 'hover:bg-red-200 dark:hover:bg-red-800'}`}
                   >
                     <Minus className="w-4 h-4" />
                   </button>
@@ -420,7 +438,8 @@ export const StatsTracker: React.FC<StatsTrackerProps> = ({
                   </span>
                   <button
                     onClick={() => adjustFouls('away', 1)}
-                    className="w-8 h-8 bg-green-100 text-green-600 rounded-lg flex items-center justify-center transition-colors dark:bg-green-900 dark:text-green-400 hover:bg-green-200 dark:hover:bg-green-800"
+                    disabled={!gameState.isRunning}
+                    className={`w-8 h-8 bg-green-100 text-green-600 rounded-lg flex items-center justify-center transition-colors dark:bg-green-900 dark:text-green-400 ${!gameState.isRunning ? 'opacity-50 cursor-not-allowed' : 'hover:bg-green-200 dark:hover:bg-green-800'}`}
                   >
                     <Plus className="w-4 h-4" />
                   </button>
@@ -509,14 +528,16 @@ export const StatsTracker: React.FC<StatsTrackerProps> = ({
                         <div className="flex items-center justify-center gap-1">
                           <button
                             onClick={() => adjustPlayerStat('home', p.id, 'goals', -1)}
-                            className="w-6 h-6 bg-red-100 text-red-600 rounded flex items-center justify-center dark:bg-red-900 dark:text-red-400 hover:bg-red-200 dark:hover:bg-red-800"
+                            disabled={!gameState.isRunning}
+                            className={`w-6 h-6 bg-red-100 text-red-600 rounded flex items-center justify-center dark:bg-red-900 dark:text-red-400 ${!gameState.isRunning ? 'opacity-50 cursor-not-allowed' : 'hover:bg-red-200 dark:hover:bg-red-800'}`}
                           >
                             <Minus className="w-3 h-3" />
                           </button>
                           <span>{p.goals}</span>
                           <button
                             onClick={() => adjustPlayerStat('home', p.id, 'goals', 1)}
-                            className="w-6 h-6 bg-green-100 text-green-600 rounded flex items-center justify-center dark:bg-green-900 dark:text-green-400 hover:bg-green-200 dark:hover:bg-green-800"
+                            disabled={!gameState.isRunning}
+                            className={`w-6 h-6 bg-green-100 text-green-600 rounded flex items-center justify-center dark:bg-green-900 dark:text-green-400 ${!gameState.isRunning ? 'opacity-50 cursor-not-allowed' : 'hover:bg-green-200 dark:hover:bg-green-800'}`}
                           >
                             <Plus className="w-3 h-3" />
                           </button>
@@ -526,14 +547,16 @@ export const StatsTracker: React.FC<StatsTrackerProps> = ({
                         <div className="flex items-center justify-center gap-1">
                           <button
                             onClick={() => adjustPlayerStat('home', p.id, 'yellowCards', -1)}
-                            className="w-6 h-6 bg-red-100 text-red-600 rounded flex items-center justify-center dark:bg-red-900 dark:text-red-400 hover:bg-red-200 dark:hover:bg-red-800"
+                            disabled={!gameState.isRunning}
+                            className={`w-6 h-6 bg-red-100 text-red-600 rounded flex items-center justify-center dark:bg-red-900 dark:text-red-400 ${!gameState.isRunning ? 'opacity-50 cursor-not-allowed' : 'hover:bg-red-200 dark:hover:bg-red-800'}`}
                           >
                             <Minus className="w-3 h-3" />
                           </button>
                           <span>{p.yellowCards}</span>
                           <button
                             onClick={() => adjustPlayerStat('home', p.id, 'yellowCards', 1)}
-                            className="w-6 h-6 bg-green-100 text-green-600 rounded flex items-center justify-center dark:bg-green-900 dark:text-green-400 hover:bg-green-200 dark:hover:bg-green-800"
+                            disabled={!gameState.isRunning}
+                            className={`w-6 h-6 bg-green-100 text-green-600 rounded flex items-center justify-center dark:bg-green-900 dark:text-green-400 ${!gameState.isRunning ? 'opacity-50 cursor-not-allowed' : 'hover:bg-green-200 dark:hover:bg-green-800'}`}
                           >
                             <Plus className="w-3 h-3" />
                           </button>
@@ -543,14 +566,16 @@ export const StatsTracker: React.FC<StatsTrackerProps> = ({
                         <div className="flex items-center justify-center gap-1">
                           <button
                             onClick={() => adjustPlayerStat('home', p.id, 'redCards', -1)}
-                            className="w-6 h-6 bg-red-100 text-red-600 rounded flex items-center justify-center dark:bg-red-900 dark:text-red-400 hover:bg-red-200 dark:hover:bg-red-800"
+                            disabled={!gameState.isRunning}
+                            className={`w-6 h-6 bg-red-100 text-red-600 rounded flex items-center justify-center dark:bg-red-900 dark:text-red-400 ${!gameState.isRunning ? 'opacity-50 cursor-not-allowed' : 'hover:bg-red-200 dark:hover:bg-red-800'}`}
                           >
                             <Minus className="w-3 h-3" />
                           </button>
                           <span>{p.redCards}</span>
                           <button
                             onClick={() => adjustPlayerStat('home', p.id, 'redCards', 1)}
-                            className="w-6 h-6 bg-green-100 text-green-600 rounded flex items-center justify-center dark:bg-green-900 dark:text-green-400 hover:bg-green-200 dark:hover:bg-green-800"
+                            disabled={!gameState.isRunning}
+                            className={`w-6 h-6 bg-green-100 text-green-600 rounded flex items-center justify-center dark:bg-green-900 dark:text-green-400 ${!gameState.isRunning ? 'opacity-50 cursor-not-allowed' : 'hover:bg-green-200 dark:hover:bg-green-800'}`}
                           >
                             <Plus className="w-3 h-3" />
                           </button>
@@ -580,14 +605,16 @@ export const StatsTracker: React.FC<StatsTrackerProps> = ({
                         <div className="flex items-center justify-center gap-1">
                           <button
                             onClick={() => adjustPlayerStat('away', p.id, 'goals', -1)}
-                            className="w-6 h-6 bg-red-100 text-red-600 rounded flex items-center justify-center dark:bg-red-900 dark:text-red-400 hover:bg-red-200 dark:hover:bg-red-800"
+                            disabled={!gameState.isRunning}
+                            className={`w-6 h-6 bg-red-100 text-red-600 rounded flex items-center justify-center dark:bg-red-900 dark:text-red-400 ${!gameState.isRunning ? 'opacity-50 cursor-not-allowed' : 'hover:bg-red-200 dark:hover:bg-red-800'}`}
                           >
                             <Minus className="w-3 h-3" />
                           </button>
                           <span>{p.goals}</span>
                           <button
                             onClick={() => adjustPlayerStat('away', p.id, 'goals', 1)}
-                            className="w-6 h-6 bg-green-100 text-green-600 rounded flex items-center justify-center dark:bg-green-900 dark:text-green-400 hover:bg-green-200 dark:hover:bg-green-800"
+                            disabled={!gameState.isRunning}
+                            className={`w-6 h-6 bg-green-100 text-green-600 rounded flex items-center justify-center dark:bg-green-900 dark:text-green-400 ${!gameState.isRunning ? 'opacity-50 cursor-not-allowed' : 'hover:bg-green-200 dark:hover:bg-green-800'}`}
                           >
                             <Plus className="w-3 h-3" />
                           </button>
@@ -597,14 +624,16 @@ export const StatsTracker: React.FC<StatsTrackerProps> = ({
                         <div className="flex items-center justify-center gap-1">
                           <button
                             onClick={() => adjustPlayerStat('away', p.id, 'yellowCards', -1)}
-                            className="w-6 h-6 bg-red-100 text-red-600 rounded flex items-center justify-center dark:bg-red-900 dark:text-red-400 hover:bg-red-200 dark:hover:bg-red-800"
+                            disabled={!gameState.isRunning}
+                            className={`w-6 h-6 bg-red-100 text-red-600 rounded flex items-center justify-center dark:bg-red-900 dark:text-red-400 ${!gameState.isRunning ? 'opacity-50 cursor-not-allowed' : 'hover:bg-red-200 dark:hover:bg-red-800'}`}
                           >
                             <Minus className="w-3 h-3" />
                           </button>
                           <span>{p.yellowCards}</span>
                           <button
                             onClick={() => adjustPlayerStat('away', p.id, 'yellowCards', 1)}
-                            className="w-6 h-6 bg-green-100 text-green-600 rounded flex items-center justify-center dark:bg-green-900 dark:text-green-400 hover:bg-green-200 dark:hover:bg-green-800"
+                            disabled={!gameState.isRunning}
+                            className={`w-6 h-6 bg-green-100 text-green-600 rounded flex items-center justify-center dark:bg-green-900 dark:text-green-400 ${!gameState.isRunning ? 'opacity-50 cursor-not-allowed' : 'hover:bg-green-200 dark:hover:bg-green-800'}`}
                           >
                             <Plus className="w-3 h-3" />
                           </button>
@@ -614,14 +643,16 @@ export const StatsTracker: React.FC<StatsTrackerProps> = ({
                         <div className="flex items-center justify-center gap-1">
                           <button
                             onClick={() => adjustPlayerStat('away', p.id, 'redCards', -1)}
-                            className="w-6 h-6 bg-red-100 text-red-600 rounded flex items-center justify-center dark:bg-red-900 dark:text-red-400 hover:bg-red-200 dark:hover:bg-red-800"
+                            disabled={!gameState.isRunning}
+                            className={`w-6 h-6 bg-red-100 text-red-600 rounded flex items-center justify-center dark:bg-red-900 dark:text-red-400 ${!gameState.isRunning ? 'opacity-50 cursor-not-allowed' : 'hover:bg-red-200 dark:hover:bg-red-800'}`}
                           >
                             <Minus className="w-3 h-3" />
                           </button>
                           <span>{p.redCards}</span>
                           <button
                             onClick={() => adjustPlayerStat('away', p.id, 'redCards', 1)}
-                            className="w-6 h-6 bg-green-100 text-green-600 rounded flex items-center justify-center dark:bg-green-900 dark:text-green-400 hover:bg-green-200 dark:hover:bg-green-800"
+                            disabled={!gameState.isRunning}
+                            className={`w-6 h-6 bg-green-100 text-green-600 rounded flex items-center justify-center dark:bg-green-900 dark:text-green-400 ${!gameState.isRunning ? 'opacity-50 cursor-not-allowed' : 'hover:bg-green-200 dark:hover:bg-green-800'}`}
                           >
                             <Plus className="w-3 h-3" />
                           </button>
