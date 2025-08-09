@@ -143,6 +143,7 @@ export const useGameState = () => {
   const keyboardListenerRef = useRef<((event: KeyboardEvent) => void) | null>(null);
   const skipStorageRef = useRef(false);
   const channelRef = useRef<BroadcastChannel | null>(null);
+  const maxHalfRef = useRef(gameState.half);
 
   const { settings } = useSettings();
 
@@ -590,6 +591,8 @@ export const useGameState = () => {
 
   const updatePeriod = useCallback((period: number) => {
     setGameState(prev => {
+      if (period < maxHalfRef.current) return prev;
+
       const now = Date.now();
       const { updatedPossessionTime, homePossession, awayPossession } =
         prev.isRunning
@@ -641,6 +644,8 @@ export const useGameState = () => {
 
       const resetFouls = prev.gamePreset.type === 'futsal' && newHalf > prev.half;
 
+      maxHalfRef.current = Math.max(maxHalfRef.current, newHalf);
+
       return {
         ...prev,
         half: newHalf,
@@ -666,6 +671,24 @@ export const useGameState = () => {
   const changeGamePreset = useCallback((presetIndex: number) => {
     const preset = GAME_PRESETS[presetIndex];
     setGameState(prev => {
+      const hasStarted =
+        prev.isRunning ||
+        prev.half !== 1 ||
+        prev.time.minutes !== prev.gamePreset.halfDuration ||
+        prev.time.seconds !== 0 ||
+        prev.homeTeam.score !== 0 ||
+        prev.awayTeam.score !== 0 ||
+        prev.homeTeam.fouls !== 0 ||
+        prev.awayTeam.fouls !== 0 ||
+        Object.entries(prev.homeTeam.stats).some(
+          ([key, value]) => key !== 'possession' && value !== 0,
+        ) ||
+        Object.entries(prev.awayTeam.stats).some(
+          ([key, value]) => key !== 'possession' && value !== 0,
+        );
+
+      if (hasStarted) return prev;
+
       const now = Date.now();
       const { updatedPossessionTime, homePossession, awayPossession } =
         prev.isRunning
@@ -675,6 +698,9 @@ export const useGameState = () => {
               homePossession: prev.homeTeam.stats.possession,
               awayPossession: prev.awayTeam.stats.possession,
             };
+
+      maxHalfRef.current = 1;
+
       return {
         ...prev,
         gamePreset: preset,
@@ -725,6 +751,7 @@ export const useGameState = () => {
       }
       historyRef.current.past = [];
       historyRef.current.future = [];
+      maxHalfRef.current = 1;
       _setGameState(prev => {
         const base = {
           ...initialState,
@@ -747,7 +774,9 @@ export const useGameState = () => {
     _setGameState(prev => {
       const past = historyRef.current.past;
       if (past.length === 0) return prev;
-      const previous = past.pop() as GameState;
+      const previous = past[past.length - 1] as GameState;
+      if (previous.half < maxHalfRef.current) return prev;
+      past.pop();
       historyRef.current.future.push(prev);
       return previous;
     });
@@ -923,6 +952,7 @@ export const useGameState = () => {
                 ? 0 // Penalties don't have a timer
                 : prev.gamePreset.halfDuration;
               const resetFouls = prev.gamePreset.type === 'futsal' && autoAdvance.newHalf > prev.half;
+              maxHalfRef.current = Math.max(maxHalfRef.current, autoAdvance.newHalf);
 
               return {
                 ...prev,

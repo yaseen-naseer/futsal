@@ -1,6 +1,7 @@
 import { renderHook, act } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { useGameState } from './useGameState';
+import { GAME_PRESETS } from '../utils/gamePresets';
 
 vi.mock('./useSettings', () => ({
   useSettings: () => ({
@@ -447,6 +448,26 @@ describe('useGameState time limits', () => {
     });
     expect(result.current.gameState.time.minutes).toBe(0);
     expect(result.current.gameState.time.seconds).toBe(0);
+  });
+});
+
+describe('game restrictions', () => {
+  it('prevents changing game format after start', () => {
+    const { result } = renderHook(() => useGameState(), { legacyRoot: true });
+    act(() => {
+      result.current.updateTeam('home', 'score', 1);
+      result.current.changeGamePreset(0);
+    });
+    expect(result.current.gameState.gamePreset).not.toBe(GAME_PRESETS[0]);
+  });
+
+  it('does not allow reverting to previous half', () => {
+    const { result } = renderHook(() => useGameState(), { legacyRoot: true });
+    act(() => {
+      result.current.updatePeriod(2);
+      result.current.updatePeriod(1);
+    });
+    expect(result.current.gameState.half).toBe(2);
   });
 });
 

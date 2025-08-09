@@ -74,6 +74,22 @@ export const Dashboard: React.FC<DashboardProps> = ({
   const awayStarters = awayPlayers.filter(p => p.role === 'starter');
   const awaySubs = awayPlayers.filter(p => p.role === 'substitute');
 
+  const hasStarted =
+    gameState.isRunning ||
+    gameState.half !== 1 ||
+    gameState.time.minutes !== gameState.gamePreset.halfDuration ||
+    gameState.time.seconds !== 0 ||
+    gameState.homeTeam.score !== 0 ||
+    gameState.awayTeam.score !== 0 ||
+    gameState.homeTeam.fouls !== 0 ||
+    gameState.awayTeam.fouls !== 0 ||
+    Object.entries(gameState.homeTeam.stats).some(
+      ([key, value]) => key !== 'possession' && value !== 0,
+    ) ||
+    Object.entries(gameState.awayTeam.stats).some(
+      ([key, value]) => key !== 'possession' && value !== 0,
+    );
+
   const handleImageUpload = (team: 'home' | 'away', event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
@@ -232,10 +248,13 @@ export const Dashboard: React.FC<DashboardProps> = ({
               Timer
             </button>
             <button
-              onClick={() => setActiveTab('format')}
+              onClick={() => !hasStarted && setActiveTab('format')}
+              disabled={hasStarted}
               className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
                 activeTab === 'format'
                   ? 'bg-white dark:bg-gray-700 shadow'
+                  : hasStarted
+                  ? 'text-gray-400 dark:text-gray-600 cursor-not-allowed'
                   : 'text-gray-600 dark:text-gray-400'
               }`}
             >
@@ -666,7 +685,12 @@ export const Dashboard: React.FC<DashboardProps> = ({
                       <div className="flex items-center justify-center gap-3">
                         <button
                           onClick={() => updatePeriod(getPrevHalf())}
-                          className="w-10 h-10 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 flex items-center justify-center transition-colors dark:bg-red-900 dark:text-red-200 dark:hover:bg-red-800"
+                          disabled={gameState.half > 1}
+                          className={`w-10 h-10 rounded-lg flex items-center justify-center transition-colors ${
+                            gameState.half > 1
+                              ? 'bg-gray-100 text-gray-400 dark:bg-gray-700 dark:text-gray-500 cursor-not-allowed'
+                              : 'bg-red-100 text-red-600 hover:bg-red-200 dark:bg-red-900 dark:text-red-200 dark:hover:bg-red-800'
+                          }`}
                         >
                           <Minus className="w-4 h-4" />
                         </button>
@@ -699,10 +723,16 @@ export const Dashboard: React.FC<DashboardProps> = ({
         {/* Format Tab */}
         {activeTab === 'format' && (
           <div className="max-w-4xl mx-auto">
-            <GamePresetSelector
-              currentPreset={gameState.gamePreset}
-              onPresetChange={changeGamePreset}
-            />
+            {hasStarted ? (
+              <div className="text-center text-gray-600 dark:text-gray-300">
+                Game format cannot be changed after the game has started.
+              </div>
+            ) : (
+              <GamePresetSelector
+                currentPreset={gameState.gamePreset}
+                onPresetChange={changeGamePreset}
+              />
+            )}
           </div>
         )}
       </div>
