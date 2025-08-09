@@ -227,6 +227,29 @@ describe('foul tracking', () => {
   });
 });
 
+describe('possession switching', () => {
+  it('switches to opponent and pauses after a goal', () => {
+    const { result } = renderHook(() => useGameState(), { legacyRoot: true });
+    act(() => {
+      result.current.toggleTimer();
+      result.current.switchBallPossession('away');
+      result.current.updateTeam('away', 'score', 1);
+    });
+    expect(result.current.gameState.ballPossession).toBe('home');
+    expect(result.current.gameState.isRunning).toBe(false);
+  });
+
+  it('switches to opponent and pauses after a foul', () => {
+    const { result } = renderHook(() => useGameState(), { legacyRoot: true });
+    act(() => {
+      result.current.toggleTimer();
+      result.current.updateTeam('home', 'fouls', 1);
+    });
+    expect(result.current.gameState.ballPossession).toBe('away');
+    expect(result.current.gameState.isRunning).toBe(false);
+  });
+});
+
 describe('foul reset behavior', () => {
   it('resets fouls between halves in futsal', () => {
     const { result } = renderHook(() => useGameState(), { legacyRoot: true });
