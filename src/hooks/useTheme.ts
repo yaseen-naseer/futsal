@@ -11,6 +11,13 @@ export function useTheme() {
   const [theme, setTheme] = useState<Theme>(() => {
     if (typeof window !== 'undefined') {
       try {
+        // Allow theme to be specified via ?theme=dark|light in the URL
+        const params = new URLSearchParams(window.location.search);
+        const paramTheme = params.get('theme') as Theme | null;
+        if (paramTheme === 'dark' || paramTheme === 'light') {
+          return paramTheme;
+        }
+
         const stored = window.localStorage.getItem('theme') as Theme | null;
         if (stored === 'dark' || stored === 'light') {
           return stored;
