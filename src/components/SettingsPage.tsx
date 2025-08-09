@@ -89,7 +89,9 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
 
   const cancelResetGame = () => setShowResetConfirm(false);
 
-  const scoreboardUrl = `${window.location.origin}/scoreboard?embed=true&theme=${theme}`;
+  const { origin, pathname } = window.location;
+  const basePath = pathname.substring(0, pathname.lastIndexOf('/'));
+  const scoreboardUrl = `${origin}${basePath}/scoreboard?embed=true&theme=${theme}`;
 
   return (
     <div className="p-8 max-w-3xl mx-auto">
