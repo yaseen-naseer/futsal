@@ -1,17 +1,17 @@
-# Futsal Scoreboard
+# Futsal Match Control
 
-A modern React + TypeScript scoreboard for tracking futsal matches with a polished interface.
+A modern React + TypeScript application for managing futsal matches with a polished interface.
 
 ## Feature Overview
 - Real-time game dashboard with configurable teams, timer, and match presets
 - Team sheet management with automatic player limits (5 starters + 9 subs for futsal, 11 starters + 12 subs for football)
 - Dark mode styling that adapts to system preferences
 - Animated transitions for scores, timer, and live indicators
-- Route-based views for dashboard, scoreboard, and statistics
+- Route-based views for dashboard and statistics
 - Progressive Web App (PWA) support so the app can be installed on devices
 - Detailed stats tracker with shot accuracy, cards, and corner tracking
 - Customizable keyboard shortcuts for switching ball possession
-- External timer control options: keyboard shortcuts, hardware integration, and a mobile remote at `/#/remote`
+- External timer control options: keyboard shortcuts and hardware integration
 
 ## Screenshots
 
@@ -49,9 +49,7 @@ A modern React + TypeScript scoreboard for tracking futsal matches with a polish
 The UI automatically follows your system theme. Switch your operating system or browser to dark mode to experience the darker palette.
 
 ### Routes
-Navigate between the dashboard, scoreboard, and stats tracker views using the on-screen controls or by visiting the respective routes (`/dashboard`, `/scoreboard`, `/stats`).
-
-To operate the timer from another device, open `/#/remote` on a device connected to the same network.
+Navigate between the dashboard and stats tracker views using the on-screen controls or by visiting the respective routes (`/dashboard`, `/stats`).
 
 ### Animations
 Key interface elements such as the live indicator and score updates use smooth animations to improve readability. These animations are powered by Tailwind CSS utility classes.

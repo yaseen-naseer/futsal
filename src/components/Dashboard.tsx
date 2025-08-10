@@ -8,7 +8,6 @@ import {
   Plus,
   Minus,
   Upload,
-  Monitor,
   BarChart3,
   Undo2,
   Redo2,
@@ -30,7 +29,7 @@ interface DashboardProps {
   addPlayer: (team: 'home' | 'away', name: string, role: 'starter' | 'substitute') => void;
   removePlayer: (team: 'home' | 'away', playerId: string) => void;
   onViewChange: (
-    view: 'scoreboard' | 'dashboard' | 'stats' | 'settings'
+    view: 'dashboard' | 'stats' | 'settings'
   ) => void;
 }
 
@@ -178,15 +177,8 @@ export const Dashboard: React.FC<DashboardProps> = ({
       <div className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-4">
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Futsal Scoreboard Control</h1>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Futsal Control Dashboard</h1>
             <div className="flex gap-3">
-              <button
-                onClick={() => onViewChange('scoreboard')}
-                className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
-              >
-                <Monitor className="w-4 h-4" />
-                View Scoreboard
-              </button>
               <button
                 onClick={() => onViewChange('stats')}
                 className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
