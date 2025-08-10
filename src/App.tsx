@@ -1,41 +1,21 @@
 import React from 'react';
-import { BrowserRouter, Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { useGameState } from './hooks/useGameState';
 import { useTheme } from './hooks/useTheme';
-import { Scoreboard } from './components/Scoreboard';
 import { Dashboard } from './components/Dashboard';
 import { StatsTracker } from './components/StatsTracker';
 import { ControlPanelButton } from './components/ControlPanelButton';
 import { ThemeToggle } from './components/ThemeToggle';
-import { RemoteControl } from './components/RemoteControl';
 import { SettingsProvider } from './hooks/SettingsProvider';
 import { SettingsPage } from './components/SettingsPage';
 
-type ViewMode =
-  | 'scoreboard'
-  | 'dashboard'
-  | 'stats'
-  | 'settings';
+type ViewMode = 'dashboard' | 'stats' | 'settings';
 
 type GameStateType = ReturnType<typeof useGameState>;
 
 interface ViewProps {
   gameState: GameStateType;
 }
-
-interface ScoreboardViewProps extends ViewProps {
-  embed?: boolean;
-}
-
-const ScoreboardView: React.FC<ScoreboardViewProps> = ({ gameState, embed }) => {
-  const navigate = useNavigate();
-  return (
-    <div className="relative">
-      <Scoreboard gameState={gameState.gameState} />
-      {!embed && <ControlPanelButton onClick={() => navigate('/dashboard')} />}
-    </div>
-  );
-};
 
 const StatsView: React.FC<ViewProps> = ({ gameState }) => {
   const navigate = useNavigate();
@@ -87,9 +67,6 @@ interface MainLayoutProps {
 
 const MainLayout: React.FC<MainLayoutProps> = ({ gameState, theme, toggleTheme }) => {
   const navigate = useNavigate();
-  const location = useLocation();
-  const params = new URLSearchParams(location.search);
-  const embed = params.get('embed') === 'true';
 
   const handleViewChange = (view: ViewMode) => {
     navigate(`/${view}`);
@@ -97,7 +74,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ gameState, theme, toggleTheme }
 
   return (
     <div className="App">
-      {!embed && <ThemeToggle theme={theme} onToggle={toggleTheme} />}
+      <ThemeToggle theme={theme} onToggle={toggleTheme} />
       <Routes>
         <Route
           path="/dashboard"
@@ -118,7 +95,6 @@ const MainLayout: React.FC<MainLayoutProps> = ({ gameState, theme, toggleTheme }
             />
           }
         />
-        <Route path="/scoreboard" element={<ScoreboardView gameState={gameState} embed={embed} />} />
         <Route path="/stats" element={<StatsView gameState={gameState} />} />
         <Route path="/settings" element={<SettingsView gameState={gameState} theme={theme} toggleTheme={toggleTheme} />} />
         <Route path="/" element={<Navigate to="/dashboard" replace />} />
@@ -135,7 +111,6 @@ const AppContent: React.FC = () => {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/remote" element={<RemoteControl />} />
         <Route
           path="/*"
           element={<MainLayout gameState={gameState} theme={theme} toggleTheme={toggleTheme} />}
