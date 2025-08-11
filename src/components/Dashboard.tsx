@@ -12,6 +12,8 @@ import {
   Undo2,
   Redo2,
   Settings,
+  Monitor,
+  SlidersHorizontal,
 } from 'lucide-react';
 import { useSettings } from '../hooks/useSettings';
 import { GamePresetSelector } from './GamePresetSelector';
@@ -179,6 +181,20 @@ export const Dashboard: React.FC<DashboardProps> = ({
           <div className="flex justify-between items-center py-4">
             <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Futsal Control Dashboard</h1>
             <div className="flex gap-3">
+              <button
+                onClick={() => window.open('/scoreboard', '_blank')}
+                className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+              >
+                <Monitor className="w-4 h-4" />
+                Scoreboard
+              </button>
+              <button
+                onClick={() => window.open('/scoreboard/control', '_blank')}
+                className="inline-flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+              >
+                <SlidersHorizontal className="w-4 h-4" />
+                Control Panel
+              </button>
               <button
                 onClick={() => onViewChange('stats')}
                 className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
