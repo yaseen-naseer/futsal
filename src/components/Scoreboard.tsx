@@ -13,6 +13,15 @@ export const Scoreboard: React.FC<Props> = ({ gameState }) => {
   const [width, setWidth] = useState(800);
   const [height, setHeight] = useState(200);
 
+  const resolutions = [
+    { label: '800x200', width: 800, height: 200 },
+    { label: '1024x256', width: 1024, height: 256 },
+    { label: '1280x720', width: 1280, height: 720 },
+    { label: '1920x1080', width: 1920, height: 1080 },
+    { label: 'Custom', width: null, height: null },
+  ];
+  const [resolution, setResolution] = useState(resolutions[0].label);
+
   const [showScore, setShowScore] = useState(true);
   const [showFouls, setShowFouls] = useState(false);
   const [showHalf, setShowHalf] = useState(true);
@@ -21,6 +30,15 @@ export const Scoreboard: React.FC<Props> = ({ gameState }) => {
   const [layout, setLayout] = useState<'horizontal' | 'vertical'>('horizontal');
   const [bgColor, setBgColor] = useState('#000000');
   const [textColor, setTextColor] = useState('#ffffff');
+
+  const handleResolutionChange = (value: string) => {
+    setResolution(value);
+    const selected = resolutions.find(r => r.label === value);
+    if (selected && selected.width && selected.height) {
+      setWidth(selected.width);
+      setHeight(selected.height);
+    }
+  };
 
   const url = `${window.location.origin}/scoreboard/display?width=${width}&height=${height}` +
     `&showScore=${showScore ? 1 : 0}&showFouls=${showFouls ? 1 : 0}&showHalf=${showHalf ? 1 : 0}` +
@@ -32,23 +50,47 @@ export const Scoreboard: React.FC<Props> = ({ gameState }) => {
       <ControlPanelButton onClick={() => navigate('/dashboard')} />
       <div className="flex flex-wrap gap-4">
         <label className="flex flex-col">
-          <span className="text-sm mb-1">Width</span>
-          <input
-            type="number"
-            value={width}
-            onChange={e => setWidth(parseInt(e.target.value) || 0)}
-            className="border rounded p-1 w-24"
-          />
+          <span className="text-sm mb-1">Resolution</span>
+          <select
+            value={resolution}
+            onChange={e => handleResolutionChange(e.target.value)}
+            className="border rounded p-1"
+          >
+            {resolutions.map(r => (
+              <option key={r.label} value={r.label}>
+                {r.label}
+              </option>
+            ))}
+          </select>
         </label>
-        <label className="flex flex-col">
-          <span className="text-sm mb-1">Height</span>
-          <input
-            type="number"
-            value={height}
-            onChange={e => setHeight(parseInt(e.target.value) || 0)}
-            className="border rounded p-1 w-24"
-          />
-        </label>
+        {resolution === 'Custom' && (
+          <>
+            <label className="flex flex-col">
+              <span className="text-sm mb-1">Width</span>
+              <input
+                type="number"
+                value={width}
+                onChange={e => {
+                  setWidth(parseInt(e.target.value) || 0);
+                  setResolution('Custom');
+                }}
+                className="border rounded p-1 w-24"
+              />
+            </label>
+            <label className="flex flex-col">
+              <span className="text-sm mb-1">Height</span>
+              <input
+                type="number"
+                value={height}
+                onChange={e => {
+                  setHeight(parseInt(e.target.value) || 0);
+                  setResolution('Custom');
+                }}
+                className="border rounded p-1 w-24"
+              />
+            </label>
+          </>
+        )}
         <label className="flex items-center gap-2">
           <input type="checkbox" checked={showScore} onChange={e => setShowScore(e.target.checked)} />
           <span>Score</span>
