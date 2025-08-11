@@ -8,8 +8,8 @@ import { ControlPanelButton } from './components/ControlPanelButton';
 import { ThemeToggle } from './components/ThemeToggle';
 import { SettingsProvider } from './hooks/SettingsProvider';
 import { SettingsPage } from './components/SettingsPage';
-import { ScoreboardPage } from './components/ScoreboardPage';
-import { ScoreboardControlPanel } from './components/ScoreboardControlPanel';
+import { ScoreboardDisplayPage } from './components/ScoreboardDisplayPage';
+import { Scoreboard } from './components/Scoreboard';
 
 type ViewMode = 'dashboard' | 'stats' | 'settings';
 
@@ -114,12 +114,12 @@ const AppContent: React.FC = () => {
     <BrowserRouter>
       <Routes>
         <Route
-          path="/scoreboard"
-          element={<ScoreboardPage gameState={gameState.gameState} />}
+          path="/scoreboard/display"
+          element={<ScoreboardDisplayPage gameState={gameState.gameState} />}
         />
         <Route
-          path="/scoreboard/control"
-          element={<ScoreboardControlPanel gameState={gameState.gameState} />}
+          path="/scoreboard"
+          element={<Scoreboard gameState={gameState.gameState} />}
         />
         <Route
           path="/*"

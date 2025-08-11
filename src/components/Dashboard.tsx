@@ -182,18 +182,18 @@ export const Dashboard: React.FC<DashboardProps> = ({
             <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Futsal Control Dashboard</h1>
             <div className="flex gap-3">
               <button
-                onClick={() => window.open('/scoreboard', '_blank')}
+                onClick={() => window.open('/scoreboard/display', '_blank')}
                 className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
               >
                 <Monitor className="w-4 h-4" />
-                Scoreboard
+                Scoreboard Display
               </button>
               <button
-                onClick={() => window.open('/scoreboard/control', '_blank')}
+                onClick={() => window.open('/scoreboard', '_blank')}
                 className="inline-flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
               >
                 <SlidersHorizontal className="w-4 h-4" />
-                Control Panel
+                Scoreboard
               </button>
               <button
                 onClick={() => onViewChange('stats')}
