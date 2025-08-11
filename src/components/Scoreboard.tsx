@@ -1,54 +1,127 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { GameState } from '../types';
-import { getHalfName } from '../utils/gamePresets';
+import { ScoreboardDisplay } from './ScoreboardDisplay';
+import { ControlPanelButton } from './ControlPanelButton';
+import { useNavigate } from 'react-router-dom';
 
-interface ScoreboardProps {
+interface Props {
   gameState: GameState;
-  width?: number;
-  height?: number;
 }
 
-export const Scoreboard: React.FC<ScoreboardProps> = ({ gameState, width, height }) => {
-  const period = getHalfName(gameState.half, gameState.gamePreset, gameState.matchPhase);
-  const style: React.CSSProperties = {
-    width: width ? `${width}px` : undefined,
-    height: height ? `${height}px` : undefined,
-  };
+export const Scoreboard: React.FC<Props> = ({ gameState }) => {
+  const navigate = useNavigate();
+  const [width, setWidth] = useState(800);
+  const [height, setHeight] = useState(200);
+
+  const [showScore, setShowScore] = useState(true);
+  const [showFouls, setShowFouls] = useState(false);
+  const [showHalf, setShowHalf] = useState(true);
+  const [showTimer, setShowTimer] = useState(true);
+  const [timerMode, setTimerMode] = useState<'elapsed' | 'remaining'>('elapsed');
+  const [layout, setLayout] = useState<'horizontal' | 'vertical'>('horizontal');
+  const [bgColor, setBgColor] = useState('#000000');
+  const [textColor, setTextColor] = useState('#ffffff');
+
+  const url = `${window.location.origin}/scoreboard/display?width=${width}&height=${height}` +
+    `&showScore=${showScore ? 1 : 0}&showFouls=${showFouls ? 1 : 0}&showHalf=${showHalf ? 1 : 0}` +
+    `&showTimer=${showTimer ? 1 : 0}&timerMode=${timerMode}&layout=${layout}` +
+    `&bgColor=${encodeURIComponent(bgColor)}&textColor=${encodeURIComponent(textColor)}`;
 
   return (
-    <div
-      className="flex items-center justify-between bg-black/70 text-white px-4 py-2 rounded"
-      style={style}
-    >
-      <div className="flex items-center gap-2">
-        {gameState.homeTeam.logo && (
-          <img
-            src={gameState.homeTeam.logo}
-            alt="Home logo"
-            className="h-8 w-8 object-contain"
+    <div className="p-4 space-y-4 relative">
+      <ControlPanelButton onClick={() => navigate('/dashboard')} />
+      <div className="flex flex-wrap gap-4">
+        <label className="flex flex-col">
+          <span className="text-sm mb-1">Width</span>
+          <input
+            type="number"
+            value={width}
+            onChange={e => setWidth(parseInt(e.target.value) || 0)}
+            className="border rounded p-1 w-24"
           />
-        )}
-        <span className="font-bold text-xl">{gameState.homeTeam.name}</span>
-      </div>
-      <div className="text-3xl font-bold">
-        {gameState.homeTeam.score} - {gameState.awayTeam.score}
-      </div>
-      <div className="flex items-center gap-2">
-        <span className="font-bold text-xl">{gameState.awayTeam.name}</span>
-        {gameState.awayTeam.logo && (
-          <img
-            src={gameState.awayTeam.logo}
-            alt="Away logo"
-            className="h-8 w-8 object-contain"
+        </label>
+        <label className="flex flex-col">
+          <span className="text-sm mb-1">Height</span>
+          <input
+            type="number"
+            value={height}
+            onChange={e => setHeight(parseInt(e.target.value) || 0)}
+            className="border rounded p-1 w-24"
           />
-        )}
+        </label>
+        <label className="flex items-center gap-2">
+          <input type="checkbox" checked={showScore} onChange={e => setShowScore(e.target.checked)} />
+          <span>Score</span>
+        </label>
+        <label className="flex items-center gap-2">
+          <input type="checkbox" checked={showFouls} onChange={e => setShowFouls(e.target.checked)} />
+          <span>Fouls</span>
+        </label>
+        <label className="flex items-center gap-2">
+          <input type="checkbox" checked={showHalf} onChange={e => setShowHalf(e.target.checked)} />
+          <span>Half</span>
+        </label>
+        <label className="flex items-center gap-2">
+          <input type="checkbox" checked={showTimer} onChange={e => setShowTimer(e.target.checked)} />
+          <span>Timer</span>
+        </label>
+        <div className="flex items-center gap-2">
+          <span>Timer Mode:</span>
+          <select
+            value={timerMode}
+            onChange={e => setTimerMode(e.target.value as 'elapsed' | 'remaining')}
+            className="border rounded p-1"
+          >
+            <option value="elapsed">Elapsed</option>
+            <option value="remaining">Remaining</option>
+          </select>
+        </div>
+        <div className="flex items-center gap-2">
+          <span>Layout:</span>
+          <select
+            value={layout}
+            onChange={e => setLayout(e.target.value as 'horizontal' | 'vertical')}
+            className="border rounded p-1"
+          >
+            <option value="horizontal">Horizontal</option>
+            <option value="vertical">Vertical</option>
+          </select>
+        </div>
+        <label className="flex items-center gap-2">
+          <span>BG</span>
+          <input type="color" value={bgColor} onChange={e => setBgColor(e.target.value)} />
+        </label>
+        <label className="flex items-center gap-2">
+          <span>Text</span>
+          <input type="color" value={textColor} onChange={e => setTextColor(e.target.value)} />
+        </label>
       </div>
-      <div className="flex flex-col items-end text-sm ml-4">
-        <span className="font-mono text-lg">
-          {String(gameState.time.minutes).padStart(2, '0')}:
-          {String(gameState.time.seconds).padStart(2, '0')}
-        </span>
-        <span>{period}</span>
+      <div>
+        <label className="text-sm mb-1 block">Shareable Link</label>
+        <input type="text" readOnly value={url} className="border rounded p-2 w-full" />
+        <button
+          onClick={() => window.open(url, '_blank')}
+          className="mt-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+        >
+          Open Scoreboard
+        </button>
+      </div>
+      <div className="border rounded p-4 bg-gray-100 dark:bg-gray-800">
+        <ScoreboardDisplay
+          gameState={gameState}
+          width={width}
+          height={height}
+          options={{
+            showScore,
+            showFouls,
+            showHalf,
+            showTimer,
+            timerMode,
+            layout,
+            bgColor,
+            textColor,
+          }}
+        />
       </div>
     </div>
   );
