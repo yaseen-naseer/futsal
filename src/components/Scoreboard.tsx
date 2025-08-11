@@ -2,13 +2,16 @@ import React, { useState } from 'react';
 import { GameState } from '../types';
 import { ScoreboardDisplay } from './ScoreboardDisplay';
 import { ControlPanelButton } from './ControlPanelButton';
+import { ThemeToggle } from './ThemeToggle';
 import { useNavigate } from 'react-router-dom';
 
 interface Props {
   gameState: GameState;
+  theme: 'light' | 'dark';
+  toggleTheme: () => void;
 }
 
-export const Scoreboard: React.FC<Props> = ({ gameState }) => {
+export const Scoreboard: React.FC<Props> = ({ gameState, theme, toggleTheme }) => {
   const navigate = useNavigate();
   const [width, setWidth] = useState(800);
   const [height, setHeight] = useState(200);
@@ -46,7 +49,8 @@ export const Scoreboard: React.FC<Props> = ({ gameState }) => {
     `&bgColor=${encodeURIComponent(bgColor)}&textColor=${encodeURIComponent(textColor)}`;
 
   return (
-    <div className="p-4 space-y-4 relative">
+    <div className="min-h-screen p-4 space-y-4 relative bg-gray-50 text-gray-900 dark:bg-gray-900 dark:text-gray-100">
+      <ThemeToggle theme={theme} onToggle={toggleTheme} />
       <ControlPanelButton onClick={() => navigate('/dashboard')} />
       <div className="flex flex-wrap gap-4">
         <label className="flex flex-col">
@@ -54,7 +58,7 @@ export const Scoreboard: React.FC<Props> = ({ gameState }) => {
           <select
             value={resolution}
             onChange={e => handleResolutionChange(e.target.value)}
-            className="border rounded p-1"
+            className="border border-gray-300 dark:border-gray-600 rounded p-1 bg-white dark:bg-gray-700 dark:text-gray-100"
           >
             {resolutions.map(r => (
               <option key={r.label} value={r.label}>
@@ -74,23 +78,23 @@ export const Scoreboard: React.FC<Props> = ({ gameState }) => {
                   setWidth(parseInt(e.target.value) || 0);
                   setResolution('Custom');
                 }}
-                className="border rounded p-1 w-24"
-              />
-            </label>
-            <label className="flex flex-col">
-              <span className="text-sm mb-1">Height</span>
-              <input
-                type="number"
-                value={height}
-                onChange={e => {
-                  setHeight(parseInt(e.target.value) || 0);
-                  setResolution('Custom');
-                }}
-                className="border rounded p-1 w-24"
-              />
-            </label>
-          </>
-        )}
+              className="border border-gray-300 dark:border-gray-600 rounded p-1 w-24 bg-white dark:bg-gray-700 dark:text-gray-100"
+            />
+          </label>
+          <label className="flex flex-col">
+            <span className="text-sm mb-1">Height</span>
+            <input
+              type="number"
+              value={height}
+              onChange={e => {
+                setHeight(parseInt(e.target.value) || 0);
+                setResolution('Custom');
+              }}
+              className="border border-gray-300 dark:border-gray-600 rounded p-1 w-24 bg-white dark:bg-gray-700 dark:text-gray-100"
+            />
+          </label>
+        </>
+      )}
         <label className="flex items-center gap-2">
           <input type="checkbox" checked={showScore} onChange={e => setShowScore(e.target.checked)} />
           <span>Score</span>
@@ -112,7 +116,7 @@ export const Scoreboard: React.FC<Props> = ({ gameState }) => {
           <select
             value={timerMode}
             onChange={e => setTimerMode(e.target.value as 'elapsed' | 'remaining')}
-            className="border rounded p-1"
+            className="border border-gray-300 dark:border-gray-600 rounded p-1 bg-white dark:bg-gray-700 dark:text-gray-100"
           >
             <option value="elapsed">Elapsed</option>
             <option value="remaining">Remaining</option>
@@ -123,7 +127,7 @@ export const Scoreboard: React.FC<Props> = ({ gameState }) => {
           <select
             value={layout}
             onChange={e => setLayout(e.target.value as 'horizontal' | 'vertical')}
-            className="border rounded p-1"
+            className="border border-gray-300 dark:border-gray-600 rounded p-1 bg-white dark:bg-gray-700 dark:text-gray-100"
           >
             <option value="horizontal">Horizontal</option>
             <option value="vertical">Vertical</option>
@@ -131,24 +135,39 @@ export const Scoreboard: React.FC<Props> = ({ gameState }) => {
         </div>
         <label className="flex items-center gap-2">
           <span>BG</span>
-          <input type="color" value={bgColor} onChange={e => setBgColor(e.target.value)} />
+          <input
+            type="color"
+            value={bgColor}
+            onChange={e => setBgColor(e.target.value)}
+            className="border border-gray-300 dark:border-gray-600 rounded bg-transparent"
+          />
         </label>
         <label className="flex items-center gap-2">
           <span>Text</span>
-          <input type="color" value={textColor} onChange={e => setTextColor(e.target.value)} />
+          <input
+            type="color"
+            value={textColor}
+            onChange={e => setTextColor(e.target.value)}
+            className="border border-gray-300 dark:border-gray-600 rounded bg-transparent"
+          />
         </label>
       </div>
       <div>
         <label className="text-sm mb-1 block">Shareable Link</label>
-        <input type="text" readOnly value={url} className="border rounded p-2 w-full" />
+        <input
+          type="text"
+          readOnly
+          value={url}
+          className="border border-gray-300 dark:border-gray-600 rounded p-2 w-full bg-white dark:bg-gray-700 dark:text-gray-100"
+        />
         <button
           onClick={() => window.open(url, '_blank')}
-          className="mt-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+          className="mt-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors dark:bg-indigo-500 dark:hover:bg-indigo-400"
         >
           Open Scoreboard
         </button>
       </div>
-      <div className="border rounded p-4 bg-gray-100 dark:bg-gray-800">
+      <div className="border border-gray-300 dark:border-gray-700 rounded p-4 bg-gray-100 dark:bg-gray-800">
         <ScoreboardDisplay
           gameState={gameState}
           width={width}

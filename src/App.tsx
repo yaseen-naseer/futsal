@@ -119,7 +119,7 @@ const AppContent: React.FC = () => {
         />
         <Route
           path="/scoreboard"
-          element={<Scoreboard gameState={gameState.gameState} />}
+          element={<Scoreboard gameState={gameState.gameState} theme={theme} toggleTheme={toggleTheme} />}
         />
         <Route
           path="/*"
