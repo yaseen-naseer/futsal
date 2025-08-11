@@ -57,48 +57,54 @@ export const ScoreboardDisplay: React.FC<ScoreboardDisplayProps> = ({ gameState,
       ? 'flex flex-col items-center gap-2 px-4 py-2 rounded'
       : 'flex items-center justify-between px-4 py-2 rounded';
 
-  return (
-    <div className={containerClass} style={style}>
-      <div className="flex items-center gap-2">
-        {gameState.homeTeam.logo && (
-          <img
-            src={gameState.homeTeam.logo}
-            alt="Home logo"
-            className="h-8 w-8 object-contain"
-          />
-        )}
-        <span className="font-bold text-xl">
-          {gameState.homeTeam.name}
-          {showFouls && <span className="ml-2 text-sm">F:{gameState.homeTeam.fouls}</span>}
-        </span>
+  const renderTeam = (
+    team: GameState['homeTeam'],
+    reverse = false
+  ) => (
+    <div
+      className={`flex items-center gap-2 ${
+        reverse ? 'flex-row-reverse text-right' : ''
+      }`}
+    >
+      {team.logo && (
+        <img
+          src={team.logo}
+          alt="Team logo"
+          className="h-10 w-10 object-contain"
+        />
+      )}
+      <div className="flex flex-col">
+        <span className="font-bold text-xl truncate">{team.name}</span>
+        {showFouls && <span className="text-xs">Fouls: {team.fouls}</span>}
       </div>
+    </div>
+  );
+
+  const renderCenter = () => (
+    <div className="flex flex-col items-center mx-4">
       {showScore && (
-        <div className="text-3xl font-bold">
+        <div className="text-4xl font-extrabold leading-none">
           {gameState.homeTeam.score} - {gameState.awayTeam.score}
         </div>
       )}
-      <div className="flex items-center gap-2">
-        <span className="font-bold text-xl">
-          {gameState.awayTeam.name}
-          {showFouls && <span className="ml-2 text-sm">F:{gameState.awayTeam.fouls}</span>}
-        </span>
-        {gameState.awayTeam.logo && (
-          <img
-            src={gameState.awayTeam.logo}
-            alt="Away logo"
-            className="h-8 w-8 object-contain"
-          />
-        )}
-      </div>
-      {showTimer && (
-        <div className="flex flex-col items-end text-sm ml-4">
-          <span className="font-mono text-lg">
-            {String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}
-          </span>
+      {(showTimer || showHalf) && (
+        <div className="flex items-center gap-2 text-sm mt-1">
+          {showTimer && (
+            <span className="font-mono text-lg">
+              {String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}
+            </span>
+          )}
           {showHalf && <span>{period}</span>}
         </div>
       )}
-      {!showTimer && showHalf && <div className="text-sm ml-4">{period}</div>}
+    </div>
+  );
+
+  return (
+    <div className={containerClass} style={style}>
+      {renderTeam(gameState.homeTeam)}
+      {renderCenter()}
+      {renderTeam(gameState.awayTeam, true)}
     </div>
   );
 };
