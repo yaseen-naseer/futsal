@@ -41,6 +41,12 @@ export const ScoreboardControlPanel: React.FC<Props> = ({ gameState }) => {
       <div>
         <label className="text-sm mb-1 block">Shareable Link</label>
         <input type="text" readOnly value={url} className="border rounded p-2 w-full" />
+        <button
+          onClick={() => window.open(url, '_blank')}
+          className="mt-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+        >
+          Open Scoreboard
+        </button>
       </div>
       <div className="border rounded p-4 bg-gray-100 dark:bg-gray-800">
         <Scoreboard gameState={gameState} width={width} height={height} />
