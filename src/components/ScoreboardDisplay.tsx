@@ -66,7 +66,6 @@ export const ScoreboardDisplay: React.FC<ScoreboardDisplayProps> = ({ gameState,
   const containerClass =
     layout === 'vertical'
       ? 'flex flex-col items-center gap-6 px-8 py-6 rounded-2xl shadow-2xl backdrop-blur-sm'
-      : 'grid grid-cols-[1fr_auto_1fr] items-center px-8 py-6 rounded-2xl shadow-2xl backdrop-blur-sm';
 
   const renderTeam = (
     team: GameState['homeTeam'],
@@ -108,7 +107,6 @@ export const ScoreboardDisplay: React.FC<ScoreboardDisplayProps> = ({ gameState,
   const renderCenter = () => (
     <div
       className="flex flex-col items-center flex-shrink-0"
-      style={{ gap: baseHeight * 0.1 }}
     >
       {showScore && (
         <div
@@ -133,9 +131,6 @@ export const ScoreboardDisplay: React.FC<ScoreboardDisplayProps> = ({ gameState,
 
   return (
     <div className={containerClass} style={style}>
-      <div className="justify-self-start min-w-0">{renderTeam(gameState.homeTeam, false, 'home')}</div>
-      <div className="justify-self-center">{renderCenter()}</div>
-      <div className="justify-self-end min-w-0">{renderTeam(gameState.awayTeam, true, 'away')}</div>
     </div>
   );
 };
