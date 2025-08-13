@@ -74,7 +74,9 @@ export const ScoreboardDisplay: React.FC<ScoreboardDisplayProps> = ({ gameState,
     variant: 'home' | 'away' = 'home'
   ) => (
     <div
-      className={`flex items-center gap-2 ${reverse ? 'flex-row-reverse text-right' : ''}`}
+      className={`flex items-center gap-2 w-full min-w-0 overflow-hidden ${
+        reverse ? 'flex-row-reverse text-right' : ''
+      }`}
       style={{ gap: baseHeight * 0.05 }}
     >
       {team.logo && (
@@ -86,7 +88,7 @@ export const ScoreboardDisplay: React.FC<ScoreboardDisplayProps> = ({ gameState,
         />
       )}
       <div
-        className={`flex flex-col px-3 py-1 rounded-lg text-white ${
+        className={`flex flex-col px-3 py-1 rounded-lg text-white flex-1 min-w-0 ${
           variant === 'home'
             ? 'bg-gradient-to-br from-blue-500 to-indigo-700'
             : 'bg-gradient-to-br from-red-500 to-pink-700'
