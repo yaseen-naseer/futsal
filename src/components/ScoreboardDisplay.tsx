@@ -28,7 +28,7 @@ export const ScoreboardDisplay: React.FC<ScoreboardDisplayProps> = ({ gameState,
     showTimer = true,
     timerMode = 'elapsed',
     layout = 'horizontal',
-    bgColor = '#000000',
+    bgColor = '#1d4ed8',
     textColor = '#ffffff',
   } = options || {};
 
@@ -59,7 +59,8 @@ export const ScoreboardDisplay: React.FC<ScoreboardDisplayProps> = ({ gameState,
 
   const renderTeam = (
     team: GameState['homeTeam'],
-    reverse = false
+    reverse = false,
+    variant: 'home' | 'away' = 'home'
   ) => (
     <div
       className={`flex items-center gap-2 ${
@@ -70,15 +71,21 @@ export const ScoreboardDisplay: React.FC<ScoreboardDisplayProps> = ({ gameState,
         <img
           src={team.logo}
           alt="Team logo"
-          className="h-12 w-12 object-cover rounded-full shadow-md"
+          className="h-[clamp(2.5rem,5vw,3.5rem)] w-[clamp(2.5rem,5vw,3.5rem)] object-cover rounded-full shadow-md"
         />
       )}
-      <div className="flex flex-col">
-        <span className="font-semibold text-2xl uppercase tracking-wide truncate">
+      <div
+        className={`flex flex-col px-3 py-1 rounded-lg text-white ${
+          variant === 'home'
+            ? 'bg-gradient-to-br from-blue-500 to-indigo-700'
+            : 'bg-gradient-to-br from-red-500 to-pink-700'
+        }`}
+      >
+        <span className="font-semibold uppercase tracking-wide truncate text-[clamp(1rem,2.5vw,2.5rem)]">
           {team.name}
         </span>
         {showFouls && (
-          <span className="text-sm opacity-80">Fouls: {team.fouls}</span>
+          <span className="text-[clamp(0.75rem,1.5vw,1rem)] opacity-90">Fouls: {team.fouls}</span>
         )}
       </div>
     </div>
@@ -87,12 +94,12 @@ export const ScoreboardDisplay: React.FC<ScoreboardDisplayProps> = ({ gameState,
   const renderCenter = () => (
     <div className="flex flex-col items-center mx-6">
       {showScore && (
-        <div className="font-mono text-6xl font-bold leading-none drop-shadow-md">
+        <div className="font-mono font-bold leading-none drop-shadow-md text-[clamp(2.5rem,8vw,6rem)]">
           {gameState.homeTeam.score} - {gameState.awayTeam.score}
         </div>
       )}
       {(showTimer || showHalf) && (
-        <div className="flex items-center gap-3 mt-2 text-lg">
+        <div className="flex items-center gap-3 mt-2 text-[clamp(1rem,2.5vw,1.5rem)]">
           {showTimer && (
             <span className="font-mono tracking-widest">
               {String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}
@@ -106,9 +113,9 @@ export const ScoreboardDisplay: React.FC<ScoreboardDisplayProps> = ({ gameState,
 
   return (
     <div className={containerClass} style={style}>
-      {renderTeam(gameState.homeTeam)}
+      {renderTeam(gameState.homeTeam, false, 'home')}
       {renderCenter()}
-      {renderTeam(gameState.awayTeam, true)}
+      {renderTeam(gameState.awayTeam, true, 'away')}
     </div>
   );
 };

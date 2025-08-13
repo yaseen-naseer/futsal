@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { GameState } from '../types';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { ScoreboardDisplay } from './ScoreboardDisplay';
@@ -14,6 +14,20 @@ export const ScoreboardDisplayPage: React.FC<Props> = ({ gameState }) => {
   const width = parseInt(params.get('width') || '800', 10);
   const height = parseInt(params.get('height') || '200', 10);
 
+  const [scale, setScale] = useState(1);
+
+  useEffect(() => {
+    const updateScale = () => {
+      const scaleX = window.innerWidth / width;
+      const scaleY = window.innerHeight / height;
+      setScale(Math.min(scaleX, scaleY));
+    };
+
+    updateScale();
+    window.addEventListener('resize', updateScale);
+    return () => window.removeEventListener('resize', updateScale);
+  }, [width, height]);
+
   const options = {
     showScore: params.get('showScore') !== '0',
     showFouls: params.get('showFouls') === '1',
@@ -21,14 +35,16 @@ export const ScoreboardDisplayPage: React.FC<Props> = ({ gameState }) => {
     showTimer: params.get('showTimer') !== '0',
     timerMode: (params.get('timerMode') as 'elapsed' | 'remaining') || 'elapsed',
     layout: (params.get('layout') as 'horizontal' | 'vertical') || 'horizontal',
-    bgColor: params.get('bgColor') ? decodeURIComponent(params.get('bgColor') as string) : '#000000',
+    bgColor: params.get('bgColor') ? decodeURIComponent(params.get('bgColor') as string) : '#1d4ed8',
     textColor: params.get('textColor') ? decodeURIComponent(params.get('textColor') as string) : '#ffffff',
   } as const;
 
   return (
     <div className="w-screen h-screen flex items-center justify-center bg-transparent">
       <ControlPanelButton onClick={() => navigate('/scoreboard')} />
-      <ScoreboardDisplay gameState={gameState} width={width} height={height} options={options} />
+      <div style={{ transform: `scale(${scale})`, transformOrigin: 'center' }}>
+        <ScoreboardDisplay gameState={gameState} width={width} height={height} options={options} />
+      </div>
     </div>
   );
 };
