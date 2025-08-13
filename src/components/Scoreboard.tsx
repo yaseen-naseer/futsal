@@ -31,7 +31,7 @@ export const Scoreboard: React.FC<Props> = ({ gameState, theme, toggleTheme }) =
   const [showTimer, setShowTimer] = useState(true);
   const [timerMode, setTimerMode] = useState<'elapsed' | 'remaining'>('elapsed');
   const [layout, setLayout] = useState<'horizontal' | 'vertical'>('horizontal');
-  const [bgColor, setBgColor] = useState('#000000');
+  const [bgColor, setBgColor] = useState('#1d4ed8');
   const [textColor, setTextColor] = useState('#ffffff');
 
   const handleResolutionChange = (value: string) => {
