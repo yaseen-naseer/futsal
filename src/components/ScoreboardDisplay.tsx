@@ -74,6 +74,7 @@ export const ScoreboardDisplay: React.FC<ScoreboardDisplayProps> = ({
   const timerFont = `${baseHeight * 0.3}px`;
   const scoreFont = `${baseHeight * 0.35}px`;
   const teamFont = `${baseHeight * 0.25}px`;
+  const pausedFont = `${baseHeight * 0.15}px`;
 
   return (
     <div className="grid grid-rows-3 w-full h-full p-2 gap-y-2" style={style}>
@@ -81,10 +82,17 @@ export const ScoreboardDisplay: React.FC<ScoreboardDisplayProps> = ({
         <div className="justify-self-start">
           <TeamLogo src={gameState.homeTeam.logo} size={logoSize} />
         </div>
-        <div className="justify-self-center font-mono font-bold" style={{ fontSize: timerFont }}>
-          {showTimer ? (
-            <>{String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}</>
-          ) : null}
+        <div className="justify-self-center font-mono font-bold flex flex-col items-center">
+          {showTimer && (
+            <span style={{ fontSize: timerFont }}>
+              {String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}
+            </span>
+          )}
+          {!gameState.isRunning && (
+            <span className="uppercase" style={{ fontSize: pausedFont }}>
+              Paused
+            </span>
+          )}
         </div>
         <div className="justify-self-end">
           <TeamLogo src={gameState.awayTeam.logo} size={logoSize} />
