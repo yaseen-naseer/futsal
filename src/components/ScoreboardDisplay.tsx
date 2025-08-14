@@ -66,18 +66,19 @@ export const ScoreboardDisplay: React.FC<ScoreboardDisplayProps> = ({
     backgroundColor: bgColor,
     color: textColor,
   };
-
-  const baseHeight = height ?? 200;
-  const logoSize = `${baseHeight * 0.4}px`;
-  const compWidth = `${baseHeight * 0.4}px`;
-  const compHeight = `${baseHeight * 0.2}px`;
-  const timerFont = `${baseHeight * 0.3}px`;
-  const scoreFont = `${baseHeight * 0.35}px`;
-  const teamFont = `${baseHeight * 0.25}px`;
-  const pausedFont = `${baseHeight * 0.15}px`;
+  // Account for padding (p-2 => 8px each side) and vertical gaps (gap-y-2 => 8px each)
+  // to ensure the computed content sizes fit within the provided height.
+  const innerHeight = (height ?? 200) - 32;
+  const logoSize = `${innerHeight * 0.4}px`;
+  const compWidth = `${innerHeight * 0.4}px`;
+  const compHeight = `${innerHeight * 0.2}px`;
+  const timerFont = `${innerHeight * 0.3}px`;
+  const scoreFont = `${innerHeight * 0.35}px`;
+  const teamFont = `${innerHeight * 0.25}px`;
+  const pausedFont = `${innerHeight * 0.15}px`;
 
   return (
-    <div className="grid grid-rows-3 w-full h-full p-2 gap-y-2" style={style}>
+    <div className="grid grid-rows-[auto_1fr_auto] w-full h-full p-2 gap-y-2" style={style}>
       <div className="grid grid-cols-3 items-center">
         <div className="justify-self-start">
           <TeamLogo src={gameState.homeTeam.logo} size={logoSize} />
@@ -124,10 +125,10 @@ export const ScoreboardDisplay: React.FC<ScoreboardDisplayProps> = ({
       </div>
 
       <div className="grid grid-cols-2 items-center">
-        <span className="justify-self-start truncate font-semibold" style={{ fontSize: teamFont }}>
+        <span className="justify-self-start truncate font-semibold leading-none" style={{ fontSize: teamFont }}>
           {gameState.homeTeam.name}
         </span>
-        <span className="justify-self-end truncate font-semibold text-right" style={{ fontSize: teamFont }}>
+        <span className="justify-self-end truncate font-semibold text-right leading-none" style={{ fontSize: teamFont }}>
           {gameState.awayTeam.name}
         </span>
       </div>
