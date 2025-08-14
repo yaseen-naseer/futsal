@@ -16,25 +16,24 @@ interface ScoreboardDisplayProps {
   options?: ScoreboardDisplayOptions;
 }
 
-const TeamLogoA: React.FC<{ size: string }> = ({ size }) => (
-  <svg viewBox="0 0 100 100" width={size} height={size} className="fill-current">
-    <polygon points="50,10 90,90 10,90" />
-  </svg>
-);
+const TeamLogo: React.FC<{ src?: string; size: string }> = ({ src, size }) =>
+  src ? (
+    <img src={src} alt="Team logo" style={{ width: size, height: size }} className="object-contain" />
+  ) : (
+    <svg viewBox="0 0 100 100" width={size} height={size} className="fill-current">
+      <polygon points="50,10 90,90 10,90" />
+    </svg>
+  );
 
-const TeamLogoB: React.FC<{ size: string }> = ({ size }) => (
-  <svg viewBox="0 0 100 100" width={size} height={size} className="fill-current">
-    <polygon points="50,10 90,90 10,90" />
-    <circle cx="50" cy="60" r="20" fill="none" stroke="currentColor" strokeWidth="10" />
-  </svg>
-);
-
-const CompetitionLogo: React.FC<{ width: string; height: string }> = ({ width, height }) => (
-  <svg viewBox="0 0 100 60" width={width} height={height} className="stroke-current fill-none">
-    <rect x="5" y="5" width="90" height="50" rx="15" ry="15" strokeWidth="10" />
-    <ellipse cx="50" cy="30" rx="25" ry="12" strokeWidth="10" />
-  </svg>
-);
+const TournamentLogo: React.FC<{ src?: string; width: string; height: string }> = ({ src, width, height }) =>
+  src ? (
+    <img src={src} alt="Competition logo" style={{ width, height }} className="object-contain" />
+  ) : (
+    <svg viewBox="0 0 100 60" width={width} height={height} className="stroke-current fill-none">
+      <rect x="5" y="5" width="90" height="50" rx="15" ry="15" strokeWidth="10" />
+      <ellipse cx="50" cy="30" rx="25" ry="12" strokeWidth="10" />
+    </svg>
+  );
 
 export const ScoreboardDisplay: React.FC<ScoreboardDisplayProps> = ({
   gameState,
@@ -68,19 +67,19 @@ export const ScoreboardDisplay: React.FC<ScoreboardDisplayProps> = ({
     color: textColor,
   };
 
-  const logoSize = 'clamp(2rem, 8vw, 6rem)';
-  const compWidth = 'clamp(4rem, 12vw, 8rem)';
-  const compHeight = 'clamp(2rem, 6vw, 4rem)';
-  const timerFont = 'clamp(1.5rem, 6vw, 4rem)';
-  const scoreFont = 'clamp(2rem, 8vw, 5rem)';
-  const labelFont = 'clamp(0.5rem, 2vw, 1.25rem)';
-  const teamFont = 'clamp(1rem, 4vw, 2.5rem)';
+  const baseHeight = height ?? 200;
+  const logoSize = `${baseHeight * 0.4}px`;
+  const compWidth = `${baseHeight * 0.4}px`;
+  const compHeight = `${baseHeight * 0.2}px`;
+  const timerFont = `${baseHeight * 0.3}px`;
+  const scoreFont = `${baseHeight * 0.35}px`;
+  const teamFont = `${baseHeight * 0.25}px`;
 
   return (
     <div className="grid grid-rows-3 w-full h-full p-2 gap-y-2" style={style}>
       <div className="grid grid-cols-3 items-center">
         <div className="justify-self-start">
-          <TeamLogoA size={logoSize} />
+          <TeamLogo src={gameState.homeTeam.logo} size={logoSize} />
         </div>
         <div className="justify-self-center font-mono font-bold" style={{ fontSize: timerFont }}>
           {showTimer ? (
@@ -88,7 +87,7 @@ export const ScoreboardDisplay: React.FC<ScoreboardDisplayProps> = ({
           ) : null}
         </div>
         <div className="justify-self-end">
-          <TeamLogoB size={logoSize} />
+          <TeamLogo src={gameState.awayTeam.logo} size={logoSize} />
         </div>
       </div>
 
@@ -99,12 +98,11 @@ export const ScoreboardDisplay: React.FC<ScoreboardDisplayProps> = ({
               <span className="font-mono font-bold leading-none" style={{ fontSize: scoreFont }}>
                 {String(gameState.homeTeam.score).padStart(2, '0')}
               </span>
-              <span style={{ fontSize: labelFont }}>Score</span>
             </div>
           )}
         </div>
         <div className="justify-self-center">
-          <CompetitionLogo width={compWidth} height={compHeight} />
+          <TournamentLogo src={gameState.tournamentLogo} width={compWidth} height={compHeight} />
         </div>
         <div className="justify-self-end">
           {showScore && (
@@ -112,7 +110,6 @@ export const ScoreboardDisplay: React.FC<ScoreboardDisplayProps> = ({
               <span className="font-mono font-bold leading-none" style={{ fontSize: scoreFont }}>
                 {String(gameState.awayTeam.score).padStart(2, '0')}
               </span>
-              <span style={{ fontSize: labelFont }}>Score</span>
             </div>
           )}
         </div>
