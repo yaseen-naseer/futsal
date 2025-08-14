@@ -61,6 +61,17 @@ export const ScoreboardDisplay: React.FC<ScoreboardDisplayProps> = ({
     color: textColor,
   };
 
+  const baseWidth = 800;
+  const baseHeight = 200;
+  const scale = Math.min(
+    width ? width / baseWidth : 1,
+    height ? height / baseHeight : 1,
+  );
+  const logoSize = `${3 * scale}rem`;
+  const teamFontSize = `${1.125 * scale}rem`;
+  const infoFontSize = `${0.875 * scale}rem`;
+  const scoreFontSize = `${2.25 * scale}rem`;
+
   const renderTeam = (
     team: GameState['homeTeam'],
   ) => (
@@ -69,14 +80,17 @@ export const ScoreboardDisplay: React.FC<ScoreboardDisplayProps> = ({
         <img
           src={team.logo}
           alt="Team logo"
-          className="w-12 h-12 object-cover rounded-full mb-2"
+          style={{ width: logoSize, height: logoSize }}
+          className="object-cover rounded-full mb-2"
         />
       )}
-      <span className="text-lg font-semibold truncate">
+      <span className="font-semibold truncate" style={{ fontSize: teamFontSize }}>
         {team.name}
       </span>
       {showFouls && (
-        <span className="text-sm opacity-80">Fouls: {team.fouls}</span>
+        <span className="opacity-80" style={{ fontSize: infoFontSize }}>
+          Fouls: {team.fouls}
+        </span>
       )}
     </div>
   );
@@ -84,12 +98,12 @@ export const ScoreboardDisplay: React.FC<ScoreboardDisplayProps> = ({
   const renderCenter = () => (
     <div className="flex flex-col items-center">
       {showScore && (
-        <div className="text-4xl font-bold font-mono mb-2">
+        <div className="font-bold font-mono mb-2" style={{ fontSize: scoreFontSize }}>
           {gameState.homeTeam.score} - {gameState.awayTeam.score}
         </div>
       )}
       {(showTimer || showHalf) && (
-        <div className="text-sm flex items-center space-x-2">
+        <div className="flex items-center space-x-2" style={{ fontSize: infoFontSize }}>
           {showTimer && (
             <span className="font-mono">
               {String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}
