@@ -142,6 +142,7 @@ export const useGameState = () => {
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const keyboardListenerRef = useRef<((event: KeyboardEvent) => void) | null>(null);
   const skipStorageRef = useRef(false);
+  const skipBroadcastRef = useRef(false);
   const channelRef = useRef<BroadcastChannel | null>(null);
   const maxHalfRef = useRef(gameState.half);
 
@@ -894,6 +895,15 @@ export const useGameState = () => {
           }
           break;
         }
+        case 'STATE_UPDATE': {
+          const { state } = data as { state?: GameState };
+          if (state) {
+            skipStorageRef.current = true;
+            skipBroadcastRef.current = true;
+            _setGameState(() => state as GameState);
+          }
+          break;
+        }
         default:
           break;
       }
@@ -922,6 +932,10 @@ export const useGameState = () => {
   }, [handleRemoteMessage]);
 
   useEffect(() => {
+    if (skipBroadcastRef.current) {
+      skipBroadcastRef.current = false;
+      return;
+    }
     channelRef.current?.postMessage({ type: 'STATE_UPDATE', state: gameState });
   }, [gameState]);
 

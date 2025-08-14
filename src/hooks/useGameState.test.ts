@@ -39,6 +39,31 @@ describe('useGameState message handling', () => {
 
     unmount();
   });
+
+  it('updates state on STATE_UPDATE messages', () => {
+    const { result, unmount } = renderHook(() => useGameState(), { legacyRoot: true });
+
+    const updatedState = {
+      ...result.current.gameState,
+      isRunning: true,
+      time: { minutes: 10, seconds: 15 },
+    };
+
+    act(() => {
+      window.dispatchEvent(
+        new MessageEvent('message', {
+          data: { type: 'STATE_UPDATE', state: updatedState },
+          origin: window.location.origin,
+        }),
+      );
+    });
+
+    expect(result.current.gameState.isRunning).toBe(true);
+    expect(result.current.gameState.time.minutes).toBe(10);
+    expect(result.current.gameState.time.seconds).toBe(15);
+
+    unmount();
+  });
 });
 
 describe('useGameState history', () => {
