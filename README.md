@@ -49,7 +49,7 @@ A modern React + TypeScript application for managing futsal matches with a polis
 The UI automatically follows your system theme. Switch your operating system or browser to dark mode to experience the darker palette.
 
 ### Routes
-Navigate between the dashboard and stats tracker views using the on-screen controls or by visiting the respective routes (`/dashboard`, `/stats`).
+Navigate between the dashboard, stats tracker, and scoreboard views using the on-screen controls or by visiting the respective routes (`/dashboard`, `/stats`, `/scoreboard`).
 
 ### Animations
 Key interface elements such as the live indicator and score updates use smooth animations to improve readability. These animations are powered by Tailwind CSS utility classes.

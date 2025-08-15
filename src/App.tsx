@@ -8,8 +8,9 @@ import { ControlPanelButton } from './components/ControlPanelButton';
 import { ThemeToggle } from './components/ThemeToggle';
 import { SettingsProvider } from './hooks/SettingsProvider';
 import { SettingsPage } from './components/SettingsPage';
+import { ScoreboardDisplay } from './components/ScoreboardDisplay';
 
-type ViewMode = 'dashboard' | 'stats' | 'settings';
+type ViewMode = 'dashboard' | 'stats' | 'settings' | 'scoreboard';
 
 type GameStateType = ReturnType<typeof useGameState>;
 
@@ -31,6 +32,16 @@ const StatsView: React.FC<ViewProps> = ({ gameState }) => {
         undo={gameState.undo}
         redo={gameState.redo}
       />
+      <ControlPanelButton onClick={() => navigate('/dashboard')} />
+    </div>
+  );
+};
+
+const ScoreboardView: React.FC<ViewProps> = ({ gameState }) => {
+  const navigate = useNavigate();
+  return (
+    <div className="relative w-full h-screen">
+      <ScoreboardDisplay gameState={gameState.gameState} />
       <ControlPanelButton onClick={() => navigate('/dashboard')} />
     </div>
   );
@@ -95,6 +106,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ gameState, theme, toggleTheme }
             />
           }
         />
+        <Route path="/scoreboard" element={<ScoreboardView gameState={gameState} />} />
         <Route path="/stats" element={<StatsView gameState={gameState} />} />
         <Route path="/settings" element={<SettingsView gameState={gameState} theme={theme} toggleTheme={toggleTheme} />} />
         <Route path="/" element={<Navigate to="/dashboard" replace />} />
