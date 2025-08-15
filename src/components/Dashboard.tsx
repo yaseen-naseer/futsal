@@ -12,6 +12,7 @@ import {
   Undo2,
   Redo2,
   Settings,
+  Tv,
 } from 'lucide-react';
 import { useSettings } from '../hooks/useSettings';
 import { GamePresetSelector } from './GamePresetSelector';
@@ -29,7 +30,7 @@ interface DashboardProps {
   addPlayer: (team: 'home' | 'away', name: string, role: 'starter' | 'substitute') => void;
   removePlayer: (team: 'home' | 'away', playerId: string) => void;
   onViewChange: (
-    view: 'dashboard' | 'stats' | 'settings'
+    view: 'dashboard' | 'stats' | 'settings' | 'scoreboard'
   ) => void;
 }
 
@@ -179,6 +180,13 @@ export const Dashboard: React.FC<DashboardProps> = ({
           <div className="flex justify-between items-center py-4">
             <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Futsal Control Dashboard</h1>
             <div className="flex gap-3">
+              <button
+                onClick={() => onViewChange('scoreboard')}
+                className="inline-flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+              >
+                <Tv className="w-4 h-4" />
+                Scoreboard
+              </button>
               <button
                 onClick={() => onViewChange('stats')}
                 className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
