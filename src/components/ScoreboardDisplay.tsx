@@ -9,7 +9,9 @@ interface ScoreboardDisplayOptions {
   timerMode?: 'elapsed' | 'remaining';
   layout?: 'horizontal' | 'vertical';
   bgColor?: string;
-  textColor?: string;
+  teamAColor?: string;
+  teamBColor?: string;
+  timerColor?: string;
 }
 
 interface ScoreboardDisplayProps {
@@ -78,7 +80,9 @@ export const ScoreboardDisplay: React.FC<ScoreboardDisplayProps> = ({
     timerMode = 'elapsed',
     layout = 'horizontal',
     bgColor = '#1d4ed8',
-    textColor = '#ffffff',
+    teamAColor = '#3b82f6',
+    teamBColor = '#ef4444',
+    timerColor = '#ffffff',
   } = options || {};
 
   let minutes = gameState.time.minutes;
@@ -92,12 +96,14 @@ export const ScoreboardDisplay: React.FC<ScoreboardDisplayProps> = ({
     seconds = remaining % 60;
   }
 
-  const style: React.CSSProperties = {
+  const style = {
     width: width ? `${width}px` : undefined,
     height: height ? `${height}px` : undefined,
     backgroundColor: bgColor,
-    color: textColor,
-  };
+    '--team-a-color': teamAColor,
+    '--team-b-color': teamBColor,
+    '--timer-color': timerColor,
+  } as React.CSSProperties;
 
   // Account for padding (p-2 => 8px each side) and vertical gaps (gap-y-2 => 8px each)
   // to ensure the computed content sizes fit within the provided height.
@@ -141,23 +147,23 @@ export const ScoreboardDisplay: React.FC<ScoreboardDisplayProps> = ({
   const horizontalLayout = (
     <div className="grid grid-rows-[auto_1fr_auto] w-full h-full p-2 gap-y-2" style={style}>
       <div className="grid grid-cols-3 items-center">
-        <div className="justify-self-start">
+        <div className="justify-self-start" style={{ color: 'var(--team-a-color)' }}>
           <TeamLogo src={gameState.homeTeam.logo} size={logoSize} />
         </div>
         <div className="justify-self-center font-mono font-bold flex flex-col items-center">
-          {showHalf && <span style={{ fontSize: halfFont }}>{halfText}</span>}
+          {showHalf && <span style={{ fontSize: halfFont, color: 'var(--timer-color)' }}>{halfText}</span>}
           {showTimer && (
-            <span style={{ fontSize: timerFont }}>
+            <span style={{ fontSize: timerFont, color: 'var(--timer-color)' }}>
               {String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}
             </span>
           )}
           {!gameState.isRunning && (
-            <span className="uppercase" style={{ fontSize: pausedFont }}>
+            <span className="uppercase" style={{ fontSize: pausedFont, color: 'var(--timer-color)' }}>
               Paused
             </span>
           )}
         </div>
-        <div className="justify-self-end">
+        <div className="justify-self-end" style={{ color: 'var(--team-b-color)' }}>
           <TeamLogo src={gameState.awayTeam.logo} size={logoSize} />
         </div>
       </div>
@@ -166,29 +172,29 @@ export const ScoreboardDisplay: React.FC<ScoreboardDisplayProps> = ({
         <div className="justify-self-start">
           <div className="flex flex-col items-start">
             {showScore && (
-              <span className="font-mono font-bold leading-none" style={{ fontSize: scoreFont }}>
+              <span className="font-mono font-bold leading-none" style={{ fontSize: scoreFont, color: 'var(--team-a-color)' }}>
                 {String(gameState.homeTeam.score).padStart(2, '0')}
               </span>
             )}
             {showFouls && (
-              <span className="font-mono leading-none" style={{ fontSize: foulsFont }}>
+              <span className="font-mono leading-none" style={{ fontSize: foulsFont, color: 'var(--team-a-color)' }}>
                 F:{gameState.homeTeam.fouls}
               </span>
             )}
           </div>
         </div>
-        <div className="justify-self-center">
+        <div className="justify-self-center" style={{ color: 'var(--timer-color)' }}>
           <TournamentLogo src={gameState.tournamentLogo} width={compWidth} height={compHeight} />
         </div>
         <div className="justify-self-end">
           <div className="flex flex-col items-end">
             {showScore && (
-              <span className="font-mono font-bold leading-none" style={{ fontSize: scoreFont }}>
+              <span className="font-mono font-bold leading-none" style={{ fontSize: scoreFont, color: 'var(--team-b-color)' }}>
                 {String(gameState.awayTeam.score).padStart(2, '0')}
               </span>
             )}
             {showFouls && (
-              <span className="font-mono leading-none" style={{ fontSize: foulsFont }}>
+              <span className="font-mono leading-none" style={{ fontSize: foulsFont, color: 'var(--team-b-color)' }}>
                 F:{gameState.awayTeam.fouls}
               </span>
             )}
@@ -200,14 +206,14 @@ export const ScoreboardDisplay: React.FC<ScoreboardDisplayProps> = ({
         <span
           ref={homeNameRef}
           className="justify-self-start truncate font-semibold leading-none"
-          style={{ fontSize: teamFont }}
+          style={{ fontSize: teamFont, color: 'var(--team-a-color)' }}
         >
           {gameState.homeTeam.name}
         </span>
         <span
           ref={awayNameRef}
           className="justify-self-end truncate font-semibold text-right leading-none"
-          style={{ fontSize: teamFont }}
+          style={{ fontSize: teamFont, color: 'var(--team-b-color)' }}
         >
           {gameState.awayTeam.name}
         </span>
@@ -218,14 +224,14 @@ export const ScoreboardDisplay: React.FC<ScoreboardDisplayProps> = ({
   const verticalLayout = (
     <div className="flex flex-col w-full h-full p-2 gap-y-2" style={style}>
       <div className="flex flex-col items-center font-mono font-bold">
-        {showHalf && <span style={{ fontSize: halfFont }}>{halfText}</span>}
+        {showHalf && <span style={{ fontSize: halfFont, color: 'var(--timer-color)' }}>{halfText}</span>}
         {showTimer && (
-          <span style={{ fontSize: timerFont }}>
+          <span style={{ fontSize: timerFont, color: 'var(--timer-color)' }}>
             {String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}
           </span>
         )}
         {!gameState.isRunning && (
-          <span className="uppercase" style={{ fontSize: pausedFont }}>
+          <span className="uppercase" style={{ fontSize: pausedFont, color: 'var(--timer-color)' }}>
             Paused
           </span>
         )}
@@ -233,15 +239,17 @@ export const ScoreboardDisplay: React.FC<ScoreboardDisplayProps> = ({
 
       <div className="flex flex-col flex-1 justify-between">
         <div className="flex items-center justify-between">
-          <TeamLogo src={gameState.homeTeam.logo} size={logoSize} />
+          <div style={{ color: 'var(--team-a-color)' }}>
+            <TeamLogo src={gameState.homeTeam.logo} size={logoSize} />
+          </div>
           <div className="flex flex-col items-center">
             {showScore && (
-              <span className="font-mono font-bold leading-none" style={{ fontSize: scoreFont }}>
+              <span className="font-mono font-bold leading-none" style={{ fontSize: scoreFont, color: 'var(--team-a-color)' }}>
                 {String(gameState.homeTeam.score).padStart(2, '0')}
               </span>
             )}
             {showFouls && (
-              <span className="font-mono leading-none" style={{ fontSize: foulsFont }}>
+              <span className="font-mono leading-none" style={{ fontSize: foulsFont, color: 'var(--team-a-color)' }}>
                 F:{gameState.homeTeam.fouls}
               </span>
             )}
@@ -249,22 +257,24 @@ export const ScoreboardDisplay: React.FC<ScoreboardDisplayProps> = ({
           <span
             ref={homeNameRef}
             className="font-semibold leading-none truncate text-right flex-1 ml-2"
-            style={{ fontSize: teamFont }}
+            style={{ fontSize: teamFont, color: 'var(--team-a-color)' }}
           >
             {gameState.homeTeam.name}
           </span>
         </div>
 
         <div className="flex items-center justify-between mt-2">
-          <TeamLogo src={gameState.awayTeam.logo} size={logoSize} />
+          <div style={{ color: 'var(--team-b-color)' }}>
+            <TeamLogo src={gameState.awayTeam.logo} size={logoSize} />
+          </div>
           <div className="flex flex-col items-center">
             {showScore && (
-              <span className="font-mono font-bold leading-none" style={{ fontSize: scoreFont }}>
+              <span className="font-mono font-bold leading-none" style={{ fontSize: scoreFont, color: 'var(--team-b-color)' }}>
                 {String(gameState.awayTeam.score).padStart(2, '0')}
               </span>
             )}
             {showFouls && (
-              <span className="font-mono leading-none" style={{ fontSize: foulsFont }}>
+              <span className="font-mono leading-none" style={{ fontSize: foulsFont, color: 'var(--team-b-color)' }}>
                 F:{gameState.awayTeam.fouls}
               </span>
             )}
@@ -272,14 +282,14 @@ export const ScoreboardDisplay: React.FC<ScoreboardDisplayProps> = ({
           <span
             ref={awayNameRef}
             className="font-semibold leading-none truncate text-right flex-1 ml-2"
-            style={{ fontSize: teamFont }}
+            style={{ fontSize: teamFont, color: 'var(--team-b-color)' }}
           >
             {gameState.awayTeam.name}
           </span>
         </div>
       </div>
 
-      <div className="flex items-center justify-center">
+      <div className="flex items-center justify-center" style={{ color: 'var(--timer-color)' }}>
         <TournamentLogo src={gameState.tournamentLogo} width={compWidth} height={compHeight} />
       </div>
     </div>
