@@ -9,7 +9,7 @@ interface ControlPanelButtonProps {
 export const ControlPanelButton: React.FC<ControlPanelButtonProps> = ({ onClick }) => (
   <button
     onClick={onClick}
-    aria-label="Open scoreboard"
+    aria-label="Open control panel"
     className="fixed top-5 right-20 w-12 h-12 rounded-full bg-indigo-600/80 text-white flex items-center justify-center shadow-lg hover:bg-indigo-600 backdrop-blur-md transition-colors z-50"
   >
     <Settings className="w-5 h-5" />
