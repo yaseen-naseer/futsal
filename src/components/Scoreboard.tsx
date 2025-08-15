@@ -32,7 +32,9 @@ export const Scoreboard: React.FC<Props> = ({ gameState, theme, toggleTheme }) =
   const [timerMode, setTimerMode] = useState<'elapsed' | 'remaining'>('elapsed');
   const [layout, setLayout] = useState<'horizontal' | 'vertical'>('horizontal');
   const [bgColor, setBgColor] = useState('#1d4ed8');
-  const [textColor, setTextColor] = useState('#ffffff');
+  const [teamAColor, setTeamAColor] = useState('#3b82f6');
+  const [teamBColor, setTeamBColor] = useState('#ef4444');
+  const [timerColor, setTimerColor] = useState('#ffffff');
 
   const handleResolutionChange = (value: string) => {
     setResolution(value);
@@ -46,7 +48,10 @@ export const Scoreboard: React.FC<Props> = ({ gameState, theme, toggleTheme }) =
   const url = `${window.location.origin}/scoreboard/display?width=${width}&height=${height}` +
     `&showScore=${showScore ? 1 : 0}&showFouls=${showFouls ? 1 : 0}&showHalf=${showHalf ? 1 : 0}` +
     `&showTimer=${showTimer ? 1 : 0}&timerMode=${timerMode}&layout=${layout}` +
-    `&bgColor=${encodeURIComponent(bgColor)}&textColor=${encodeURIComponent(textColor)}`;
+    `&bgColor=${encodeURIComponent(bgColor)}` +
+    `&teamAColor=${encodeURIComponent(teamAColor)}` +
+    `&teamBColor=${encodeURIComponent(teamBColor)}` +
+    `&timerColor=${encodeURIComponent(timerColor)}`;
 
   return (
     <div className="min-h-screen p-4 space-y-4 relative bg-gray-50 text-gray-900 dark:bg-gray-900 dark:text-gray-100">
@@ -134,20 +139,38 @@ export const Scoreboard: React.FC<Props> = ({ gameState, theme, toggleTheme }) =
           </select>
         </div>
         <label className="flex items-center gap-2">
+          <span>Team A</span>
+          <input
+            type="color"
+            value={teamAColor}
+            onChange={e => setTeamAColor(e.target.value)}
+            className="border border-gray-300 dark:border-gray-600 rounded bg-transparent"
+          />
+        </label>
+        <label className="flex items-center gap-2">
+          <span>Team B</span>
+          <input
+            type="color"
+            value={teamBColor}
+            onChange={e => setTeamBColor(e.target.value)}
+            className="border border-gray-300 dark:border-gray-600 rounded bg-transparent"
+          />
+        </label>
+        <label className="flex items-center gap-2">
+          <span>Timer</span>
+          <input
+            type="color"
+            value={timerColor}
+            onChange={e => setTimerColor(e.target.value)}
+            className="border border-gray-300 dark:border-gray-600 rounded bg-transparent"
+          />
+        </label>
+        <label className="flex items-center gap-2">
           <span>BG</span>
           <input
             type="color"
             value={bgColor}
             onChange={e => setBgColor(e.target.value)}
-            className="border border-gray-300 dark:border-gray-600 rounded bg-transparent"
-          />
-        </label>
-        <label className="flex items-center gap-2">
-          <span>Text</span>
-          <input
-            type="color"
-            value={textColor}
-            onChange={e => setTextColor(e.target.value)}
             className="border border-gray-300 dark:border-gray-600 rounded bg-transparent"
           />
         </label>
@@ -180,7 +203,9 @@ export const Scoreboard: React.FC<Props> = ({ gameState, theme, toggleTheme }) =
             timerMode,
             layout,
             bgColor,
-            textColor,
+            teamAColor,
+            teamBColor,
+            timerColor,
           }}
         />
       </div>

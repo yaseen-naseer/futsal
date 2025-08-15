@@ -36,7 +36,9 @@ export const ScoreboardDisplayPage: React.FC<Props> = ({ gameState }) => {
     timerMode: (params.get('timerMode') as 'elapsed' | 'remaining') || 'elapsed',
     layout: (params.get('layout') as 'horizontal' | 'vertical') || 'horizontal',
     bgColor: params.get('bgColor') ? decodeURIComponent(params.get('bgColor') as string) : '#1d4ed8',
-    textColor: params.get('textColor') ? decodeURIComponent(params.get('textColor') as string) : '#ffffff',
+    teamAColor: params.get('teamAColor') ? decodeURIComponent(params.get('teamAColor') as string) : '#3b82f6',
+    teamBColor: params.get('teamBColor') ? decodeURIComponent(params.get('teamBColor') as string) : '#ef4444',
+    timerColor: params.get('timerColor') ? decodeURIComponent(params.get('timerColor') as string) : '#ffffff',
   } as const;
 
   return (
