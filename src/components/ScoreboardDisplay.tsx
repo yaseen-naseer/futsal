@@ -119,7 +119,6 @@ export const ScoreboardDisplay: React.FC<ScoreboardDisplayProps> = ({
   const scoreFont = makeFont(20, 0.35, innerHeight * 0.5);
   const teamFontBase = innerHeight * 0.25;
   const teamFont = makeFont(16, 0.25, innerHeight * 0.3);
-  const pausedFont = makeFont(12, 0.15, innerHeight * 0.2);
   const halfFont = makeFont(12, 0.15, innerHeight * 0.2);
   const foulsFont = makeFont(10, 0.15, innerHeight * 0.2);
 
@@ -155,11 +154,7 @@ export const ScoreboardDisplay: React.FC<ScoreboardDisplayProps> = ({
           {showTimer && (
             <span style={{ fontSize: timerFont, color: 'var(--timer-color)' }}>
               {String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}
-            </span>
-          )}
-          {!gameState.isRunning && (
-            <span className="uppercase" style={{ fontSize: pausedFont, color: 'var(--timer-color)' }}>
-              Paused
+              {!gameState.isRunning ? ' PAUSED' : ''}
             </span>
           )}
         </div>
@@ -202,22 +197,22 @@ export const ScoreboardDisplay: React.FC<ScoreboardDisplayProps> = ({
         </div>
       </div>
 
-      <div className="grid grid-cols-2 items-center">
-        <span
-          ref={homeNameRef}
-          className="justify-self-start truncate font-semibold leading-none"
-          style={{ fontSize: teamFont, color: 'var(--team-a-color)' }}
-        >
-          {gameState.homeTeam.name}
-        </span>
-        <span
-          ref={awayNameRef}
-          className="justify-self-end truncate font-semibold text-right leading-none"
-          style={{ fontSize: teamFont, color: 'var(--team-b-color)' }}
-        >
-          {gameState.awayTeam.name}
-        </span>
-      </div>
+        <div className="grid grid-cols-2 items-center">
+          <span
+            ref={homeNameRef}
+            className="col-start-1 justify-self-start w-full truncate font-semibold leading-none"
+            style={{ fontSize: teamFont, color: 'var(--team-a-color)' }}
+          >
+            {gameState.homeTeam.name}
+          </span>
+          <span
+            ref={awayNameRef}
+            className="col-start-2 justify-self-end w-full truncate font-semibold text-right leading-none"
+            style={{ fontSize: teamFont, color: 'var(--team-b-color)' }}
+          >
+            {gameState.awayTeam.name}
+          </span>
+        </div>
     </div>
   );
 
@@ -228,11 +223,7 @@ export const ScoreboardDisplay: React.FC<ScoreboardDisplayProps> = ({
         {showTimer && (
           <span style={{ fontSize: timerFont, color: 'var(--timer-color)' }}>
             {String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}
-          </span>
-        )}
-        {!gameState.isRunning && (
-          <span className="uppercase" style={{ fontSize: pausedFont, color: 'var(--timer-color)' }}>
-            Paused
+            {!gameState.isRunning ? ' PAUSED' : ''}
           </span>
         )}
       </div>
