@@ -132,12 +132,12 @@ export const ScoreboardDisplay: React.FC<ScoreboardDisplayProps> = ({
   const logoSize = `${innerHeight * 0.4}px`;
   const compWidth = `${innerHeight * 0.4}px`;
   const compHeight = `${innerHeight * 0.2}px`;
-  const timerFont = makeFont(20, 0.3, innerHeight * 0.4);
-  const statusFont = makeFont(12, 0.2, innerHeight * 0.25);
+  const timerFont = makeFont(16, 0.25, innerHeight * 0.3); // Reduced from 0.3 to 0.25
+  const statusFont = makeFont(8, 0.12, innerHeight * 0.15); // Reduced from 0.2 to 0.12
   const scoreFont = makeFont(20, 0.35, innerHeight * 0.5);
   const teamFontBase = innerHeight * 0.25;
   const teamFont = makeFont(16, 0.25, innerHeight * 0.3);
-  const halfFont = makeFont(12, 0.15, innerHeight * 0.2);
+  const halfFont = makeFont(6, 0.08, innerHeight * 0.1); // Reduced from 0.15 to 0.08
   const foulsFont = makeFont(10, 0.15, innerHeight * 0.2);
 
   const homeNameRef = useRef<HTMLSpanElement>(null);
@@ -192,17 +192,25 @@ export const ScoreboardDisplay: React.FC<ScoreboardDisplayProps> = ({
         <div className="justify-self-start" style={{ color: 'var(--team-a-color)' }}>
           <TeamLogo src={gameState.homeTeam.logo} name={gameState.homeTeam.name} size={logoSize} />
         </div>
-        <div className="justify-self-center font-mono font-bold flex flex-col items-center">
-          {showHalf && <span style={{ fontSize: halfFont, color: 'var(--timer-color)' }}>{halfText}</span>}
+        <div className="justify-self-center font-mono font-bold flex flex-col items-center gap-1">
           {showTimer && (
             <>
-              <span style={{ fontSize: timerFont, color: 'var(--timer-color)' }}>
+              <span style={{ fontSize: timerFont, color: 'var(--timer-color)', lineHeight: '1' }}>
                 {String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}
               </span>
-              <span style={{ fontSize: statusFont, color: 'var(--timer-color)' }}>
+              <span
+                style={{ fontSize: statusFont, color: 'var(--timer-color)', lineHeight: '1', opacity: '0.8' }}
+              >
                 {statusText}
               </span>
             </>
+          )}
+          {showHalf && (
+            <span
+              style={{ fontSize: halfFont, color: 'var(--timer-color)', lineHeight: '1', opacity: '0.7' }}
+            >
+              {halfText}
+            </span>
           )}
         </div>
         <div className="justify-self-end" style={{ color: 'var(--team-b-color)' }}>
@@ -265,19 +273,25 @@ export const ScoreboardDisplay: React.FC<ScoreboardDisplayProps> = ({
 
   const verticalLayout = (
     <div className="flex flex-col w-full h-full p-2 gap-y-2" style={style}>
-      <div className="flex flex-col items-center font-mono font-bold">
-        {showHalf && <span style={{ fontSize: halfFont, color: 'var(--timer-color)' }}>{halfText}</span>}
-        {showTimer && (
-          <>
-            <span style={{ fontSize: timerFont, color: 'var(--timer-color)' }}>
-              {String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}
-            </span>
-            <span style={{ fontSize: statusFont, color: 'var(--timer-color)' }}>
-              {statusText}
-            </span>
-          </>
-        )}
-      </div>
+    <div className="flex flex-col items-center font-mono font-bold gap-1">
+      {showTimer && (
+        <>
+          <span style={{ fontSize: timerFont, color: 'var(--timer-color)', lineHeight: '1' }}>
+            {String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}
+          </span>
+          <span
+            style={{ fontSize: statusFont, color: 'var(--timer-color)', lineHeight: '1', opacity: '0.8' }}
+          >
+            {statusText}
+          </span>
+        </>
+      )}
+      {showHalf && (
+        <span style={{ fontSize: halfFont, color: 'var(--timer-color)', lineHeight: '1', opacity: '0.7' }}>
+          {halfText}
+        </span>
+      )}
+    </div>
 
       <div className="flex flex-col flex-1 justify-between">
         <div className="flex items-center justify-between">
